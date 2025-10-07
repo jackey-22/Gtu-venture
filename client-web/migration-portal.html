@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GTU Ventures - Database Migration</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        .step {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #4CAF50;
+        }
+        .step.completed {
+            border-left-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.1);
+        }
+        .step.pending {
+            border-left-color: #FFC107;
+            background: rgba(255, 193, 7, 0.1);
+        }
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            transition: transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .status.success { background: rgba(76, 175, 80, 0.2); }
+        .status.error { background: rgba(244, 67, 54, 0.2); }
+        .status.info { background: rgba(33, 150, 243, 0.2); }
+        pre {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        .progress {
+            width: 100%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 GTU Ventures Database Migration</h1>
+        <p>Migrate your existing localStorage data to Supabase cloud database</p>
+
+        <div class="step" id="step1">
+            <h3>Step 1: Database Setup</h3>
+            <p>✅ Environment variables configured</p>
+            <p>✅ SQL schema ready to run</p>
+            <button class="btn" onclick="openSupabaseDashboard()">Open Supabase Dashboard</button>
+        </div>
+
+        <div class="step pending" id="step2">
+            <h3>Step 2: Run SQL Schema</h3>
+            <p>Execute the SQL commands in your Supabase dashboard</p>
+            <button class="btn" onclick="showSQLSchema()">Show SQL Commands</button>
+        </div>
+
+        <div class="step pending" id="step3">
+            <h3>Step 3: Test Connection</h3>
+            <p>Verify database connection and table creation</p>
+            <button class="btn" id="testBtn" onclick="testConnection()">Test Database Connection</button>
+        </div>
+
+        <div class="step pending" id="step4">
+            <h3>Step 4: Migrate Data</h3>
+            <p>Transfer existing localStorage data to Supabase</p>
+            <button class="btn" id="migrateBtn" onclick="runMigration()" disabled>Start Migration</button>
+        </div>
+
+        <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div id="status"></div>
+        <div id="output"></div>
+    </div>
+
+    <script type="module">
+        import { DatabaseService } from './src/lib/database.js';
+        import { MigrationService } from './supabase/migration-fixed.js';
+
+        window.DatabaseService = DatabaseService;
+        window.MigrationService = MigrationService;
+
+        let currentStep = 1;
+
+        function updateProgress(step) {
+            currentStep = step;
+            const progress = (step / 4) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+
+            // Update step styles
+            for (let i = 1; i <= 4; i++) {
+                const stepEl = document.getElementById('step' + i);
+                if (i < step) {
+                    stepEl.className = 'step completed';
+                } else if (i === step) {
+                    stepEl.className = 'step pending';
+                }
+            }
+        }
+
+        function showStatus(message, type = 'info') {
+            const statusEl = document.getElementById('status');
+            statusEl.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        function logOutput(message) {
+            const outputEl = document.getElementById('output');
+            outputEl.innerHTML += '<div>' + message + '</div>';
+            console.log(message);
+        }
+
+        window.openSupabaseDashboard = function() {
+            window.open('https://supabase.com/dashboard/project/hdzroxreechbimzlayop/sql', '_blank');
+        };
+
+        window.showSQLSchema = function() {
+            const sql = `-- Copy this SQL to Supabase dashboard
+-- Enable Row Level Security
+ALTER DATABASE postgres SET "app.jwt_secret" TO 'your-jwt-secret';
+
+-- Create custom types
+CREATE TYPE user_role AS ENUM ('admin', 'editor', 'viewer');
+CREATE TYPE content_status AS ENUM ('draft', 'published', 'archived');
+CREATE TYPE application_status AS ENUM ('pending', 'under_review', 'accepted', 'rejected', 'waitlisted');
+CREATE TYPE contact_status AS ENUM ('new', 'read', 'replied', 'closed');
+
+-- Create all tables (news, events, programs, startups, gallery, reports, faqs, team, etc.)
+-- ... [Full schema would be here - see supabase/schema.sql for complete version]
+
+-- Enable RLS and create policies
+ALTER TABLE news ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public read access for published news" ON news FOR SELECT USING (status = 'published');
+CREATE POLICY "Admin full access to news" ON news FOR ALL USING (auth.jwt() ->> 'role' = 'admin');
+-- ... [More policies for all tables]`;
+
+            const outputEl = document.getElementById('output');
+            outputEl.innerHTML = '<pre>' + sql + '</pre>';
+        };
+
+        window.testConnection = async function() {
+            const testBtn = document.getElementById('testBtn');
+            testBtn.disabled = true;
+            testBtn.textContent = 'Testing...';
+
+            showStatus('🔍 Testing database connection...', 'info');
+            logOutput('Starting database connection test...');
+
+            try {
+                // Test news table
+                const news = await DatabaseService.getAllNews({ published: false });
+                logOutput('✅ News table: ' + news.length + ' items');
+
+                // Test events table
+                const events = await DatabaseService.getAllEvents({ published: false });
+                logOutput('✅ Events table: ' + events.length + ' items');
+
+                // Test gallery table
+                const gallery = await DatabaseService.getAllGallery({ published: false });
+                logOutput('✅ Gallery table: ' + gallery.length + ' items');
+
+                showStatus('🎉 Database connection successful!', 'success');
+                updateProgress(3);
+
+                // Enable migration button
+                document.getElementById('migrateBtn').disabled = false;
+
+            } catch (error) {
+                showStatus('❌ Database connection failed: ' + error.message, 'error');
+                logOutput('❌ Error: ' + error.message);
+                testBtn.disabled = false;
+                testBtn.textContent = 'Test Database Connection';
+            }
+        };
+
+        window.runMigration = async function() {
+            const migrateBtn = document.getElementById('migrateBtn');
+            migrateBtn.disabled = true;
+            migrateBtn.textContent = 'Migrating...';
+
+            showStatus('🚀 Starting data migration...', 'info');
+            logOutput('Starting migration process...');
+
+            try {
+                await MigrationService.migrateAllData();
+                logOutput('✅ Migration completed successfully!');
+
+                // Verify migration
+                logOutput('🔍 Verifying migration...');
+                await MigrationService.verifyMigration();
+
+                showStatus('🎉 Migration completed successfully!', 'success');
+                updateProgress(4);
+
+                // Show next steps
+                setTimeout(() => {
+                    showStatus('✅ Ready! Your website now uses Supabase database.', 'success');
+                }, 2000);
+
+            } catch (error) {
+                showStatus('❌ Migration failed: ' + error.message, 'error');
+                logOutput('❌ Migration error: ' + error.message);
+                migrateBtn.disabled = false;
+                migrateBtn.textContent = 'Start Migration';
+            }
+        };
+
+        // Initialize
+        updateProgress(1);
+        showStatus('Welcome! Follow the steps to migrate your data to Supabase.', 'info');
+    </script>
+</body>
+</html>

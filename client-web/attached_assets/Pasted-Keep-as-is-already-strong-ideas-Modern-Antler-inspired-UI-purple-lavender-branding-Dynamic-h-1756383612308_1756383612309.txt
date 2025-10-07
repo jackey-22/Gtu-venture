@@ -1,0 +1,75 @@
+Keep as-is (already strong ideas)
+
+Modern Antler-inspired UI (purple-lavender branding ✅)
+
+Dynamic homepage with impact metrics ✅
+
+Programs, Startups, Events, News, Partners ✅
+
+Testimonial rotator with auto-advance ✅
+
+Photo gallery with lightbox ✅
+
+Logo wall for grant & funding partners ✅
+
+Contact form with validation ✅
+
+Newsletter subscription ✅
+
+Responsive navigation ✅
+
+🔥 Must-add for completeness
+
+About Us Page
+
+Mission, vision, leadership, advisory board, mentors.
+
+Timeline of GTU Ventures (like Antler’s story flow).
+
+Centers of Excellence (CoE)
+
+Dedicated page to showcase specialized labs, innovation hubs, and incubators.
+
+Reports & Resources
+
+Annual reports, startup playbooks, research whitepapers (downloadable PDFs).
+
+Careers & Opportunities
+
+Fellowship, internships, open roles in startups + GTU Ventures team openings.
+
+Facilities Page
+
+Coworking spaces, labs, maker rooms, prototyping support — with photos.
+
+Circulars & Notices
+
+Announcements, application deadlines, result notices.
+
+Gallery & Media Coverage
+
+Split gallery (Events | Startups | Achievements) + press clippings/media articles.
+
+⚡ Suggested Improvements
+
+Homepage Hero Section → add a bold headline with a CTA (“Join Gujarat’s Largest Student Startup Ecosystem”).
+
+Impact Metrics → make them animated counters (numbers rolling up).
+
+Programs Page → showcase active & past programs with filters (Pre-incubation, Incubation, Acceleration, Hackathons).
+
+Startups Page → searchable/filterable database of startups (industry, stage, funding).
+
+Events Page → calendar view + registration buttons (sync with Google Calendar/ICS download).
+
+Partners Page → separate Strategic Partners, Funding Partners, Community Partners.
+
+Testimonials → mix founders + mentors + investors for variety.
+
+SEO & Performance → meta tags, OG tags, lazy-load images for speed.
+
+📌 My Recommendation (Phase-wise Build)
+
+Phase 1 (Launch fast) → Homepage, About, Programs, Startups, Events, Partners, Contact.
+Phase 2 (Expand) → Gallery, News, Testimonials, Resources, CoE, Careers.
+Phase 3 (Full polish) → Circulars, Notices, Advanced startup search/filter, CMS integration.

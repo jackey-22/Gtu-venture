@@ -1,0 +1,143 @@
+Part I: Public-Facing Website Pages
+These are the pages that visitors will see and interact with.
+
+1. Front Page
+
+Purpose: The main entry point and first impression of the website. It should be dynamic and visually appealing.
+
+Content: A hero section with a captivating headline, a subtle background, and key statistics. It will also feature brief highlights of the program, a few partner logos, and a rotating testimonial.
+
+2. Home
+
+Purpose: A high-level overview of the program, including its core principles.
+
+Content: Sections dedicated to the GTU Ventures' vision, mission, and objectives, presented concisely with clear headings.
+
+3. About Us
+
+Purpose: To build trust by introducing the people and governance behind the program.
+
+Content: A message from the Director, a brief overview of the program's governance, and a list of the Board and Committee members with their roles.
+
+4. Program (Current / Past)
+
+Purpose: To showcase the different programs offered by GTU Ventures and their structure.
+
+Content:
+
+Current Program: Detailed information on Pre-incubation, Incubation, and Acceleration.
+
+Past Programs: An archive of completed cohorts and a dedicated alumni section.
+
+Apply Now: A prominent section with a form for new applicants.
+
+5. Startups
+
+Purpose: To highlight the companies that have been part of the program.
+
+Content: A directory of incubated startups, each with their logo, a brief description, and success stories.
+
+6. Events
+
+Purpose: To inform the community about upcoming activities and showcase past gatherings.
+
+Content: A list or calendar of upcoming events with registration details and an archive of past events with photos and recordings.
+
+7. Partners
+
+Purpose: To acknowledge and display the academic, corporate, and government organizations that support GTU Ventures.
+
+Content: A display of partner logos and brief descriptions of their collaboration.
+
+8. News
+
+Purpose: A central hub for all program-related news, announcements, and articles.
+
+Content: A chronological list of announcements, media coverage, and a blog section with articles.
+
+9. CoI (Center of Innovation)
+
+Purpose: A dedicated page for information and resources specific to the Center of Innovation.
+
+Content: An overview of the CoI's objectives and a repository of downloadable reports.
+
+10. Annual Reports / Impact Reports
+
+Purpose: To provide public documentation of the program's performance and impact.
+
+Content: A structured list of reports with brief descriptions and direct download links.
+
+11. FAQs
+
+Purpose: To provide quick answers to common questions.
+
+Content: A list of frequently asked questions with collapsible answers, organized by category.
+
+12. Gallery
+
+Purpose: A visual showcase of events and campus life.
+
+Content: A collection of photo and video galleries from various program activities.
+
+13. Testimonials
+
+Purpose: To build credibility and trust through endorsements from startups, mentors, and partners.
+
+Content: Quotes and feedback from key stakeholders, including their names and photos.
+
+14. Facilities & Resources
+
+Purpose: To inform potential applicants about the available resources.
+
+Content: Details on labs, office spaces, and co-working, as well as a list of services and downloadable tools & templates.
+
+15. Careers
+
+Purpose: To list opportunities to join the GTU Ventures team.
+
+Content: A list of current openings, internships, and volunteer opportunities.
+
+16. Circular/Notice/Tender
+
+Purpose: To provide public access to official internal documents.
+
+Content: A list of official circulars and notices with downloadable files.
+
+17. Our Initiatives
+
+Purpose: To provide sub-pages for specific programs run by GTU Ventures.
+
+Content: Individual pages for DIC, IPR, GISC, and the AIC-GISC Foundation.
+
+18. Team
+
+Purpose: To introduce the key individuals behind the program.
+
+Content: A gallery of the core team, mentors, and advisors with their professional profiles.
+
+19. Contact Us
+
+Purpose: To provide clear methods for users to get in touch.
+
+Content: A contact form, physical address with an embedded map, and social media links.
+
+Part II: Admin Pages (Backend)
+The admin pages are not publicly visible. They form a secure, single-user control panel to manage all the content on the pages listed above.
+
+Access: The admin user will log in via a dedicated, private URL (e.g., gtuventures.com/admin).
+
+Purpose: To provide a user-friendly interface to manage all the website's data, eliminating the need for coding. The admin panel acts as a CMS (Content Management System) that interacts directly with the website's database.
+
+Key UI Components:
+
+Dashboard: A home screen providing a summary of key metrics and recent activity.
+
+Data Tables: Lists of all content items (e.g., all news posts, all events, all startups). Each item will have options to Edit or Delete.
+
+Forms: Simple, intuitive forms for adding or modifying content. For example, the "Add New Event" form would have fields for the title, date, and description.
+
+Content Management via the UI:
+
+The admin will control the content for every public page, including news articles, event details, startup profiles, partner logos, and team member information.
+
+The "Apply Now" form submissions will be visible in a secure section of the admin panel, allowing the admin to review applications privately.
