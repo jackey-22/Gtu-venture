@@ -146,10 +146,125 @@ async function deleteEvent(req, res) {
 	}
 }
 
+async function addNews(req, res) {
+	try {
+		const { title, slug, content, date, category, status, publishedAt } = req.body;
+		if (!title || !slug || !content) {
+			return res.status(400).json({ message: 'Missing required fields' });
+		}
+
+		const images =
+			req.files?.map((file) => {
+				return '\\' + file.path.replace(/^public[\\/]/, '').replace(/\//g, '\\');
+			}) || [];
+
+		const existingNews = await newsModel.findOne({ slug });
+		if (existingNews) {
+			return res.status(400).json({ message: 'Slug already exists' });
+		}
+
+		const newNews = new newsModel({
+			title,
+			slug,
+			content,
+			date,
+			category,
+			images: images ? images : [],
+			status: status || 'draft',
+			publishedAt,
+		});
+
+		await newNews.save();
+		return res.status(201).json({ message: 'News created successfully', news: newNews });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function getAllNews(req, res) {
+	try {
+		const news = await newsModel.find().sort({ created_at: -1 });
+		return res.status(200).json(news);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function getNewsById(req, res) {
+	try {
+		const news = await newsModel.findById(req.params.id);
+		if (!news) return res.status(404).json({ message: 'News not found' });
+		return res.status(200).json(news);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function updateNews(req, res) {
+	try {
+		const { id } = req.params;
+		const { title, slug, content, date, category, images, status, publishedAt, removeImages } =
+			req.body;
+
+		const updatedData = await newsModel.findByIdAndUpdate(id, {
+			title,
+			slug,
+			content,
+			date,
+			category,
+			status,
+			publishedAt,
+		});
+
+		const newImages =
+			req.files?.map((file) => {
+				return '\\' + file.path.replace(/^public[\\/]/, '').replace(/\//g, '\\');
+			}) || [];
+		if (removeImages) {
+			updatedData.images = newImages;
+		} else {
+			const existingNews = await newsModel.findById(id);
+			updatedData.images = [...(existingNews.images || []), ...newImages];
+		}
+
+		const updatedNews = await newsModel.findByIdAndUpdate(id, updatedData, {
+			new: true,
+			runValidators: true,
+		});
+
+		if (!updatedNews) return res.status(404).json({ message: 'News not found' });
+
+		return res.status(200).json({ message: 'News updated successfully', news: updatedNews });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function deleteNews(req, res) {
+	try {
+		const { id } = req.params;
+		const deletedNews = await newsModel.findByIdAndDelete(id);
+		if (!deletedNews) return res.status(404).json({ message: 'News not found' });
+		return res.status(200).json({ message: 'News deleted successfully' });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
 module.exports = {
 	addEvent,
 	getAllEvents,
 	getEventById,
 	updateEvent,
 	deleteEvent,
+	addNews,
+	getAllNews,
+	getNewsById,
+	updateNews,
+	deleteNews,
 };

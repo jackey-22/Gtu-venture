@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const adminController = require('../controllers/admin.controller');
 const { asyncRouteHandler } = require('../utils/route.utils');
+const multer = require('multer');
 const { upload } = require('../utils/multer.utils');
 
 // router.use(authMiddleware('Admin'));
@@ -15,5 +16,15 @@ router.post(
 	asyncRouteHandler(adminController.updateEvent)
 );
 router.delete('/delete-event/:id', asyncRouteHandler(adminController.deleteEvent));
+
+router.post('/add-news', upload.array('images'), asyncRouteHandler(adminController.addNews));
+router.get('/get-news', asyncRouteHandler(adminController.getAllNews));
+router.get('/get-news/:id', asyncRouteHandler(adminController.getNewsById));
+router.post(
+	'/update-news/:id',
+	upload.array('images'),
+	asyncRouteHandler(adminController.updateNews)
+);
+router.delete('/delete-news/:id', asyncRouteHandler(adminController.deleteNews));
 
 module.exports = router;
