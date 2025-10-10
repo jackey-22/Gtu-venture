@@ -35,6 +35,7 @@ import { Plus, Edit, Trash2, Calendar, MapPin, Users, Link, Tag, Image } from 'l
 export default function EventsCRUD() {
 	const [events, setEvents] = useState<any[]>([]);
 	const [loading, setLoading] = useState(true);
+	const [actionLoading, setActionLoading] = useState(false);
 	const [editingEvent, setEditingEvent] = useState<any | null>(null);
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	const [removeExistingImage, setRemoveExistingImage] = useState(false);
@@ -78,6 +79,7 @@ export default function EventsCRUD() {
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
+		setActionLoading(true);
 		const token = localStorage.getItem('token');
 		const payload = new FormData();
 
@@ -109,13 +111,15 @@ export default function EventsCRUD() {
 				alert(`Event ${editingEvent ? 'updated' : 'created'} successfully`);
 				fetchEvents();
 				resetForm();
-				setIsDialogOpen(false);
 			} else {
 				alert(data.message || 'Something went wrong');
 			}
 		} catch (error) {
 			console.error('Error submitting event:', error);
 			alert('Failed to submit event');
+		} finally {
+			setActionLoading(false);
+			setIsDialogOpen(false);
 		}
 	};
 
@@ -138,6 +142,7 @@ export default function EventsCRUD() {
 	};
 
 	const handleDelete = async (id: string) => {
+		setActionLoading(true);
 		const token = localStorage.getItem('token');
 		try {
 			const response = await fetch(`${BASE_URL}admin/delete-event/${id}`, {
@@ -155,6 +160,8 @@ export default function EventsCRUD() {
 		} catch (error) {
 			console.error('Error deleting event:', error);
 			alert('Failed to delete event');
+		} finally {
+			setActionLoading(false);
 		}
 	};
 
@@ -191,6 +198,16 @@ export default function EventsCRUD() {
 
 	if (loading)
 		return <div className="flex justify-center items-center h-64">Loading events...</div>;
+
+	if (actionLoading)
+		return (
+			<div className="flex justify-center items-center h-64">
+				<div className="text-center">
+					<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
+					<p className="mt-3 text-primary">Loading...</p>
+				</div>
+			</div>
+		);
 
 	return (
 		<div className="space-y-6">
