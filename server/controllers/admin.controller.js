@@ -354,6 +354,127 @@ async function deleteReport(req, res) {
 	}
 }
 
+// StartUp
+async function addStartup(req, res) {
+	const { name, description, founderName, sector, stage, url, location, status, publishedAt } =
+		req.body;
+
+	const logo = req.file ? req.file.path.slice(6) : null;
+
+	if (!name || !description) {
+		return res.status(400).json({ message: 'Missing required fields' });
+	}
+
+	try {
+		const newStartup = new startupModel({
+			name,
+			description,
+			founderName: founderName ? JSON.parse(founderName) : [],
+			sector,
+			stage,
+			url,
+			location,
+			status,
+			publishedAt,
+			logo,
+		});
+
+		await newStartup.save();
+		return res
+			.status(201)
+			.json({ message: 'Startup created successfully', startup: newStartup });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function getAllStartups(req, res) {
+	try {
+		const startups = await startupModel.find().sort({ created_at: -1 });
+		return res.status(200).json(startups);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function getStartupById(req, res) {
+	try {
+		const startup = await startupModel.findById(req.params.id);
+		if (!startup) {
+			return res.status(404).json({ message: 'Startup not found' });
+		}
+		return res.status(200).json(startup);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function updateStartup(req, res) {
+	try {
+		const { id } = req.params;
+		const {
+			name,
+			description,
+			founderName,
+			sector,
+			stage,
+			url,
+			location,
+			status,
+			publishedAt,
+		} = req.body;
+
+		const logo = req.file ? req.file.path.slice(6) : null;
+
+		const updatedData = {
+			name,
+			description,
+			founderName: founderName ? JSON.parse(founderName) : [],
+			sector,
+			stage,
+			url,
+			location,
+			status,
+			publishedAt,
+		};
+
+		if (logo) updatedData.logo = logo;
+
+		const updatedStartup = await startupModel.findByIdAndUpdate(id, updatedData, {
+			new: true,
+			runValidators: true,
+		});
+
+		if (!updatedStartup) {
+			return res.status(404).json({ message: 'Startup not found' });
+		}
+
+		return res
+			.status(200)
+			.json({ message: 'Startup updated successfully', startup: updatedStartup });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function deleteStartup(req, res) {
+	try {
+		const { id } = req.params;
+		const deletedStartup = await startupModel.findByIdAndDelete(id);
+		if (!deletedStartup) {
+			return res.status(404).json({ message: 'Startup not found' });
+		}
+		return res.status(200).json({ message: 'Startup deleted successfully' });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
 module.exports = {
 	addEvent,
 	getAllEvents,
@@ -370,4 +491,9 @@ module.exports = {
 	getReportById,
 	updateReport,
 	deleteReport,
+	addStartup,
+	getAllStartups,
+	getStartupById,
+	updateStartup,
+	deleteStartup,
 };

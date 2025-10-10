@@ -40,4 +40,15 @@ router.post(
 );
 router.delete('/delete-report/:id', asyncRouteHandler(adminController.deleteReport));
 
+// StartUp
+router.post('/add-startup', upload.single('logo'), asyncRouteHandler(adminController.addStartup));
+router.get('/get-startups', asyncRouteHandler(adminController.getAllStartups));
+router.get('/get-startup/:id', asyncRouteHandler(adminController.getStartupById));
+router.post(
+	'/update-startup/:id',
+	upload.single('logo'),
+	asyncRouteHandler(adminController.updateStartup)
+);
+router.delete('/delete-startup/:id', asyncRouteHandler(adminController.deleteStartup));
+
 module.exports = router;
