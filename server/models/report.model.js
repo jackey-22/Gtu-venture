@@ -4,7 +4,7 @@ const reportSchema = new mongoose.Schema(
 	{
 		title: { type: String, required: true },
 		description: { type: String },
-		file_url: { type: String, required: true },
+		fileUrl: { type: String, required: true },
 		// file_name: { type: String },
 		// file_size: { type: Number },
 		// file_type: { type: String }, // pdf, docx, etc.

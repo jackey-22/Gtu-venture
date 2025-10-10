@@ -5,7 +5,10 @@ const newsModel = require('../models/news.model');
 const programModel = require('../models/program.model');
 const reportModel = require('../models/report.model');
 const startupModel = require('../models/startup.model');
+const path = require('path');
+const fs = require('fs');
 
+// Event
 async function addEvent(req, res) {
 	const {
 		title,
@@ -146,6 +149,7 @@ async function deleteEvent(req, res) {
 	}
 }
 
+// News
 async function addNews(req, res) {
 	try {
 		const { title, slug, content, date, category, status, publishedAt } = req.body;
@@ -256,6 +260,100 @@ async function deleteNews(req, res) {
 	}
 }
 
+//Report
+async function addReport(req, res) {
+	const { title, description, category, status, publishedAt } = req.body;
+	const fileUrl = req.file ? req.file.path.slice(6) : null;
+
+	if (!title || !fileUrl) {
+		return res.status(400).json({ message: 'Missing required fields' });
+	}
+
+	try {
+		const newReport = new reportModel({
+			title,
+			description,
+			category,
+			fileUrl,
+			status: status || 'draft',
+			publishedAt,
+		});
+
+		await newReport.save();
+		return res.status(201).json({ message: 'Report created successfully', report: newReport });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function getAllReports(req, res) {
+	try {
+		const reports = await reportModel.find().sort({ created_at: -1 });
+		return res.status(200).json(reports);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function getReportById(req, res) {
+	try {
+		const report = await reportModel.findById(req.params.id);
+		if (!report) return res.status(404).json({ message: 'Report not found' });
+		return res.status(200).json(report);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function updateReport(req, res) {
+	try {
+		const { id } = req.params;
+		const { title, description, category, status, publishedAt } = req.body;
+
+		const updatedData = { title, description, category, status, publishedAt };
+
+		if (req.file) {
+			updatedData.fileUrl = req.file.path.slice(6);
+		}
+
+		const updatedReport = await reportModel.findByIdAndUpdate(id, updatedData, {
+			new: true,
+			runValidators: true,
+		});
+
+		if (!updatedReport) return res.status(404).json({ message: 'Report not found' });
+
+		return res
+			.status(200)
+			.json({ message: 'Report updated successfully', report: updatedReport });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function deleteReport(req, res) {
+	try {
+		const { id } = req.params;
+
+		const deletedReport = await reportModel.findByIdAndDelete(id);
+		if (!deletedReport) return res.status(404).json({ message: 'Report not found' });
+
+		if (deletedReport.fileUrl) {
+			const filePath = path.join(__dirname, '..', 'public', deletedReport.fileUrl);
+			if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+		}
+
+		return res.status(200).json({ message: 'Report deleted successfully' });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
 module.exports = {
 	addEvent,
 	getAllEvents,
@@ -267,4 +365,9 @@ module.exports = {
 	getNewsById,
 	updateNews,
 	deleteNews,
+	addReport,
+	getAllReports,
+	getReportById,
+	updateReport,
+	deleteReport,
 };
