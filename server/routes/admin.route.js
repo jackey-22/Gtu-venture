@@ -51,4 +51,15 @@ router.post(
 );
 router.delete('/delete-startup/:id', asyncRouteHandler(adminController.deleteStartup));
 
+// Gallary
+router.post('/add-gallery', upload.array('images'), asyncRouteHandler(adminController.addGallery));
+router.get('/get-galleries', asyncRouteHandler(adminController.getAllGalleries));
+router.get('/get-gallery/:id', asyncRouteHandler(adminController.getGalleryById));
+router.post(
+	'/update-gallery/:id',
+	upload.array('images'),
+	asyncRouteHandler(adminController.updateGallery)
+);
+router.delete('/delete-gallery/:id', asyncRouteHandler(adminController.deleteGallery));
+
 module.exports = router;

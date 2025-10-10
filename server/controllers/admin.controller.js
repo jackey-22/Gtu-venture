@@ -475,6 +475,106 @@ async function deleteStartup(req, res) {
 	}
 }
 
+// Gallary
+async function addGallery(req, res) {
+	try {
+		const { title, description, status, publishedAt } = req.body;
+
+		if (!title) {
+			return res.status(400).json({ message: 'Title is required' });
+		}
+
+		const images =
+			req.files?.map((file) => {
+				return '\\' + file.path.replace(/^public[\\/]/, '').replace(/\//g, '\\');
+			}) || [];
+
+		const newGallery = new galleryModel({
+			title,
+			description,
+			images,
+			status: status || 'draft',
+			publishedAt,
+		});
+
+		await newGallery.save();
+		return res
+			.status(201)
+			.json({ message: 'Gallery created successfully', gallery: newGallery });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function getAllGalleries(req, res) {
+	try {
+		const galleries = await galleryModel.find().sort({ created_at: -1 });
+		return res.status(200).json(galleries);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function getGalleryById(req, res) {
+	try {
+		const gallery = await galleryModel.findById(req.params.id);
+		if (!gallery) return res.status(404).json({ message: 'Gallery not found' });
+		return res.status(200).json(gallery);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function updateGallery(req, res) {
+	try {
+		const { id } = req.params;
+		const { title, description, status, publishedAt, removeImages } = req.body;
+
+		const galleryData = await galleryModel.findById(id);
+		if (!galleryData) return res.status(404).json({ message: 'Gallery not found' });
+
+		const newImages =
+			req.files?.map((file) => {
+				return '\\' + file.path.replace(/^public[\\/]/, '').replace(/\//g, '\\');
+			}) || [];
+
+		if (removeImages) {
+			galleryData.images = newImages;
+		} else {
+			galleryData.images = [...(galleryData.images || []), ...newImages];
+		}
+
+		galleryData.title = title || galleryData.title;
+		galleryData.description = description || galleryData.description;
+		galleryData.status = status || galleryData.status;
+		galleryData.publishedAt = publishedAt || galleryData.publishedAt;
+
+		const updatedGallery = await galleryData.save();
+
+		return res
+			.status(200)
+			.json({ message: 'Gallery updated successfully', gallery: updatedGallery });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function deleteGallery(req, res) {
+	try {
+		const { id } = req.params;
+		const deletedGallery = await galleryModel.findByIdAndDelete(id);
+		if (!deletedGallery) return res.status(404).json({ message: 'Gallery not found' });
+		return res.status(200).json({ message: 'Gallery deleted successfully' });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
 module.exports = {
 	addEvent,
 	getAllEvents,
@@ -496,4 +596,9 @@ module.exports = {
 	getStartupById,
 	updateStartup,
 	deleteStartup,
+	addGallery,
+	getAllGalleries,
+	getGalleryById,
+	updateGallery,
+	deleteGallery,
 };
