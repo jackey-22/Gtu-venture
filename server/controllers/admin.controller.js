@@ -575,7 +575,7 @@ async function deleteGallery(req, res) {
 	}
 }
 
-// ✅ Add Program
+// Programs
 async function addProgram(req, res) {
 	try {
 		const {
@@ -638,7 +638,6 @@ async function addProgram(req, res) {
 	}
 }
 
-// ✅ Get all programs
 async function getAllPrograms(req, res) {
 	try {
 		const programs = await programModel.find().sort({ created_at: -1 });
@@ -649,7 +648,6 @@ async function getAllPrograms(req, res) {
 	}
 }
 
-// ✅ Get single program
 async function getProgramById(req, res) {
 	try {
 		const program = await programModel.findById(req.params.id);
@@ -663,7 +661,6 @@ async function getProgramById(req, res) {
 	}
 }
 
-// ✅ Update program
 async function updateProgram(req, res) {
 	try {
 		const { id } = req.params;
@@ -726,7 +723,6 @@ async function updateProgram(req, res) {
 	}
 }
 
-// ✅ Delete program
 async function deleteProgram(req, res) {
 	try {
 		const { id } = req.params;
@@ -734,6 +730,33 @@ async function deleteProgram(req, res) {
 		if (!deleted) return res.status(404).json({ message: 'Program not found' });
 
 		return res.status(200).json({ message: 'Program deleted successfully' });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+// Dashboard cnts
+async function getDashboardCounts(req, res) {
+	try {
+		const [eventsCount, programsCount, newsCount, reportsCount, startupsCount, galleriesCount] =
+			await Promise.all([
+				eventModel.countDocuments(),
+				programModel.countDocuments(),
+				newsModel.countDocuments(),
+				reportModel.countDocuments(),
+				startupModel.countDocuments(),
+				galleryModel.countDocuments(),
+			]);
+
+		return res.status(200).json({
+			events: eventsCount,
+			programs: programsCount,
+			news: newsCount,
+			reports: reportsCount,
+			startups: startupsCount,
+			galleries: galleriesCount,
+		});
 	} catch (error) {
 		console.error(error);
 		return res.status(500).json({ message: 'Internal server error' });
@@ -771,4 +794,5 @@ module.exports = {
 	getProgramById,
 	updateProgram,
 	deleteProgram,
+	getDashboardCounts,
 };

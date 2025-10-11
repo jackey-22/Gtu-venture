@@ -17,7 +17,8 @@ router.post(
 	asyncRouteHandler(adminController.updateEvent)
 );
 router.delete('/delete-event/:id', asyncRouteHandler(adminController.deleteEvent));
-//Program Routes
+
+//Program
 router.post('/add-program', adminController.addProgram);
 router.get('/get-programs', asyncRouteHandler(adminController.getAllPrograms));
 router.get('/program/:id', asyncRouteHandler(adminController.getProgramById));
@@ -67,5 +68,8 @@ router.post(
 	asyncRouteHandler(adminController.updateGallery)
 );
 router.delete('/delete-gallery/:id', asyncRouteHandler(adminController.deleteGallery));
+
+// Dashbaord cnts
+router.get('/get-counts', asyncRouteHandler(adminController.getDashboardCounts));
 
 module.exports = router;
