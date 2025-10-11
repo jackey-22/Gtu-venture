@@ -17,6 +17,12 @@ router.post(
 	asyncRouteHandler(adminController.updateEvent)
 );
 router.delete('/delete-event/:id', asyncRouteHandler(adminController.deleteEvent));
+//Program Routes
+router.post('/add-program', adminController.addProgram);
+router.get('/get-programs', asyncRouteHandler(adminController.getAllPrograms));
+router.get('/program/:id', asyncRouteHandler(adminController.getProgramById));
+router.put('/update-program/:id', asyncRouteHandler(adminController.updateProgram));
+router.delete('/delete-program/:id', asyncRouteHandler(adminController.deleteProgram));
 
 // News
 router.post('/add-news', upload.array('images'), asyncRouteHandler(adminController.addNews));

@@ -575,6 +575,171 @@ async function deleteGallery(req, res) {
 	}
 }
 
+// ✅ Add Program
+async function addProgram(req, res) {
+	try {
+		const {
+			title,
+			slug,
+			description,
+			category,
+			duration,
+			eligibility,
+			benefits,
+			deadline,
+			start_date,
+			end_date,
+			image,
+			status,
+			publishedAt,
+		} = req.body;
+
+		if (!title || !slug || !description) {
+			return res.status(400).json({ message: 'Missing required fields' });
+		}
+
+		const existingProgram = await programModel.findOne({ slug });
+		if (existingProgram) {
+			return res.status(400).json({ message: 'Slug already exists' });
+		}
+
+		const newProgram = new programModel({
+			title,
+			slug,
+			description,
+			category,
+			duration,
+			eligibility: Array.isArray(eligibility)
+				? eligibility
+				: typeof eligibility === 'string'
+				? eligibility.split(',').map((e) => e.trim())
+				: [],
+
+			benefits: Array.isArray(benefits)
+				? benefits
+				: typeof benefits === 'string'
+				? benefits.split(',').map((b) => b.trim())
+				: [],
+			deadline,
+			start_date,
+			end_date,
+			image,
+			status,
+			publishedAt,
+		});
+
+		await newProgram.save();
+		return res
+			.status(201)
+			.json({ message: 'Program created successfully', program: newProgram });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+// ✅ Get all programs
+async function getAllPrograms(req, res) {
+	try {
+		const programs = await programModel.find().sort({ created_at: -1 });
+		return res.status(200).json(programs);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+// ✅ Get single program
+async function getProgramById(req, res) {
+	try {
+		const program = await programModel.findById(req.params.id);
+		if (!program) {
+			return res.status(404).json({ message: 'Program not found' });
+		}
+		return res.status(200).json(program);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+// ✅ Update program
+async function updateProgram(req, res) {
+	try {
+		const { id } = req.params;
+		const {
+			title,
+			slug,
+			description,
+			category,
+			duration,
+			eligibility,
+			benefits,
+			deadline,
+			start_date,
+			end_date,
+			image,
+			status,
+			publishedAt,
+		} = req.body;
+
+		const updatedData = {
+			title,
+			slug,
+			description,
+			category,
+			duration,
+			eligibility: Array.isArray(eligibility)
+				? eligibility
+				: typeof eligibility === 'string'
+				? eligibility.split(',').map((e) => e.trim())
+				: [],
+
+			benefits: Array.isArray(benefits)
+				? benefits
+				: typeof benefits === 'string'
+				? benefits.split(',').map((b) => b.trim())
+				: [],
+			deadline,
+			start_date,
+			end_date,
+			image,
+			status,
+			publishedAt,
+		};
+
+		const updatedProgram = await programModel.findByIdAndUpdate(id, updatedData, {
+			new: true,
+			runValidators: true,
+		});
+
+		if (!updatedProgram) {
+			return res.status(404).json({ message: 'Program not found' });
+		}
+
+		return res
+			.status(200)
+			.json({ message: 'Program updated successfully', program: updatedProgram });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+// ✅ Delete program
+async function deleteProgram(req, res) {
+	try {
+		const { id } = req.params;
+		const deleted = await programModel.findByIdAndDelete(id);
+		if (!deleted) return res.status(404).json({ message: 'Program not found' });
+
+		return res.status(200).json({ message: 'Program deleted successfully' });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
 module.exports = {
 	addEvent,
 	getAllEvents,
@@ -601,4 +766,9 @@ module.exports = {
 	getGalleryById,
 	updateGallery,
 	deleteGallery,
+	addProgram,
+	getAllPrograms,
+	getProgramById,
+	updateProgram,
+	deleteProgram,
 };
