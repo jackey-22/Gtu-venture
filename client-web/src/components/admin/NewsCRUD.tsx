@@ -44,12 +44,12 @@ export default function NewsCRUD() {
 		content: '',
 		date: '',
 		category: '',
-		images: [] as File[], // new images
+		images: [] as File[],
 		status: 'draft',
 		publishedAt: '',
 	});
 
-	const [existingImages, setExistingImages] = useState<string[]>([]); // existing images
+	const [existingImages, setExistingImages] = useState<string[]>([]);
 
 	const BASE_URL = import.meta.env.VITE_URL;
 
@@ -121,7 +121,6 @@ export default function NewsCRUD() {
 			}
 		});
 
-		// Send removed images info
 		if (editingNews) {
 			payload.append('existingImages', JSON.stringify(existingImages));
 		}
@@ -189,20 +188,20 @@ export default function NewsCRUD() {
 		}
 	};
 
-	if (loading)
-		return <div className="flex justify-center items-center h-64">Loading news...</div>;
+	// if (loading)
+	// 	return <div className="flex justify-center items-center h-64">Loading news...</div>;
 
-	if (actionLoading)
-		return (
-			<>
-				<div className="flex justify-center items-center h-64">
-					<div className="text-center">
-						<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
-						<p className="mt-3 text-primary">Loading...</p>
-					</div>
-				</div>
-			</>
-		);
+	// if (actionLoading)
+	// 	return (
+	// 		<>
+	// 			<div className="flex justify-center items-center h-64">
+	// 				<div className="text-center">
+	// 					<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
+	// 					<p className="mt-3 text-primary">Loading...</p>
+	// 				</div>
+	// 			</div>
+	// 		</>
+	// 	);
 
 	return (
 		<div className="space-y-6 relative">
@@ -211,6 +210,7 @@ export default function NewsCRUD() {
 					<h2 className="text-2xl font-bold">News Management</h2>
 					<p className="text-muted-foreground">Manage news articles</p>
 				</div>
+
 				<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
 					<DialogTrigger asChild>
 						<Button onClick={resetForm}>
@@ -229,7 +229,10 @@ export default function NewsCRUD() {
 										required
 										value={formData.title}
 										onChange={(e) =>
-											setFormData({ ...formData, title: e.target.value })
+											setFormData({
+												...formData,
+												title: e.target.value,
+											})
 										}
 									/>
 								</div>
@@ -239,7 +242,10 @@ export default function NewsCRUD() {
 										required
 										value={formData.slug}
 										onChange={(e) =>
-											setFormData({ ...formData, slug: e.target.value })
+											setFormData({
+												...formData,
+												slug: e.target.value,
+											})
 										}
 									/>
 								</div>
@@ -252,7 +258,10 @@ export default function NewsCRUD() {
 									rows={5}
 									value={formData.content}
 									onChange={(e) =>
-										setFormData({ ...formData, content: e.target.value })
+										setFormData({
+											...formData,
+											content: e.target.value,
+										})
 									}
 								/>
 							</div>
@@ -264,7 +273,10 @@ export default function NewsCRUD() {
 										type="datetime-local"
 										value={formData.date}
 										onChange={(e) =>
-											setFormData({ ...formData, date: e.target.value })
+											setFormData({
+												...formData,
+												date: e.target.value,
+											})
 										}
 									/>
 								</div>
@@ -288,7 +300,10 @@ export default function NewsCRUD() {
 								<Input
 									value={formData.category}
 									onChange={(e) =>
-										setFormData({ ...formData, category: e.target.value })
+										setFormData({
+											...formData,
+											category: e.target.value,
+										})
 									}
 								/>
 							</div>
@@ -433,7 +448,7 @@ export default function NewsCRUD() {
 								>
 									Cancel
 								</Button>
-								<Button type="submit">
+								<Button type="submit" onClick={() => setIsDialogOpen(false)}>
 									{editingNews ? 'Update' : 'Create'} News
 								</Button>
 							</div>
@@ -442,60 +457,75 @@ export default function NewsCRUD() {
 				</Dialog>
 			</div>
 
-			<div className="grid grid-flow-col grid-cols-3 gap-4">
-				{news.map((n) => (
-					<div
-						key={n._id}
-						className="border rounded-md shadow p-4 bg-white space-y-5 px-5"
-					>
-						<div className="flex justify-between items-center">
-							<h3 className="text-xl font-bold">{n.title}</h3>
-							<div className="flex gap-2">
-								<Button variant="outline" size="sm" onClick={() => handleEdit(n)}>
-									<Edit className="w-4 h-4" />
-								</Button>
-								<AlertDialog>
-									<AlertDialogTrigger asChild>
-										<Button variant="outline" size="sm">
-											<Trash2 className="w-4 h-4" />
-										</Button>
-									</AlertDialogTrigger>
-									<AlertDialogContent>
-										<AlertDialogHeader>
-											<AlertDialogTitle>Delete News</AlertDialogTitle>
-											<AlertDialogDescription>
-												Are you sure you want to delete "{n.title}"?
-											</AlertDialogDescription>
-										</AlertDialogHeader>
-										<AlertDialogFooter>
-											<AlertDialogCancel>Cancel</AlertDialogCancel>
-											<AlertDialogAction onClick={() => handleDelete(n._id)}>
-												Delete
-											</AlertDialogAction>
-										</AlertDialogFooter>
-									</AlertDialogContent>
-								</AlertDialog>
-							</div>
-						</div>
-
-						<div className="space-y-5">
-							<p className="text-muted-foreground line-clamp-2">{n.content}</p>
-							<div className="text-sm text-gray-500">
-								{n.date && (
-									<p>
-										<Calendar className="inline w-4 h-4 mr-1 my-auto" />
-										{new Date(n.date).toLocaleString()}
-									</p>
-								)}
-							</div>
-							<div className="flex items-center gap-3 mt-2">
-								<Badge className={getStatusColor(n.status)}>{n.status}</Badge>
-								{n.category && <Badge variant="outline">{n.category}</Badge>}
-							</div>
-						</div>
+			{loading || actionLoading ? (
+				<div className="flex justify-center items-center h-64">
+					<div className="text-center">
+						<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
+						<p className="mt-3 text-primary">Loading News...</p>
 					</div>
-				))}
-			</div>
+				</div>
+			) : (
+				<div className="grid grid-flow-col grid-cols-3 gap-4">
+					{news.map((n) => (
+						<div
+							key={n._id}
+							className="border rounded-md shadow p-4 bg-white space-y-5 px-5"
+						>
+							<div className="flex justify-between items-center">
+								<h3 className="text-xl font-bold">{n.title}</h3>
+								<div className="flex gap-2">
+									<Button
+										variant="outline"
+										size="sm"
+										onClick={() => handleEdit(n)}
+									>
+										<Edit className="w-4 h-4" />
+									</Button>
+									<AlertDialog>
+										<AlertDialogTrigger asChild>
+											<Button variant="outline" size="sm">
+												<Trash2 className="w-4 h-4" />
+											</Button>
+										</AlertDialogTrigger>
+										<AlertDialogContent>
+											<AlertDialogHeader>
+												<AlertDialogTitle>Delete News</AlertDialogTitle>
+												<AlertDialogDescription>
+													Are you sure you want to delete "{n.title}"?
+												</AlertDialogDescription>
+											</AlertDialogHeader>
+											<AlertDialogFooter>
+												<AlertDialogCancel>Cancel</AlertDialogCancel>
+												<AlertDialogAction
+													onClick={() => handleDelete(n._id)}
+												>
+													Delete
+												</AlertDialogAction>
+											</AlertDialogFooter>
+										</AlertDialogContent>
+									</AlertDialog>
+								</div>
+							</div>
+
+							<div className="space-y-5">
+								<p className="text-muted-foreground line-clamp-2">{n.content}</p>
+								<div className="bottom-0 text-sm text-gray-500">
+									{n.date && (
+										<p>
+											<Calendar className="inline w-4 h-4 mr-1 my-auto" />
+											{new Date(n.date).toLocaleString()}
+										</p>
+									)}
+								</div>
+								<div className="flex items-center gap-3 mt-2">
+									<Badge className={getStatusColor(n.status)}>{n.status}</Badge>
+									{n.category && <Badge variant="outline">{n.category}</Badge>}
+								</div>
+							</div>
+						</div>
+					))}
+				</div>
+			)}
 		</div>
 	);
 }

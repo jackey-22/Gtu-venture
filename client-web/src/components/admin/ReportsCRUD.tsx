@@ -176,19 +176,6 @@ export default function ReportsCRUD() {
 		}
 	};
 
-	if (loading)
-		return <div className="flex justify-center items-center h-64">Loading reports...</div>;
-
-	if (actionLoading)
-		return (
-			<div className="flex justify-center items-center h-64">
-				<div className="text-center">
-					<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
-					<p className="mt-3 text-primary">Loading...</p>
-				</div>
-			</div>
-		);
-
 	return (
 		<div className="space-y-6 relative">
 			<div className="flex justify-between items-center">
@@ -362,7 +349,7 @@ export default function ReportsCRUD() {
 								>
 									Cancel
 								</Button>
-								<Button type="submit">
+								<Button type="submit" onClick={() => setIsDialogOpen(false)}>
 									{editingReport ? 'Update' : 'Create'} Report
 								</Button>
 							</div>
@@ -371,65 +358,88 @@ export default function ReportsCRUD() {
 				</Dialog>
 			</div>
 
-			<div className="grid grid-flow-col grid-cols-3 gap-4">
-				{reports.map((r) => (
-					<div
-						key={r._id}
-						className="border rounded-md shadow p-4 bg-white space-y-5 px-5"
-					>
-						<div className="flex justify-between items-center">
-							<h3 className="text-xl font-bold">{r.title}</h3>
-							<div className="flex gap-2">
-								<Button variant="outline" size="sm" onClick={() => handleEdit(r)}>
-									<Edit className="w-4 h-4" />
-								</Button>
-								<AlertDialog>
-									<AlertDialogTrigger asChild>
-										<Button variant="outline" size="sm">
-											<Trash2 className="w-4 h-4" />
-										</Button>
-									</AlertDialogTrigger>
-									<AlertDialogContent>
-										<AlertDialogHeader>
-											<AlertDialogTitle>Delete Report</AlertDialogTitle>
-											<AlertDialogDescription>
-												Are you sure you want to delete "{r.title}"?
-											</AlertDialogDescription>
-										</AlertDialogHeader>
-										<AlertDialogFooter>
-											<AlertDialogCancel>Cancel</AlertDialogCancel>
-											<AlertDialogAction onClick={() => handleDelete(r._id)}>
-												Delete
-											</AlertDialogAction>
-										</AlertDialogFooter>
-									</AlertDialogContent>
-								</AlertDialog>
-							</div>
-						</div>
-
-						<div className="space-y-5">
-							<p className="text-muted-foreground line-clamp-2">{r.description}</p>
-							<div className="flex items-center gap-3 mt-2">
-								<Badge className={getStatusColor(r.status)}>{r.status}</Badge>
-								{r.category && <Badge variant="outline">{r.category}</Badge>}
-							</div>
-							{r.fileUrl && (
-								<div className="flex items-center gap-2 mt-2">
-									<FileText className="w-4 h-4 text-gray-600" />
-									<a
-										href={`${BASE_URL}${r.file_url}`}
-										target="_blank"
-										rel="noopener noreferrer"
-										className="text-blue-600 underline"
-									>
-										{r.fileUrl.split('/').pop()}
-									</a>
-								</div>
-							)}
-						</div>
+			{loading || actionLoading ? (
+				<div className="flex justify-center items-center h-64">
+					<div className="text-center">
+						<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
+						<p className="mt-3 text-primary">Loading Reports...</p>
 					</div>
-				))}
-			</div>
+				</div>
+			) : (
+				<div className="grid grid-flow-col grid-cols-3 gap-4">
+					{reports.map((r) => (
+						<div
+							key={r._id}
+							className="border rounded-md shadow p-4 bg-white space-y-5 px-5 flex flex-col h-full"
+						>
+							<div className="flex justify-between items-center mb-2">
+								<h3 className="text-xl font-bold">{r.title}</h3>
+								<div className="flex gap-2">
+									<Button
+										variant="outline"
+										size="sm"
+										onClick={() => handleEdit(r)}
+									>
+										<Edit className="w-4 h-4" />
+									</Button>
+									<AlertDialog>
+										<AlertDialogTrigger asChild>
+											<Button variant="outline" size="sm">
+												<Trash2 className="w-4 h-4" />
+											</Button>
+										</AlertDialogTrigger>
+										<AlertDialogContent>
+											<AlertDialogHeader>
+												<AlertDialogTitle>Delete Report</AlertDialogTitle>
+												<AlertDialogDescription>
+													Are you sure you want to delete "{r.title}"?
+												</AlertDialogDescription>
+											</AlertDialogHeader>
+											<AlertDialogFooter>
+												<AlertDialogCancel>Cancel</AlertDialogCancel>
+												<AlertDialogAction
+													onClick={() => handleDelete(r._id)}
+												>
+													Delete
+												</AlertDialogAction>
+											</AlertDialogFooter>
+										</AlertDialogContent>
+									</AlertDialog>
+								</div>
+							</div>
+
+							<div className="space-y-5">
+								<p className="text-muted-foreground line-clamp-2">
+									{r.description}
+								</p>
+								<div className="mt-auto space-y-3">
+									<div className="flex items-center gap-3 mt-2">
+										<Badge className={getStatusColor(r.status)}>
+											{r.status}
+										</Badge>
+										{r.category && (
+											<Badge variant="outline">{r.category}</Badge>
+										)}
+									</div>
+									{r.fileUrl && (
+										<div className="flex items-center gap-2 mt-2">
+											<FileText className="w-4 h-4 text-gray-600" />
+											<a
+												href={`${BASE_URL}${r.file_url}`}
+												target="_blank"
+												rel="noopener noreferrer"
+												className="text-blue-600 underline"
+											>
+												{r.fileUrl.split('/').pop()}
+											</a>
+										</div>
+									)}
+								</div>
+							</div>
+						</div>
+					))}
+				</div>
+			)}
 		</div>
 	);
 }

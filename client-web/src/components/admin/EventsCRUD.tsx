@@ -196,19 +196,6 @@ export default function EventsCRUD() {
 		}
 	};
 
-	if (loading)
-		return <div className="flex justify-center items-center h-64">Loading events...</div>;
-
-	if (actionLoading)
-		return (
-			<div className="flex justify-center items-center h-64">
-				<div className="text-center">
-					<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
-					<p className="mt-3 text-primary">Loading...</p>
-				</div>
-			</div>
-		);
-
 	return (
 		<div className="space-y-6">
 			<div className="flex justify-between items-center">
@@ -417,7 +404,7 @@ export default function EventsCRUD() {
 								>
 									Cancel
 								</Button>
-								<Button type="submit">
+								<Button type="submit" onClick={() => setIsDialogOpen(false)}>
 									{editingEvent ? 'Update' : 'Create'} Event
 								</Button>
 							</div>
@@ -426,78 +413,87 @@ export default function EventsCRUD() {
 				</Dialog>
 			</div>
 
-			<div className="grid grid-flow-col grid-cols-3 gap-4">
-				{events.map((event) => (
-					<div
-						key={event._id}
-						className="border rounded-md shadow p-4 bg-white space-y-5 px-5"
-					>
-						<div className="flex justify-between items-center">
-							<h3 className="text-xl font-bold">{event.title}</h3>
-							<div className="flex gap-2">
-								<Button
-									variant="outline"
-									size="sm"
-									onClick={() => handleEdit(event)}
-								>
-									<Edit className="w-4 h-4" />
-								</Button>
-								<AlertDialog>
-									<AlertDialogTrigger asChild>
-										<Button variant="outline" size="sm">
-											<Trash2 className="w-4 h-4" />
-										</Button>
-									</AlertDialogTrigger>
-									<AlertDialogContent>
-										<AlertDialogHeader>
-											<AlertDialogTitle>Delete Event</AlertDialogTitle>
-											<AlertDialogDescription>
-												Are you sure you want to delete "{event.title}"?
-											</AlertDialogDescription>
-										</AlertDialogHeader>
-										<AlertDialogFooter>
-											<AlertDialogCancel>Cancel</AlertDialogCancel>
-											<AlertDialogAction
-												onClick={() => handleDelete(event._id)}
-											>
-												Delete
-											</AlertDialogAction>
-										</AlertDialogFooter>
-									</AlertDialogContent>
-								</AlertDialog>
+			{loading || actionLoading ? (
+				<div className="flex justify-center items-center h-64">
+					<div className="text-center">
+						<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
+						<p className="mt-3 text-primary">Loading Events...</p>
+					</div>
+				</div>
+			) : (
+				<div className="grid grid-flow-col grid-cols-3 gap-4">
+					{events.map((event) => (
+						<div
+							key={event._id}
+							className="border rounded-md shadow p-4 bg-white space-y-5 px-5 flex flex-col h-full"
+						>
+							<div className="flex justify-between items-center mb-2">
+								<h3 className="text-xl font-bold">{event.title}</h3>
+								<div className="flex gap-2">
+									<Button
+										variant="outline"
+										size="sm"
+										onClick={() => handleEdit(event)}
+									>
+										<Edit className="w-4 h-4" />
+									</Button>
+									<AlertDialog>
+										<AlertDialogTrigger asChild>
+											<Button variant="outline" size="sm">
+												<Trash2 className="w-4 h-4" />
+											</Button>
+										</AlertDialogTrigger>
+										<AlertDialogContent>
+											<AlertDialogHeader>
+												<AlertDialogTitle>Delete Event</AlertDialogTitle>
+												<AlertDialogDescription>
+													Are you sure you want to delete "{event.title}"?
+												</AlertDialogDescription>
+											</AlertDialogHeader>
+											<AlertDialogFooter>
+												<AlertDialogCancel>Cancel</AlertDialogCancel>
+												<AlertDialogAction
+													onClick={() => handleDelete(event._id)}
+												>
+													Delete
+												</AlertDialogAction>
+											</AlertDialogFooter>
+										</AlertDialogContent>
+									</AlertDialog>
+								</div>
 							</div>
-						</div>
 
-						<div className="space-y-5">
-							<p className="text-muted-foreground line-clamp-2">
+							<p className="text-muted-foreground line-clamp-2 flex-grow">
 								{event.description}
 							</p>
 
-							<div className="text-sm text-gray-500">
-								<p>
-									<Calendar className="inline w-4 h-4 mr-1" />
-									{event.start_date
-										? new Date(event.start_date).toLocaleString()
-										: 'N/A'}{' '}
-									-{' '}
-									{event.end_date
-										? new Date(event.end_date).toLocaleString()
-										: 'N/A'}
-								</p>
-							</div>
+							<div className="mt-auto space-y-4">
+								<div className="text-sm text-gray-500">
+									<p>
+										<Calendar className="inline w-4 h-4 mr-1" />
+										{event.start_date
+											? new Date(event.start_date).toLocaleString()
+											: 'N/A'}{' '}
+										-{' '}
+										{event.end_date
+											? new Date(event.end_date).toLocaleString()
+											: 'N/A'}
+									</p>
+								</div>
 
-							<div className="flex items-center gap-3 mt-2">
-								<Badge className={getStatusColor(event.status)}>
-									{event.status}
-								</Badge>
-								{event.category && (
-									<Badge variant="outline">{event.category}</Badge>
-								)}
+								<div className="flex items-center gap-3 mt-2">
+									<Badge className={getStatusColor(event.status)}>
+										{event.status}
+									</Badge>
+									{event.category && (
+										<Badge variant="outline">{event.category}</Badge>
+									)}
+								</div>
 							</div>
 						</div>
-					</div>
-				))}
-			</div>
+					))}
+				</div>
+			)}
 		</div>
 	);
 }

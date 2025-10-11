@@ -176,19 +176,6 @@ export default function GalleryCRUD() {
 		}
 	};
 
-	if (loading)
-		return <div className="flex justify-center items-center h-64">Loading gallery...</div>;
-
-	if (actionLoading)
-		return (
-			<div className="flex justify-center items-center h-64">
-				<div className="text-center">
-					<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
-					<p className="mt-3 text-primary">Loading...</p>
-				</div>
-			</div>
-		);
-
 	return (
 		<div className="space-y-6 relative">
 			<div className="flex justify-between items-center">
@@ -373,7 +360,7 @@ export default function GalleryCRUD() {
 								>
 									Cancel
 								</Button>
-								<Button type="submit">
+								<Button type="submit" onClick={() => setIsDialogOpen(false)}>
 									{editingGallery ? 'Update' : 'Create'} Gallery
 								</Button>
 							</div>
@@ -382,89 +369,104 @@ export default function GalleryCRUD() {
 				</Dialog>
 			</div>
 
-			<div className="grid grid-cols-3 gap-4">
-				{gallery.map((item) => (
-					<div key={item._id} className="border rounded-md shadow p-4 bg-white space-y-5">
-						<div className="flex justify-between items-start">
-							<h3 className="text-lg font-semibold">{item.title}</h3>
-							<div className="flex gap-2">
-								<Button
-									variant="outline"
-									size="sm"
-									onClick={() => handleEdit(item)}
-								>
-									<Edit className="w-4 h-4" />
-								</Button>
-								<AlertDialog>
-									<AlertDialogTrigger asChild>
-										<Button variant="outline" size="sm">
-											<Trash2 className="w-4 h-4" />
-										</Button>
-									</AlertDialogTrigger>
-									<AlertDialogContent>
-										<AlertDialogHeader>
-											<AlertDialogTitle>Delete Gallery</AlertDialogTitle>
-											<AlertDialogDescription>
-												Are you sure you want to delete "{item.title}"?
-											</AlertDialogDescription>
-										</AlertDialogHeader>
-										<AlertDialogFooter>
-											<AlertDialogCancel>Cancel</AlertDialogCancel>
-											<AlertDialogAction
-												onClick={() => handleDelete(item._id)}
+			{loading || actionLoading ? (
+				<div className="flex justify-center items-center h-64">
+					<div className="text-center">
+						<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
+						<p className="mt-3 text-primary">Loading Gallery...</p>
+					</div>
+				</div>
+			) : (
+				<div className="grid grid-cols-3 gap-4">
+					{gallery.map((item) => (
+						<div
+							key={item._id}
+							className="border rounded-md shadow p-4 bg-white space-y-5 px-5 flex flex-col h-full"
+						>
+							<div className="flex justify-between items-start mb-2">
+								<h3 className="text-lg font-semibold">{item.title}</h3>
+								<div className="flex gap-2">
+									<Button
+										variant="outline"
+										size="sm"
+										onClick={() => handleEdit(item)}
+									>
+										<Edit className="w-4 h-4" />
+									</Button>
+									<AlertDialog>
+										<AlertDialogTrigger asChild>
+											<Button variant="outline" size="sm">
+												<Trash2 className="w-4 h-4" />
+											</Button>
+										</AlertDialogTrigger>
+										<AlertDialogContent>
+											<AlertDialogHeader>
+												<AlertDialogTitle>Delete Gallery</AlertDialogTitle>
+												<AlertDialogDescription>
+													Are you sure you want to delete "{item.title}"?
+												</AlertDialogDescription>
+											</AlertDialogHeader>
+											<AlertDialogFooter>
+												<AlertDialogCancel>Cancel</AlertDialogCancel>
+												<AlertDialogAction
+													onClick={() => handleDelete(item._id)}
+												>
+													Delete
+												</AlertDialogAction>
+											</AlertDialogFooter>
+										</AlertDialogContent>
+									</AlertDialog>
+								</div>
+							</div>
+
+							<div>
+								{item.images && item.images.length > 0 && (
+									<div className="grid grid-cols-3 gap-2 mb-2">
+										{item.images.slice(0, 2).map((img, idx) => (
+											<div
+												key={idx}
+												className="flex items-center justify-between border rounded-lg p-1 bg-gray-50 hover:bg-gray-100 transition"
 											>
-												Delete
-											</AlertDialogAction>
-										</AlertDialogFooter>
-									</AlertDialogContent>
-								</AlertDialog>
+												<div className="flex items-center gap-1 overflow-hidden">
+													<ImageIcon className="w-4 h-4 text-gray-600" />
+													<span className="truncate max-w-[60px] text-xs">
+														{img.split('\\').pop()}
+													</span>
+												</div>
+												<div className="flex gap-1">
+													<button
+														type="button"
+														className="p-1 rounded hover:bg-gray-200 transition"
+														onClick={() =>
+															window.open(
+																`${BASE_URL}${img}`,
+																'_blank'
+															)
+														}
+													>
+														<Eye className="w-4 h-4 text-primary" />
+													</button>
+												</div>
+											</div>
+										))}
+										{item.images.length > 2 && (
+											<div className="flex items-center justify-center border rounded-lg p-2 bg-gray-50 text-sm text-gray-600">
+												+{item.images.length - 2}
+											</div>
+										)}
+									</div>
+								)}
+							</div>
+
+							<p className="text-muted-foreground line-clamp-2">{item.description}</p>
+
+							<div className="flex items-center gap-3 mt-auto">
+								<Badge className={getStatusColor(item.status)}>{item.status}</Badge>
 							</div>
 						</div>
-
-						<div>
-							{item.images && item.images.length > 0 && (
-								<div className="grid grid-cols-3 gap-2 mb-2">
-									{item.images.slice(0, 2).map((img, idx) => (
-										<div
-											key={idx}
-											className="flex items-center justify-between border rounded-lg p-1 bg-gray-50 hover:bg-gray-100 transition"
-										>
-											<div className="flex items-center gap-1 overflow-hidden">
-												<ImageIcon className="w-4 h-4 text-gray-600" />
-												<span className="truncate max-w-[60px] text-xs">
-													{img.split('\\').pop()}
-												</span>
-											</div>
-											<div className="flex gap-1">
-												<button
-													type="button"
-													className="p-1 rounded hover:bg-gray-200 transition"
-													onClick={() =>
-														window.open(`${BASE_URL}${img}`, '_blank')
-													}
-												>
-													<Eye className="w-4 h-4 text-primary" />
-												</button>
-											</div>
-										</div>
-									))}
-									{item.images.length > 2 && (
-										<div className="flex items-center justify-center border rounded-lg p-2 bg-gray-50 text-sm text-gray-600">
-											+{item.images.length - 2}
-										</div>
-									)}
-								</div>
-							)}
-						</div>
-
-						<p className="text-muted-foreground line-clamp-2">{item.description}</p>
-
-						<div className="flex items-center gap-3 mt-2">
-							<Badge className={getStatusColor(item.status)}>{item.status}</Badge>
-						</div>
-					</div>
-				))}
-			</div>
+					))}
+				</div>
+			)}
 		</div>
 	);
 }

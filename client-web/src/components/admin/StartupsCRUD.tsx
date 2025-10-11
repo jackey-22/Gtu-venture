@@ -212,19 +212,6 @@ export default function StartupsCRUD() {
 		}
 	};
 
-	if (loading)
-		return <div className="flex justify-center items-center h-64">Loading startups...</div>;
-
-	if (actionLoading)
-		return (
-			<div className="flex justify-center items-center h-64">
-				<div className="text-center">
-					<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
-					<p className="mt-3 text-primary">Loading...</p>
-				</div>
-			</div>
-		);
-
 	return (
 		<div className="space-y-6 relative">
 			<div className="flex justify-between items-center">
@@ -439,7 +426,7 @@ export default function StartupsCRUD() {
 								>
 									Cancel
 								</Button>
-								<Button type="submit">
+								<Button type="submit" onClick={() => setIsDialogOpen(false)}>
 									{editingStartup ? 'Update' : 'Create'} Startup
 								</Button>
 							</div>
@@ -448,65 +435,82 @@ export default function StartupsCRUD() {
 				</Dialog>
 			</div>
 
-			<div className="grid grid-flow-col grid-cols-3 gap-4">
-				{startups.map((s) => (
-					<div
-						key={s._id}
-						className="border rounded-md shadow p-4 bg-white space-y-5 px-5"
-					>
-						<div className="flex justify-between items-center">
-							<h3 className="text-xl font-bold">{s.name}</h3>
-							<div className="flex gap-2">
-								<Button variant="outline" size="sm" onClick={() => handleEdit(s)}>
-									<Edit className="w-4 h-4" />
-								</Button>
-								<AlertDialog>
-									<AlertDialogTrigger asChild>
-										<Button variant="outline" size="sm">
-											<Trash2 className="w-4 h-4" />
-										</Button>
-									</AlertDialogTrigger>
-									<AlertDialogContent>
-										<AlertDialogHeader>
-											<AlertDialogTitle>Delete Startup</AlertDialogTitle>
-											<AlertDialogDescription>
-												Are you sure you want to delete "{s.name}"?
-											</AlertDialogDescription>
-										</AlertDialogHeader>
-										<AlertDialogFooter>
-											<AlertDialogCancel>Cancel</AlertDialogCancel>
-											<AlertDialogAction onClick={() => handleDelete(s._id)}>
-												Delete
-											</AlertDialogAction>
-										</AlertDialogFooter>
-									</AlertDialogContent>
-								</AlertDialog>
+			{loading || actionLoading ? (
+				<div className="flex justify-center items-center h-64">
+					<div className="text-center">
+						<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
+						<p className="mt-3 text-primary">Loading Startups...</p>
+					</div>
+				</div>
+			) : (
+				<div className="grid grid-flow-col grid-cols-3 gap-4">
+					{startups.map((s) => (
+						<div
+							key={s._id}
+							className="border rounded-md shadow p-4 bg-white space-y-5 px-5 flex flex-col h-full"
+						>
+							<div className="flex justify-between items-center mb-2">
+								<h3 className="text-xl font-bold">{s.name}</h3>
+								<div className="flex gap-2">
+									<Button
+										variant="outline"
+										size="sm"
+										onClick={() => handleEdit(s)}
+									>
+										<Edit className="w-4 h-4" />
+									</Button>
+									<AlertDialog>
+										<AlertDialogTrigger asChild>
+											<Button variant="outline" size="sm">
+												<Trash2 className="w-4 h-4" />
+											</Button>
+										</AlertDialogTrigger>
+										<AlertDialogContent>
+											<AlertDialogHeader>
+												<AlertDialogTitle>Delete Startup</AlertDialogTitle>
+												<AlertDialogDescription>
+													Are you sure you want to delete "{s.name}"?
+												</AlertDialogDescription>
+											</AlertDialogHeader>
+											<AlertDialogFooter>
+												<AlertDialogCancel>Cancel</AlertDialogCancel>
+												<AlertDialogAction
+													onClick={() => handleDelete(s._id)}
+												>
+													Delete
+												</AlertDialogAction>
+											</AlertDialogFooter>
+										</AlertDialogContent>
+									</AlertDialog>
+								</div>
+							</div>
+
+							<p className="text-muted-foreground line-clamp-2">{s.description}</p>
+
+							<div className="mt-auto space-y-3">
+								<div className="flex flex-wrap gap-2">
+									{s.sector && <Badge variant="outline">{s.sector}</Badge>}
+									{s.stage && <Badge variant="outline">{s.stage}</Badge>}
+									<Badge className={getStatusColor(s.status)}>{s.status}</Badge>
+								</div>
+
+								<div>
+									{s.url && (
+										<a
+											href={s.url}
+											target="_blank"
+											rel="noopener noreferrer"
+											className="text-primary underline"
+										>
+											Visit Website
+										</a>
+									)}
+								</div>
 							</div>
 						</div>
-
-						<p className="text-muted-foreground line-clamp-2">{s.description}</p>
-
-						<div className="flex flex-wrap gap-2 mt-2">
-							{s.sector && <Badge variant="outline">{s.sector}</Badge>}
-							{s.stage && <Badge variant="outline">{s.stage}</Badge>}
-							<Badge className={getStatusColor(s.status)}>{s.status}</Badge>
-						</div>
-
-						<div>
-							{s.url && (
-								<a
-									href={s.url}
-									target="_blank"
-									rel="noopener noreferrer"
-									className="text-primary underline"
-								>
-									Visit Website
-								</a>
-							)}
-						</div>
-					</div>
-				))}
-			</div>
+					))}
+				</div>
+			)}
 		</div>
 	);
 }
