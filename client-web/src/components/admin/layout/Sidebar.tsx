@@ -12,6 +12,13 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+interface SidebarProps {
+	activeTab: string;
+	setActiveTab: (tab: string) => void;
+	isOpen: boolean;
+	onClose: () => void;
+}
+
 const navItems = [
 	{ key: 'overview', label: 'Overview', icon: Settings },
 	{ key: 'news', label: 'News', icon: Newspaper },
@@ -24,17 +31,21 @@ const navItems = [
 	{ key: 'team', label: 'Team', icon: Users },
 ];
 
-const Sidebar = ({ activeTab, setActiveTab, isOpen, onClose }) => {
+const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpen, onClose }) => {
 	return (
 		<aside
 			className={cn(
-				'fixed md:relative hero-depth border-r z-30 w-64 h-full transform transition-transform duration-300 ease-in-out md:translate-x-0 flex flex-col',
-				isOpen ? 'translate-x-0' : '-translate-x-full'
+				'fixed md:static top-16 md:top-0 left-0 h-[calc(100vh-4rem)] md:h-screen w-60 hero-depth text-white shadow-lg z-40 transform transition-transform duration-300 ease-in-out',
+				isOpen ? 'translate-x-0' : '-translate-x-full',
+				'md:translate-x-0'
 			)}
+			style={{
+				height: 'calc(100vh - 4rem)',
+			}}
 		>
-			<div className="md:hidden flex items-center justify-between px-4 py-3 border-b">
+			<div className="md:hidden flex items-center justify-between px-4 py-3 border-b border-gray-700">
 				<h2 className="text-lg font-semibold">GTU Ventures</h2>
-				<button onClick={onClose} className="p-2 rounded-md hover:bg-gray-100">
+				<button onClick={onClose} className="p-2 rounded-md hover:bg-gray-100/20">
 					✕
 				</button>
 			</div>
@@ -52,11 +63,11 @@ const Sidebar = ({ activeTab, setActiveTab, isOpen, onClose }) => {
 							className={cn(
 								'w-full flex items-center gap-4 px-3 py-2 rounded-lg text-sm font-medium transition-all',
 								activeTab === item.key
-									? 'bg-gtu-primary text-white shadow-sm '
-									: 'text-white hover:bg-primary'
+									? 'bg-white text-primary shadow-md'
+									: 'hover:bg-white/10'
 							)}
 						>
-							<Icon className="w-6 h-6" />
+							<Icon className="w-5 h-5" />
 							<span className="text-lg">{item.label}</span>
 						</button>
 					);

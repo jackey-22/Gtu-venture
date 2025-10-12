@@ -60,13 +60,10 @@ export default function AdminDashboard() {
 	const Overview = () => (
 		<div className="space-y-10">
 			<div className="space-y-3">
-				<h1 className="flex items-center gap-2 text-3xl font-semibold mb-1 text-gray-800">
-					<Database className="w-7 h-7 text-primary" />
-					Admin Dashboard Overview
+				<h1 className="flex items-center gap-2 text-3xl font-bold mb-1 text-gray-800">
+					<Database className="w-7 h-7 text-primary font-bold" />
+					Admin Dashboard
 				</h1>
-				<span className="text-base text-gray-500">
-					Manage all content types for GTU Ventures website
-				</span>
 			</div>
 
 			<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
@@ -115,7 +112,7 @@ export default function AdminDashboard() {
 
 									<div className="flex justify-between items-start relative z-10">
 										<div>
-											<div className="text-sm font-medium text-gray-500">
+											<div className="text-lg font-medium text-gray-500">
 												{section.label}
 											</div>
 											<div className="text-3xl md:text-4xl font-bold text-gray-800 mt-2">

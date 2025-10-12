@@ -69,6 +69,13 @@ router.post(
 );
 router.delete('/delete-gallery/:id', asyncRouteHandler(adminController.deleteGallery));
 
+// FAQ
+router.post('/add-faq', asyncRouteHandler(adminController.addFAQ));
+router.get('/get-faqs', asyncRouteHandler(adminController.getAllFAQs));
+router.get('/get-faq/:id', asyncRouteHandler(adminController.getFAQById));
+router.post('/update-faq/:id', asyncRouteHandler(adminController.updateFAQ));
+router.post('/delete-faq/:id', asyncRouteHandler(adminController.deleteFAQ));
+
 // Dashbaord cnts
 router.get('/get-counts', asyncRouteHandler(adminController.getDashboardCounts));
 

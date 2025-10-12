@@ -5,6 +5,7 @@ const newsModel = require('../models/news.model');
 const programModel = require('../models/program.model');
 const reportModel = require('../models/report.model');
 const startupModel = require('../models/startup.model');
+const faqModel = require('../models/faq.model');
 const path = require('path');
 const fs = require('fs');
 
@@ -736,6 +737,101 @@ async function deleteProgram(req, res) {
 	}
 }
 
+// FAQ
+async function addFAQ(req, res) {
+	try {
+		const { question, answer, status, publishedAt, priority } = req.body;
+
+		if (!question || !answer) {
+			return res.status(400).json({ message: 'Missing required fields' });
+		}
+
+		let newPriority = priority;
+		if (!newPriority) {
+			const maxPriorityFAQ = await faqModel.findOne().sort({ priority: -1 });
+			newPriority = maxPriorityFAQ ? maxPriorityFAQ.priority + 1 : 1;
+		}
+
+		const newFAQ = new faqModel({
+			question,
+			answer,
+			priority: newPriority,
+			status,
+			publishedAt,
+		});
+
+		await newFAQ.save();
+		return res.status(201).json({ message: 'FAQ created successfully', faq: newFAQ });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function getAllFAQs(req, res) {
+	try {
+		const faqs = await faqModel.find().sort({ priority: 1, created_at: -1 });
+		return res.status(200).json(faqs);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function getFAQById(req, res) {
+	try {
+		const faq = await faqModel.findById(req.params.id);
+		if (!faq) {
+			return res.status(404).json({ message: 'FAQ not found' });
+		}
+		return res.status(200).json(faq);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function updateFAQ(req, res) {
+	try {
+		const { id } = req.params;
+
+		const { question, answer, status, publishedAt, priority } = req.body;
+
+		const updatedData = { question, answer, status, publishedAt };
+		if (priority) updatedData.priority = priority;
+
+		const updatedFAQ = await faqModel.findByIdAndUpdate(id, updatedData, {
+			new: true,
+			runValidators: true,
+		});
+
+		if (!updatedFAQ) {
+			return res.status(404).json({ message: 'FAQ not found' });
+		}
+
+		return res.status(200).json({ message: 'FAQ updated successfully', faq: updatedFAQ });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function deleteFAQ(req, res) {
+	try {
+		const { id } = req.params;
+		const deleted = await faqModel.findByIdAndDelete(id);
+
+		if (!deleted) {
+			return res.status(404).json({ message: 'FAQ not found' });
+		}
+
+		return res.status(200).json({ message: 'FAQ deleted successfully' });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
 // Dashboard cnts
 async function getDashboardCounts(req, res) {
 	try {
@@ -795,4 +891,9 @@ module.exports = {
 	updateProgram,
 	deleteProgram,
 	getDashboardCounts,
+	addFAQ,
+	getAllFAQs,
+	getFAQById,
+	updateFAQ,
+	deleteFAQ,
 };
