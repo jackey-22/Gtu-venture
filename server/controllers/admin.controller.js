@@ -835,15 +835,23 @@ async function deleteFAQ(req, res) {
 // Dashboard cnts
 async function getDashboardCounts(req, res) {
 	try {
-		const [eventsCount, programsCount, newsCount, reportsCount, startupsCount, galleriesCount] =
-			await Promise.all([
-				eventModel.countDocuments(),
-				programModel.countDocuments(),
-				newsModel.countDocuments(),
-				reportModel.countDocuments(),
-				startupModel.countDocuments(),
-				galleryModel.countDocuments(),
-			]);
+		const [
+			eventsCount,
+			programsCount,
+			newsCount,
+			reportsCount,
+			startupsCount,
+			galleriesCount,
+			faqsCount,
+		] = await Promise.all([
+			eventModel.countDocuments(),
+			programModel.countDocuments(),
+			newsModel.countDocuments(),
+			reportModel.countDocuments(),
+			startupModel.countDocuments(),
+			galleryModel.countDocuments(),
+			faqModel.countDocuments(),
+		]);
 
 		return res.status(200).json({
 			events: eventsCount,
@@ -852,6 +860,7 @@ async function getDashboardCounts(req, res) {
 			reports: reportsCount,
 			startups: startupsCount,
 			galleries: galleriesCount,
+			faqs: faqsCount,
 		});
 	} catch (error) {
 		console.error(error);
