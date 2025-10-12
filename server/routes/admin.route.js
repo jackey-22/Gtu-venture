@@ -76,6 +76,28 @@ router.get('/get-faq/:id', asyncRouteHandler(adminController.getFAQById));
 router.post('/update-faq/:id', asyncRouteHandler(adminController.updateFAQ));
 router.post('/delete-faq/:id', asyncRouteHandler(adminController.deleteFAQ));
 
+// Team Label
+router.post('/add-team-label', asyncRouteHandler(adminController.addTeamLabel));
+router.get('/get-team-labels', asyncRouteHandler(adminController.getAllTeamLabels));
+router.get('/get-team-label/:id', asyncRouteHandler(adminController.getTeamLabelById));
+router.post('/update-team-label/:id', asyncRouteHandler(adminController.updateTeamLabel));
+router.post('/delete-team-label/:id', asyncRouteHandler(adminController.deleteTeamLabel));
+
+// Team Member
+router.post(
+	'/add-team-member',
+	upload.single('photo'),
+	asyncRouteHandler(adminController.addTeamMember)
+);
+router.get('/get-team-members', asyncRouteHandler(adminController.getAllTeamMembers));
+router.get('/get-team-member/:id', asyncRouteHandler(adminController.getTeamMemberById));
+router.post(
+	'/update-team-member/:id',
+	upload.single('photo'),
+	asyncRouteHandler(adminController.updateTeamMember)
+);
+router.post('/delete-team-member/:id', asyncRouteHandler(adminController.deleteTeamMember));
+
 // Dashbaord cnts
 router.get('/get-counts', asyncRouteHandler(adminController.getDashboardCounts));
 

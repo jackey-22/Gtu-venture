@@ -1,402 +1,633 @@
-import React, { useState, useEffect } from 'react';
-import { DatabaseService } from '@/lib/database';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Plus, Edit, Trash2, Users, Mail, Phone, MapPin, Linkedin, Twitter } from 'lucide-react';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+	AlertDialog,
+	AlertDialogTrigger,
+	AlertDialogContent,
+	AlertDialogHeader,
+	AlertDialogTitle,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogCancel,
+	AlertDialogAction,
+} from '@/components/ui/alert-dialog';
+import {
+	Select,
+	SelectTrigger,
+	SelectContent,
+	SelectValue,
+	SelectItem,
+} from '@/components/ui/select';
+import { Plus, Edit, Trash2, Loader2, Users, Tag } from 'lucide-react';
+import { fetchGet, fetchPost } from '../../utils/fetch.utils';
 
-interface TeamMember {
-  id: string;
-  name: string;
-  position: string;
-  bio: string | null;
-  image_url: string | null;
-  email: string | null;
-  phone: string | null;
-  linkedin_url: string | null;
-  twitter_handle: string | null;
-  status: 'draft' | 'published' | 'archived';
-  sort_order: number;
-  created_at: string;
-  updated_at: string;
-}
+const BASE_URL = import.meta.env.VITE_URL;
 
-export default function TeamCRUD() {
-  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [editingMember, setEditingMember] = useState<TeamMember | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    position: '',
-    bio: '',
-    email: '',
-    phone: '',
-    linkedin_url: '',
-    twitter_handle: '',
-    image_url: '',
-    status: 'draft' as 'draft' | 'published' | 'archived',
-    sort_order: '',
-  });
+export default function TeamManagement() {
+	const [activeTab, setActiveTab] = useState('labels');
+	const [labels, setLabels] = useState([]);
+	const [members, setMembers] = useState([]);
+	const [loading, setLoading] = useState(true);
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [isDialogOpen, setIsDialogOpen] = useState(false);
+	const [editingItem, setEditingItem] = useState(null);
+	const [actionType, setActionType] = useState('label');
+	const [removeExistingPhoto, setRemoveExistingPhoto] = useState(false);
 
-  useEffect(() => {
-    loadTeamMembers();
-  }, []);
+	const [formData, setFormData] = useState({
+		title: '',
+		description: '',
+		name: '',
+		role: '',
+		bio: '',
+		label: '',
+		photo: null,
+		priority: 1,
+	});
 
-  const loadTeamMembers = async () => {
-    try {
-      const data = await DatabaseService.getAllTeam({ published: false });
-      setTeamMembers(data);
-    } catch (error) {
-      console.error('Error loading team members:', error);
-      alert('Failed to load team members');
-    } finally {
-      setLoading(false);
-    }
-  };
+	useEffect(() => {
+		fetchData();
+	}, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+	const fetchData = async () => {
+		setLoading(true);
+		try {
+			const labelData = await fetchGet({ pathName: 'admin/get-team-labels' });
+			const memberData = await fetchGet({ pathName: 'admin/get-team-members' });
 
-    try {
-      const memberData = {
-        ...formData,
-        sort_order: formData.sort_order ? parseInt(formData.sort_order) : 0,
-      };
+			setLabels(labelData || []);
+			setMembers(memberData || []);
+		} catch (error) {
+			console.error('Error fetching team data:', error);
+		} finally {
+			setLoading(false);
+		}
+	};
 
-      if (editingMember) {
-        await DatabaseService.updateTeamMember(editingMember.id, memberData);
-        alert('Team member updated successfully');
-      } else {
-        await DatabaseService.createTeamMember(memberData);
-        alert('Team member created successfully');
-      }
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+		setIsSubmitting(true);
 
-      setIsDialogOpen(false);
-      resetForm();
-      loadTeamMembers();
-    } catch (error) {
-      console.error('Error saving team member:', error);
-      alert('Failed to save team member');
-    }
-  };
+		try {
+			let response;
+			let data;
+			if (actionType === 'label') {
+				const body = JSON.stringify({
+					title: formData.title,
+					description: formData.description,
+					priority: formData.priority,
+				});
+				const pathName = editingItem
+					? `admin/update-team-label/${editingItem._id}`
+					: 'admin/add-team-label';
 
-  const handleEdit = (member: TeamMember) => {
-    setEditingMember(member);
-    setFormData({
-      name: member.name,
-      position: member.position,
-      bio: member.bio || '',
-      email: member.email || '',
-      phone: member.phone || '',
-      linkedin_url: member.linkedin_url || '',
-      twitter_handle: member.twitter_handle || '',
-      image_url: member.image_url || '',
-      status: member.status,
-      sort_order: member.sort_order.toString(),
-    });
-    setIsDialogOpen(true);
-  };
+				response = await fetchPost({ pathName, body });
+				data = response;
+			} else {
+				const payload = new FormData();
+				payload.append('name', formData.name);
+				payload.append('role', formData.role);
+				payload.append('bio', formData.bio || '');
+				payload.append('label', formData.label);
+				payload.append('priority', formData.priority || 1);
 
-  const handleDelete = async (id: string) => {
-    try {
-      await DatabaseService.deleteTeamMember(id);
-      alert('Team member deleted successfully');
-      loadTeamMembers();
-    } catch (error) {
-      console.error('Error deleting team member:', error);
-      alert('Failed to delete team member');
-    }
-  };
+				if (formData.photo) {
+					payload.append('photo', formData.photo);
+				} else if (editingItem && removeExistingPhoto) {
+					payload.append('removePhoto', 'true');
+				}
 
-  const resetForm = () => {
-    setEditingMember(null);
-    setFormData({
-      name: '',
-      position: '',
-      bio: '',
-      email: '',
-      phone: '',
-      linkedin_url: '',
-      twitter_handle: '',
-      image_url: '',
-      status: 'draft',
-      sort_order: '',
-    });
-  };
+				const pathName = editingItem
+					? `${BASE_URL}admin/update-team-member/${editingItem._id}`
+					: `${BASE_URL}admin/add-team-member`;
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'published': return 'bg-green-100 text-green-800';
-      case 'draft': return 'bg-yellow-100 text-yellow-800';
-      case 'archived': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
+				response = await fetch(pathName, { method: 'POST', body: payload });
+				data = await response.json();
+			}
 
-  if (loading) {
-    return <div className="flex justify-center items-center h-64">Loading team members...</div>;
-  }
+			if (data && (data.message || data.success)) {
+				alert(
+					editingItem
+						? `${actionType === 'label' ? 'Label' : 'Member'} updated successfully`
+						: `${actionType === 'label' ? 'Label' : 'Member'} added successfully`
+				);
+				setIsDialogOpen(false);
+				resetForm();
+				fetchData();
+			} else {
+				throw new Error('Failed to save data');
+			}
+		} catch (error) {
+			alert(error);
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
 
-  return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-bold">Team Management</h2>
-          <p className="text-muted-foreground">Manage team members and their information</p>
-        </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={resetForm}>
-              <Plus className="w-4 h-4 mr-2" />
-              Add Team Member
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>{editingMember ? 'Edit Team Member' : 'Add New Team Member'}</DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Name *</Label>
-                  <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="position">Position *</Label>
-                  <Input
-                    id="position"
-                    value={formData.position}
-                    onChange={(e) => setFormData({ ...formData, position: e.target.value })}
-                    required
-                  />
-                </div>
-              </div>
+	const handleDelete = async (id, type) => {
+		setIsSubmitting(true);
+		try {
+			if (type === 'label') {
+				const pathName = `admin/delete-team-label/${id}`;
+				const res = await fetchPost({ pathName, body: JSON.stringify({}) });
+				if (res?.message) {
+					alert(res.message);
+					fetchData();
+				} else {
+					throw new Error('Failed to delete label');
+				}
+			} else {
+				const endpoint = `${BASE_URL}admin/delete-team-member/${id}`;
+				const res = await fetch(endpoint, { method: 'POST', body: JSON.stringify({}) });
+				const data = await res.json();
 
-              <div className="space-y-2">
-                <Label htmlFor="bio">Bio</Label>
-                <Textarea
-                  id="bio"
-                  value={formData.bio}
-                  onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                  rows={3}
-                />
-              </div>
+				if (res.ok && data.message) {
+					alert(data.message);
+					fetchData();
+				} else {
+					throw new Error(data.message || 'Failed to delete member');
+				}
+			}
+		} catch (error) {
+			console.error(error);
+			alert('Error deleting!');
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone</Label>
-                  <Input
-                    id="phone"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  />
-                </div>
-              </div>
+	const handleEdit = (item, type) => {
+		setActionType(type);
+		setEditingItem(item);
+		if (type === 'label') {
+			setFormData({
+				title: item.title,
+				description: item.description,
+				name: '',
+				role: '',
+				bio: '',
+				label: '',
+				photo: null,
+				priority: item.priority,
+			});
+		} else {
+			setFormData({
+				title: '',
+				description: '',
+				name: item.name,
+				role: item.role,
+				bio: item.bio || '',
+				label: item.label?._id || '',
+				photo: null,
+				priority: item.priority,
+			});
+		}
+		setRemoveExistingPhoto(false);
+		setIsDialogOpen(true);
+	};
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="linkedin_url">LinkedIn URL</Label>
-                  <Input
-                    id="linkedin_url"
-                    value={formData.linkedin_url}
-                    onChange={(e) => setFormData({ ...formData, linkedin_url: e.target.value })}
-                    placeholder="https://linkedin.com/in/username"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="twitter_handle">Twitter Handle</Label>
-                  <Input
-                    id="twitter_handle"
-                    value={formData.twitter_handle}
-                    onChange={(e) => setFormData({ ...formData, twitter_handle: e.target.value })}
-                    placeholder="@username"
-                  />
-                </div>
-              </div>
+	const resetForm = () => {
+		setEditingItem(null);
+		setFormData({
+			title: '',
+			description: '',
+			name: '',
+			role: '',
+			bio: '',
+			label: '',
+			photo: null,
+			priority: 1,
+		});
+		setRemoveExistingPhoto(false);
+	};
 
-              <div className="space-y-2">
-                <Label htmlFor="image_url">Profile Image URL</Label>
-                <Input
-                  id="image_url"
-                  value={formData.image_url}
-                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                  placeholder="https://..."
-                />
-              </div>
+	return (
+		<div className="space-y-8">
+			{/* Header Buttons */}
+			<div className="flex justify-between items-center">
+				<div>
+					<h2 className="text-2xl font-bold">Team Management</h2>
+					<p className="text-muted-foreground">Manage team labels and members</p>
+				</div>
+				<div className="flex gap-3">
+					<Button
+						onClick={() => {
+							resetForm();
+							setActionType('label');
+							setIsDialogOpen(true);
+						}}
+					>
+						<Plus className="w-4 h-4 mr-2" /> Add Label
+					</Button>
+					<Button
+						onClick={() => {
+							resetForm();
+							setActionType('member');
+							setIsDialogOpen(true);
+						}}
+					>
+						<Plus className="w-4 h-4 mr-2" /> Add Member
+					</Button>
+				</div>
+			</div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="sort_order">Sort Order</Label>
-                  <Input
-                    id="sort_order"
-                    type="number"
-                    value={formData.sort_order}
-                    onChange={(e) => setFormData({ ...formData, sort_order: e.target.value })}
-                    placeholder="0"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="status">Status</Label>
-                  <Select value={formData.status} onValueChange={(value: 'draft' | 'published' | 'archived') => setFormData({ ...formData, status: value })}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="draft">Draft</SelectItem>
-                      <SelectItem value="published">Published</SelectItem>
-                      <SelectItem value="archived">Archived</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
+			{/* Tabs */}
+			<Tabs value={activeTab} onValueChange={setActiveTab}>
+				<TabsList>
+					<TabsTrigger value="labels">
+						<Tag className="w-4 h-4 mr-2" /> Labels
+					</TabsTrigger>
+					<TabsTrigger value="members">
+						<Users className="w-4 h-4 mr-2" /> Members
+					</TabsTrigger>
+				</TabsList>
 
-              <div className="flex justify-end space-x-2">
-                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                  Cancel
-                </Button>
-                <Button type="submit">
-                  {editingMember ? 'Update' : 'Create'} Team Member
-                </Button>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
-      </div>
+				{/* Labels Content */}
+				<TabsContent value="labels" className="mt-6">
+					{loading ? (
+						<div className="flex justify-center items-center h-64">
+							<div className="text-center">
+								<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
+								<p className="mt-3 text-primary">Loading Labels...</p>
+							</div>
+						</div>
+					) : labels.length === 0 ? (
+						<p className="text-center text-muted-foreground">No labels found</p>
+					) : (
+						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+							{labels.map((label) => (
+								<div
+									key={label._id}
+									className="border rounded-lg p-4 shadow-sm bg-white space-y-5"
+								>
+									<div className="flex justify-between items-center mb-2">
+										<h4 className="font-semibold">{label.title}</h4>
+										<div className="flex gap-2">
+											<Button
+												size="sm"
+												variant="outline"
+												onClick={() => handleEdit(label, 'label')}
+											>
+												<Edit className="w-4 h-4" />
+											</Button>
+											<AlertDialog>
+												<AlertDialogTrigger asChild>
+													<Button size="sm" variant="outline">
+														<Trash2 className="w-4 h-4" />
+													</Button>
+												</AlertDialogTrigger>
+												<AlertDialogContent>
+													<AlertDialogHeader>
+														<AlertDialogTitle>
+															Delete Label
+														</AlertDialogTitle>
+														<AlertDialogDescription>
+															Are you sure you want to delete "
+															{label.title}"?
+														</AlertDialogDescription>
+													</AlertDialogHeader>
+													<AlertDialogFooter>
+														<AlertDialogCancel>
+															Cancel
+														</AlertDialogCancel>
+														<AlertDialogAction asChild>
+															<Button
+																onClick={async (e) => {
+																	e.preventDefault();
+																	await handleDelete(
+																		label._id,
+																		'label'
+																	);
+																}}
+																disabled={isSubmitting}
+															>
+																{isSubmitting ? (
+																	<>
+																		<Loader2 className="mr-2 h-4 w-4 animate-spin" />{' '}
+																		Deleting...
+																	</>
+																) : (
+																	'Delete'
+																)}
+															</Button>
+														</AlertDialogAction>
+													</AlertDialogFooter>
+												</AlertDialogContent>
+											</AlertDialog>
+										</div>
+									</div>
+									<p className="text-gray-500 text-sm">{label.description}</p>
+								</div>
+							))}
+						</div>
+					)}
+				</TabsContent>
 
-      <div className="grid gap-4">
-        {teamMembers.map((member) => (
-          <Card key={member.id}>
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  <CardTitle className="flex items-center gap-2">
-                    <Users className="w-5 h-5" />
-                    {member.name}
-                  </CardTitle>
-                  <div className="flex items-center gap-4 mt-2">
-                    <Badge variant="outline">{member.position}</Badge>
-                    <Badge className={getStatusColor(member.status)}>
-                      {member.status}
-                    </Badge>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm" onClick={() => handleEdit(member)}>
-                    <Edit className="w-4 h-4" />
-                  </Button>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="outline" size="sm">
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Delete Team Member</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Are you sure you want to delete "{member.name}"? This action cannot be undone.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleDelete(member.id)}>
-                          Delete
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {member.bio && (
-                <p className="text-muted-foreground mb-4">{member.bio.slice(0, 200)}...</p>
-              )}
+				{/* Members Content */}
+				<TabsContent value="members" className="mt-6">
+					{loading ? (
+						<div className="flex justify-center items-center h-64">
+							<div className="text-center">
+								<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
+								<p className="mt-3 text-primary">Loading Members...</p>
+							</div>
+						</div>
+					) : members.length === 0 ? (
+						<p className="text-center text-muted-foreground">No members found</p>
+					) : (
+						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+							{members.map((m) => (
+								<div
+									key={m._id}
+									className="border rounded-lg p-4 shadow-sm bg-white flex flex-col"
+								>
+									<div className="flex justify-between items-center mb-2">
+										<h4 className="font-semibold">{m.name}</h4>
+										<div className="flex gap-2">
+											<Button
+												size="sm"
+												variant="outline"
+												onClick={() => handleEdit(m, 'member')}
+											>
+												<Edit className="w-4 h-4" />
+											</Button>
+											<AlertDialog>
+												<AlertDialogTrigger asChild>
+													<Button size="sm" variant="outline">
+														<Trash2 className="w-4 h-4" />
+													</Button>
+												</AlertDialogTrigger>
+												<AlertDialogContent>
+													<AlertDialogHeader>
+														<AlertDialogTitle>
+															Delete Member
+														</AlertDialogTitle>
+														<AlertDialogDescription>
+															Are you sure you want to delete "
+															{m.name}"?
+														</AlertDialogDescription>
+													</AlertDialogHeader>
+													<AlertDialogFooter>
+														<AlertDialogCancel>
+															Cancel
+														</AlertDialogCancel>
+														<AlertDialogAction asChild>
+															<Button
+																onClick={async (e) => {
+																	e.preventDefault();
+																	await handleDelete(
+																		m._id,
+																		'member'
+																	);
+																}}
+																disabled={isSubmitting}
+															>
+																{isSubmitting ? (
+																	<>
+																		<Loader2 className="mr-2 h-4 w-4 animate-spin" />{' '}
+																		Deleting...
+																	</>
+																) : (
+																	'Delete'
+																)}
+															</Button>
+														</AlertDialogAction>
+													</AlertDialogFooter>
+												</AlertDialogContent>
+											</AlertDialog>
+										</div>
+									</div>
+									{(m.photo || m.label) && (
+										<>
+											{m.photo && (
+												<img
+													src={`${BASE_URL}${m.photo}`}
+													alt={m.name}
+													className="w-full h-40 object-cover rounded mb-3"
+												/>
+											)}
+											<p className="text-gray-600 font-medium">{m.role}</p>
+											<p className="text-gray-500 text-sm line-clamp-3 flex-grow">
+												{m.bio}
+											</p>
+											<div className="mt-3">
+												<Badge variant="outline">
+													{m.label?.title || 'Unassigned'}
+												</Badge>
+											</div>
+										</>
+									)}
+								</div>
+							))}
+						</div>
+					)}
+				</TabsContent>
+			</Tabs>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                <div className="space-y-2">
-                  {member.email && (
-                    <div className="flex items-center gap-2">
-                      <Mail className="w-4 h-4" />
-                      <span>{member.email}</span>
-                    </div>
-                  )}
-                  {member.phone && (
-                    <div className="flex items-center gap-2">
-                      <Phone className="w-4 h-4" />
-                      <span>{member.phone}</span>
-                    </div>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  {member.linkedin_url && (
-                    <div className="flex items-center gap-2">
-                      <Linkedin className="w-4 h-4" />
-                      <a
-                        href={member.linkedin_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline"
-                      >
-                        LinkedIn
-                      </a>
-                    </div>
-                  )}
-                  {member.twitter_handle && (
-                    <div className="flex items-center gap-2">
-                      <Twitter className="w-4 h-4" />
-                      <a
-                        href={`https://twitter.com/${member.twitter_handle}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline"
-                      >
-                        @{member.twitter_handle}
-                      </a>
-                    </div>
-                  )}
-                  <div className="text-muted-foreground">
-                    Order: {member.sort_order}
-                  </div>
-                </div>
-              </div>
+			{/* Add/Edit Dialog */}
+			<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+				<DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+					<DialogHeader>
+						<DialogTitle>
+							{editingItem
+								? `Edit ${actionType === 'label' ? 'Label' : 'Member'}`
+								: `Add New ${actionType === 'label' ? 'Label' : 'Member'}`}
+						</DialogTitle>
+					</DialogHeader>
 
-              <div className="mt-4 text-sm text-muted-foreground">
-                Created: {new Date(member.created_at).toLocaleDateString()} |
-                Updated: {new Date(member.updated_at).toLocaleDateString()}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+					<form onSubmit={handleSubmit} className="space-y-4">
+						{actionType === 'label' ? (
+							<>
+								<div className="space-y-2">
+									<Label>Title</Label>
+									<Input
+										value={formData.title}
+										onChange={(e) =>
+											setFormData({ ...formData, title: e.target.value })
+										}
+										required
+									/>
+								</div>
+								<div className="space-y-2">
+									<Label>Description</Label>
+									<Textarea
+										rows={3}
+										value={formData.description}
+										onChange={(e) =>
+											setFormData({
+												...formData,
+												description: e.target.value,
+											})
+										}
+									/>
+								</div>
+								<div className="space-y-2">
+									<Label>Priority</Label>
+									<Input
+										type="number"
+										min={1}
+										value={formData.priority}
+										onChange={(e) =>
+											setFormData({
+												...formData,
+												priority:
+													e.target.value === ''
+														? ''
+														: parseInt(e.target.value),
+											})
+										}
+										required
+									/>
+								</div>
+							</>
+						) : (
+							<>
+								<div className="grid grid-cols-2 gap-4">
+									<div className="space-y-2">
+										<Label>Name</Label>
+										<Input
+											value={formData.name}
+											onChange={(e) =>
+												setFormData({ ...formData, name: e.target.value })
+											}
+											required
+										/>
+									</div>
+									<div className="space-y-2">
+										<Label>Role</Label>
+										<Input
+											value={formData.role}
+											onChange={(e) =>
+												setFormData({ ...formData, role: e.target.value })
+											}
+											required
+										/>
+									</div>
+								</div>
+								<div className="space-y-2">
+									<Label>Bio</Label>
+									<Textarea
+										rows={3}
+										value={formData.bio || ''}
+										onChange={(e) =>
+											setFormData({ ...formData, bio: e.target.value })
+										}
+									/>
+								</div>
+								<div className="space-y-2">
+									<Label>Label</Label>
+									<Select
+										value={formData.label}
+										onValueChange={(v) =>
+											setFormData({ ...formData, label: v })
+										}
+									>
+										<SelectTrigger>
+											<SelectValue placeholder="Select label" />
+										</SelectTrigger>
+										<SelectContent>
+											{labels.map((l) => (
+												<SelectItem key={l._id} value={l._id}>
+													{l.title}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
+								</div>
+								<div className="space-y-2">
+									<Label>Priority</Label>
+									<Input
+										type="number"
+										min={1}
+										value={formData.priority}
+										onChange={(e) =>
+											setFormData({
+												...formData,
+												priority:
+													e.target.value === ''
+														? ''
+														: parseInt(e.target.value),
+											})
+										}
+										required
+									/>
+								</div>
+								<div className="space-y-2">
+									<Label>Photo</Label>
+									<Input
+										type="file"
+										accept="image/*"
+										onChange={(e) => {
+											setFormData({
+												...formData,
+												photo: e.target.files?.[0] || null,
+											});
+											setRemoveExistingPhoto(false);
+										}}
+									/>
 
-        {teamMembers.length === 0 && (
-          <div className="text-center py-12">
-            <Users className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-            <p className="text-muted-foreground">No team members found. Add your first team member!</p>
-          </div>
-        )}
-      </div>
-    </div>
-  );
+									{(formData.photo ||
+										(editingItem?.photo && !removeExistingPhoto)) && (
+										<div className="mt-2 flex items-center gap-2">
+											<img
+												src={
+													formData.photo
+														? URL.createObjectURL(formData.photo)
+														: `${BASE_URL}${editingItem?.photo}`
+												}
+												alt="Member"
+												className="w-32 h-32 object-cover rounded border"
+											/>
+											<Button
+												type="button"
+												variant="destructive"
+												size="sm"
+												onClick={() => {
+													if (formData.photo) {
+														setFormData({ ...formData, photo: null });
+													} else {
+														setRemoveExistingPhoto(true);
+														setFormData({ ...formData, photo: null });
+													}
+												}}
+											>
+												<Trash2 className="w-4 h-4" />
+											</Button>
+										</div>
+									)}
+								</div>
+							</>
+						)}
+
+						<div className="flex justify-end gap-3">
+							<Button
+								type="button"
+								variant="outline"
+								onClick={() => setIsDialogOpen(false)}
+							>
+								Cancel
+							</Button>
+							<Button type="submit" disabled={isSubmitting}>
+								{isSubmitting ? (
+									<>
+										<Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...
+									</>
+								) : editingItem ? (
+									'Update'
+								) : (
+									'Create'
+								)}
+							</Button>
+						</div>
+					</form>
+				</DialogContent>
+			</Dialog>
+		</div>
+	);
 }

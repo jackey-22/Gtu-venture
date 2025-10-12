@@ -6,6 +6,8 @@ const programModel = require('../models/program.model');
 const reportModel = require('../models/report.model');
 const startupModel = require('../models/startup.model');
 const faqModel = require('../models/faq.model');
+const teamLabelModel = require('../models/teamTitle.model');
+const teamMemberModel = require('../models/teamMember.model');
 const path = require('path');
 const fs = require('fs');
 
@@ -832,6 +834,176 @@ async function deleteFAQ(req, res) {
 	}
 }
 
+// Team Title
+async function addTeamLabel(req, res) {
+	try {
+		const { title, description, priority } = req.body;
+		if (!title || !priority) {
+			return res.status(400).json({ message: 'Missing required fields' });
+		}
+
+		const existingLabel = await teamLabelModel.findOne({ title });
+		if (existingLabel) {
+			return res.status(400).json({ message: 'Team title already exists' });
+		}
+
+		const newLabel = new teamLabelModel({ title, description, priority });
+		await newLabel.save();
+		return res.status(201).json({ message: 'Team label created', label: newLabel });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function getAllTeamLabels(req, res) {
+	try {
+		const labels = await teamLabelModel.find().sort({ priority: 1, createdAt: -1 });
+		return res.status(200).json(labels);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function getTeamLabelById(req, res) {
+	try {
+		const label = await teamLabelModel.findById(req.params.id);
+		if (!label) return res.status(404).json({ message: 'Team label not found' });
+		return res.status(200).json(label);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function updateTeamLabel(req, res) {
+	try {
+		const { id } = req.params;
+		const { title, description, priority } = req.body;
+
+		const updatedData = { title, description, priority };
+
+		const updatedLabel = await teamLabelModel.findByIdAndUpdate(id, updatedData, {
+			new: true,
+			runValidators: true,
+		});
+
+		if (!updatedLabel) return res.status(404).json({ message: 'Team label not found' });
+
+		return res.status(200).json({ message: 'Team label updated', label: updatedLabel });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function deleteTeamLabel(req, res) {
+	try {
+		const { id } = req.params;
+		const deletedLabel = await teamLabelModel.findByIdAndDelete(id);
+		if (!deletedLabel) return res.status(404).json({ message: 'Team label not found' });
+
+		await teamMemberModel.updateMany({ label: id }, { $unset: { label: '' } });
+
+		return res.status(200).json({ message: 'Team label deleted' });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+// Team Member
+async function addTeamMember(req, res) {
+	try {
+		const { name, bio, role, label, priority } = req.body;
+		const photo = req.file ? req.file.path.slice(6) : null;
+
+		if (!name || !role || !label || !priority) {
+			return res.status(400).json({ message: 'Missing required fields' });
+		}
+
+		const newMember = new teamMemberModel({
+			name,
+			bio,
+			role,
+			label,
+			photo,
+			priority: priority || 1,
+		});
+
+		await newMember.save();
+		return res.status(201).json({ message: 'Team member added', member: newMember });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function getAllTeamMembers(req, res) {
+	try {
+		const members = await teamMemberModel
+			.find()
+			.populate('label')
+			.sort({ priority: 1, createdAt: -1 });
+		return res.status(200).json(members);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function getTeamMemberById(req, res) {
+	try {
+		const member = await teamMemberModel.findById(req.params.id).populate('label');
+		if (!member) return res.status(404).json({ message: 'Team member not found' });
+		return res.status(200).json(member);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function updateTeamMember(req, res) {
+	try {
+		const { id } = req.params;
+		const { name, bio, role, label, priority, removePhoto } = req.body;
+		const photo = req.file ? req.file.path.slice(6) : null;
+
+		const updatedData = { name, bio, role, label, priority: priority || 1 };
+		if (photo) {
+			updatedData.photo = photo;
+		} else if (removePhoto === 'true' || removePhoto === true) {
+			updatedData.photo = null;
+		}
+
+		const updatedMember = await teamMemberModel.findByIdAndUpdate(id, updatedData, {
+			new: true,
+			runValidators: true,
+		});
+
+		if (!updatedMember) return res.status(404).json({ message: 'Team member not found' });
+
+		return res.status(200).json({ message: 'Team member updated', member: updatedMember });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function deleteTeamMember(req, res) {
+	try {
+		const { id } = req.params;
+		const deletedMember = await teamMemberModel.findByIdAndDelete(id);
+		if (!deletedMember) return res.status(404).json({ message: 'Team member not found' });
+
+		return res.status(200).json({ message: 'Team member deleted' });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
 // Dashboard cnts
 async function getDashboardCounts(req, res) {
 	try {
@@ -852,7 +1024,6 @@ async function getDashboardCounts(req, res) {
 			galleryModel.countDocuments(),
 			faqModel.countDocuments(),
 		]);
-
 		return res.status(200).json({
 			events: eventsCount,
 			programs: programsCount,
@@ -899,10 +1070,20 @@ module.exports = {
 	getProgramById,
 	updateProgram,
 	deleteProgram,
-	getDashboardCounts,
 	addFAQ,
 	getAllFAQs,
 	getFAQById,
 	updateFAQ,
 	deleteFAQ,
+	addTeamLabel,
+	getAllTeamLabels,
+	getTeamLabelById,
+	updateTeamLabel,
+	deleteTeamLabel,
+	addTeamMember,
+	getAllTeamMembers,
+	getTeamMemberById,
+	updateTeamMember,
+	deleteTeamMember,
+	getDashboardCounts,
 };
