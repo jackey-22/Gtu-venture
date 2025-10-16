@@ -12,6 +12,8 @@ const programIcons = {
 	'acceleration': Target,
 };
 
+const baseApi = import.meta.env.VITE_URL;
+
 export default function Programs() {
 	const [selectedStage, setSelectedStage] = useState<string>('all');
 	const [programs, setPrograms] = useState<any[]>([]);
@@ -20,7 +22,7 @@ export default function Programs() {
 	useEffect(() => {
 		const fetchPrograms = async () => {
 			try {
-				const res = await fetch('http://localhost:5000/user/get-programs');
+				const res = await fetch(`${baseApi}user/get-programs`);
 				const data = await res.json();
         // console.log(data);
 				setPrograms(data.data || []);

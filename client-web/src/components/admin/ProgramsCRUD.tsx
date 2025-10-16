@@ -31,7 +31,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Plus, Edit, Trash2, Clock, Calendar, Users } from 'lucide-react';
 
-const baseURL = 'http://localhost:5000/admin';
+const baseURL = import.meta.env.VITE_URL;
 
 export default function ProgramsCRUD() {
 	const [programs, setPrograms] = useState([]);
