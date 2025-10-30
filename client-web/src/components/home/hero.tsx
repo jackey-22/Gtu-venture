@@ -38,16 +38,16 @@ function AnimatedNumber({ target, format, duration = 900 }: { target: number; fo
 export default function Hero() {
   return (
   // add top padding equal to navbar height (h-16 = 4rem) so the hero's background starts below the fixed navbar
-  <section className="hero-depth relative h-screen min-h-[100vh] pt-16 flex items-center justify-center overflow-visible">
+  <section className="hero-depth relative h-screen min-h-[100vh] pt-16 my-16 flex items-center justify-center overflow-visible">
   {/* World map overlay (higher z-index so it sits above soft blobs but below the navbar) */}
-  <div className="absolute left-0 right-0 top-16 bottom-0 pointer-events-none" style={{ zIndex: 5 }}>
+  <div className="absolute left-0 right-0 top-1 bottom-0 pointer-events-none" style={{ zIndex: 5 }}>
         <div
           className="absolute inset-0 bg-center bg-no-repeat bg-cover"
           style={{
             backgroundImage: `url('/World-Map-Dots.svg')`,
             backgroundPosition: 'center',
             // increase size slightly so dots feel more prominent on large viewports
-            backgroundSize: '120% auto',
+            backgroundSize: '130% auto',
             // make the map more visible
             opacity: 0.24,
             // keep a subtle tint but avoid blend modes that wash out the dots
@@ -58,7 +58,7 @@ export default function Hero() {
         />
       </div>
       {/* Animated Background Blobs (push behind the map overlay) */}
-      <div className="absolute inset-0" style={{ opacity: 0.18, zIndex: 0 }}>
+      <div className="absolute inset-0" style={{ opacity: 0.21, zIndex: 0 }}>
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
         <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-primary rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
         <div className="absolute bottom-1/4 left-1/3 w-96 h-96 bg-secondary rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
@@ -131,7 +131,7 @@ export default function Hero() {
           </motion.div>
 
           {/* KPI Chips */}
-          <motion.div
+          {/* <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
@@ -160,19 +160,19 @@ export default function Hero() {
                 </motion.div>
               );
             })}
-          </motion.div>
+          </motion.div> */}
         </motion.div>
       </div>
 
       {/* Scroll Indicator */}
-      <motion.div
+      {/* <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2, duration: 1 }}
         className="scroll-indicator"
       >
         <ChevronDown className="w-8 h-8 text-white/60" />
-      </motion.div>
+      </motion.div> */}
     </section>
   );
 }
