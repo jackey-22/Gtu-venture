@@ -1,56 +1,33 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
+import { fetchPost } from '../utils/fetch.utils';
 
-// Admin credentials (in production, these should be environment variables or server-side)
-const ADMIN_USERNAME = 'admin';
-const ADMIN_PASSWORD = 'gtu2024';
+const AuthContext = createContext();
 
-interface AuthContextType {
-  isAuthenticated: boolean;
-  login: (username: string, password: string) => boolean;
-  logout: () => void;
-  loading: boolean;
-}
+export const useAuth = () => useContext(AuthContext);
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthProvider = ({ children }) => {
+	const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
+	useEffect(() => {
+		setIsAuthenticated(!!localStorage.getItem('token'));
+	}, []);
 
-  useEffect(() => {
-    // Check if user is already logged in (from localStorage)
-    const authStatus = localStorage.getItem('admin_authenticated');
-    if (authStatus === 'true') {
-      setIsAuthenticated(true);
-    }
-    setLoading(false);
-  }, []);
+	const login = (user) => {
+		localStorage.setItem('token', user.token);
 
-  const login = (username: string, password: string): boolean => {
-    if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-      setIsAuthenticated(true);
-      localStorage.setItem('admin_authenticated', 'true');
-      return true;
-    }
-    return false;
-  };
+		setIsAuthenticated(true);
+	};
 
-  const logout = () => {
-    setIsAuthenticated(false);
-    localStorage.removeItem('admin_authenticated');
-  };
+	const logout = async () => {
+		const userId = localStorage.getItem('_id');
+		await fetchPost({ pathName: 'auth/logout', body: JSON.stringify({ _id: userId }) });
+		localStorage.clear();
+		setIsAuthenticated(false);
+	};
 
-  return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout, loading }}>
-      {children}
-    </AuthContext.Provider>
-  );
-}
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-}
+	return (
+		<AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+			{children}
+		</AuthContext.Provider>
+	);
+};

@@ -1,8 +1,6 @@
 const jwt = require('jsonwebtoken');
 const md5 = require('md5');
-// const userModel = require('../models/user.model');
-// const studentModel = require('../models/student.model');
-// const facultyModel = require('../models/faculty.model');
+const userModel = require('../models/user.model');
 const { sendResetPasswordEmail } = require('../utils/mailer');
 
 async function login(req, res) {
@@ -13,43 +11,25 @@ async function login(req, res) {
 
 	let profile = null;
 	let user = await userModel.findOne({ username: username, password: md5(password) });
-	if (!user) return res.status(404).json({ message: 'User not found' });
-
-	if (user.role === 'STUDENT') {
-		profile = await studentModel.findOne({ userId: user._id });
-		if (!profile) return res.status(404).json({ message: 'Student profile not found' });
-	} else if (user.role === 'AUTHORITY') {
-		profile = await facultyModel.findOne({ userId: user._id });
-		if (!profile) return res.status(404).json({ message: 'Authority profile not found' });
-	}
+	if (!user) return res.status(404).json({ message: 'Invalid Credentials' });
 
 	const token = jwt.sign(
 		{
 			_id: user._id,
-			permissions: user.permissions,
-			role: user.role == 'STUDENT' ? user.role : profile.role,
 		},
 		process.env.JWT_SECRET,
 		{ expiresIn: '1d' }
 	);
 
-	user.currentToken = token;
-	await user.save();
-
 	res.json({
 		success: true,
 		data: {
 			token,
-			username: user.username,
-			role: user.role == 'STUDENT' ? user.role : profile.role,
-			_id: user._id,
-			profile: profile,
 		},
 	});
 }
 
 async function logout(req, res) {
-	await userModel.updateOne({ _id: req.body._id }, { currentToken: null });
 	res.clearCookie('auth');
 	return res.json({ success: true });
 }

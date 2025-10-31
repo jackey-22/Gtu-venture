@@ -4,8 +4,9 @@ const adminController = require('../controllers/admin.controller');
 const { asyncRouteHandler } = require('../utils/route.utils');
 const multer = require('multer');
 const { upload } = require('../utils/multer.utils');
+const { authMiddleware } = require('../middleware/auth.middleware');
 
-// router.use(authMiddleware('Admin'));
+router.use(authMiddleware('Admin'));
 
 // Event
 router.post('/add-event', upload.single('image'), asyncRouteHandler(adminController.addEvent));

@@ -60,7 +60,10 @@ export default function ProgramsCRUD() {
 	const loadPrograms = async () => {
 		setLoading(true);
 		try {
-			const res = await fetch(`${baseURL}/get-programs`);
+			const res = await fetch(`${baseURL}admin/get-programs`, {
+				headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+			});
+			if (!res.ok) throw new Error('Failed to fetch programs');
 			const data = await res.json();
 			setPrograms(data);
 		} catch (error) {
@@ -75,8 +78,8 @@ export default function ProgramsCRUD() {
 		e.preventDefault();
 		const method = editingProgram ? 'PUT' : 'POST';
 		const url = editingProgram
-			? `${baseURL}/update-program/${editingProgram._id}`
-			: `${baseURL}/add-program`;
+			? `${baseURL}admin/update-program/${editingProgram._id}`
+			: `${baseURL}admin/add-program`;
 
 		const dataToSend = {
 			...formData,
@@ -97,7 +100,10 @@ export default function ProgramsCRUD() {
 		try {
 			const res = await fetch(url, {
 				method,
-				headers: { 'Content-Type': 'application/json' },
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${localStorage.getItem('token')}`,
+				},
 				body: JSON.stringify(dataToSend),
 			});
 
@@ -148,7 +154,10 @@ export default function ProgramsCRUD() {
 	const handleDelete = async (id) => {
 		setLoading(true);
 		try {
-			const res = await fetch(`${baseURL}/delete-program/${id}`, { method: 'DELETE' });
+			const res = await fetch(`${baseURL}admin/delete-program/${id}`, {
+				method: 'DELETE',
+				headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+			});
 			if (!res.ok) throw new Error('Delete failed');
 			alert('Program deleted successfully');
 			loadPrograms();
