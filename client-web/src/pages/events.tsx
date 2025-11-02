@@ -3,35 +3,28 @@ import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar, MapPin, Clock, Users, ExternalLink } from 'lucide-react';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Calendar, MapPin, Clock, Users, ExternalLink, Search } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 const baseURL = import.meta.env.VITE_URL;
-const eventTypes = [
-	'All',
-	'Summit',
-	'Workshop',
-	'Conference',
-	'Pitch Event',
-	'Hackathon',
-	'Demo Day',
-	'Networking',
-];
 
 export default function Events() {
 	const [events, setEvents] = useState<any[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
-	const [activeTab, setActiveTab] = useState('upcoming');
-	const [selectedType, setSelectedType] = useState('All');
+	const [activeTab, setActiveTab] = useState('all');
+	const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
+	const [modalLoading, setModalLoading] = useState(false);
+	const [searchQuery, setSearchQuery] = useState('');
 
 	useEffect(() => {
 		const fetchEvents = async () => {
 			try {
-				const res = await fetch(`${baseURL}admin/get-events`);
+				const res = await fetch(`${baseURL}user/get-events`);
 				if (!res.ok) throw new Error('Failed to fetch events');
-				const data = await res.json();
-				setEvents(data);
+				const json = await res.json();
+				setEvents(json.data || []);
 			} catch (err: any) {
 				setError(err.message || 'Error fetching events');
 			} finally {
@@ -41,22 +34,55 @@ export default function Events() {
 		fetchEvents();
 	}, []);
 
-	// Show all events without filtering
-	const filteredEvents = events;
+	const fetchEventById = async (id: string) => {
+		try {
+			setModalLoading(true);
+			const res = await fetch(`${baseURL}user/get-event/${id}`);
+			if (!res.ok) throw new Error('Failed to fetch event');
+			const json = await res.json();
+			setSelectedEvent(json.data || null);
+		} catch (err) {
+			console.error(err);
+		} finally {
+			setModalLoading(false);
+		}
+	};
 
-	const formatDate = (dateString: string) => {
+	const formatDateTime = (dateString: string) => {
+		if (!dateString) return '';
 		const date = new Date(dateString);
-		return date.toLocaleDateString('en-US', {
+		const formattedDate = date.toLocaleDateString('en-US', {
 			weekday: 'long',
 			year: 'numeric',
 			month: 'long',
 			day: 'numeric',
 		});
+		const formattedTime = date.toLocaleTimeString('en-US', {
+			hour: 'numeric',
+			minute: '2-digit',
+			hour12: true,
+		});
+		return `${formattedDate} at ${formattedTime}`;
 	};
 
-	const getStatusColor = (status: string) => {
-		return status === 'upcoming' ? 'bg-success' : 'bg-muted-foreground';
-	};
+	const now = new Date();
+	let filteredEvents = events;
+
+	if (activeTab === 'upcoming') {
+		filteredEvents = events.filter((e) => new Date(e.start_date) >= now);
+	} else if (activeTab === 'past') {
+		filteredEvents = events.filter((e) => new Date(e.start_date) < now);
+	}
+
+	const searchLower = searchQuery.toLowerCase();
+	filteredEvents = filteredEvents.filter(
+		(e) =>
+			e.title.toLowerCase().includes(searchLower) ||
+			e.description.toLowerCase().includes(searchLower) ||
+			e.category.toLowerCase().includes(searchLower) ||
+			e.location.toLowerCase().includes(searchLower) ||
+			e.experts?.some((exp: string) => exp.toLowerCase().includes(searchLower))
+	);
 
 	if (loading) {
 		return (
@@ -72,16 +98,13 @@ export default function Events() {
 	if (error) {
 		return (
 			<div className="flex justify-center items-center h-64">
-				<div className="text-center">
-					<p className="text-red-500">{error}</p>
-				</div>
+				<p className="text-red-500">{error}</p>
 			</div>
 		);
 	}
 
 	return (
 		<div className="min-h-screen pt-20">
-			{/* Hero Section */}
 			<section className="py-24 bg-gradient-to-br from-gtu-base to-gtu-light">
 				<div className="max-w-7xl mx-auto px-6 lg:px-16">
 					<motion.div
@@ -100,194 +123,95 @@ export default function Events() {
 				</div>
 			</section>
 
-			{/* Tabs and Filters */}
-			<section className="py-12 bg-background border-b">
+			<section className="py-6 bg-background border-b">
 				<div className="max-w-7xl mx-auto px-6 lg:px-16">
-					<div className="space-y-8">
-						{/* Event Status Tabs */}
-						<Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-							<TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
-								<TabsTrigger value="upcoming" data-testid="tab-upcoming">
-									Upcoming Events
-								</TabsTrigger>
-								<TabsTrigger value="past" data-testid="tab-past">
-									Past Events
-								</TabsTrigger>
-							</TabsList>
-						</Tabs>
+					<div className="flex flex-col gap-3 md:gap-40 md:flex-row md:items-center md:justify-between">
+						<div className="flex-1"></div>
+						<div className="flex justify-center w-full md:w-auto order-1 md:order-none mx-auto">
+							<Tabs value={activeTab} onValueChange={setActiveTab}>
+								<TabsList className="grid grid-cols-3 w-auto">
+									<TabsTrigger value="all">All</TabsTrigger>
+									<TabsTrigger value="upcoming">Upcoming</TabsTrigger>
+									<TabsTrigger value="past">Past</TabsTrigger>
+								</TabsList>
+							</Tabs>
+						</div>
+
+						<div className="relative w-full md:w-72 lg:w-80 md:ml-auto order-2">
+							<Search className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
+							<input
+								type="text"
+								placeholder="Search events..."
+								className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-primary/20"
+								value={searchQuery}
+								onChange={(e) => setSearchQuery(e.target.value)}
+							/>
+						</div>
 					</div>
 				</div>
 			</section>
 
-			{/* Events Grid */}
-			<section className="py-24 bg-background">
+			{/* Events List */}
+			<section className="py-16 bg-background">
 				<div className="max-w-7xl mx-auto px-6 lg:px-16">
 					<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-						{filteredEvents.map((event, index) => (
+						{filteredEvents.map((event, idx) => (
 							<motion.div
-								key={event._id || event.id}
+								key={event._id}
 								initial={{ opacity: 0, y: 30 }}
 								animate={{ opacity: 1, y: 0 }}
-								transition={{ duration: 0.6, delay: index * 0.1 }}
-								data-testid={`event-card-${event._id || event.id}`}
+								transition={{ duration: 0.6, delay: idx * 0.1 }}
+								onClick={() => fetchEventById(event._id)}
+								className="cursor-pointer"
 							>
-								<Card className="h-full hover-lift overflow-hidden">
-									<div className="relative">
-										<img
-											src={event.image}
-											alt={event.title}
-											className="w-full h-48 object-cover"
-										/>
-										<div className="absolute top-4 left-4">
-											<Badge
-												className={`${getStatusColor(
-													event.status
-												)} text-white`}
-											>
-												{event.status === 'upcoming'
-													? 'Upcoming'
-													: 'Completed'}
-											</Badge>
-										</div>
-										<div className="absolute top-4 right-4">
-											<Badge variant="secondary">{event.type}</Badge>
-										</div>
-									</div>
+								<Card className="hover-lift overflow-hidden">
+									<img
+										src={`${baseURL}${event.image.replace(/\\/g, '/')}`}
+										alt={event.title}
+										className="w-full h-48 object-cover"
+									/>
 
 									<CardContent className="p-6">
-										<h3 className="text-xl font-bold text-foreground mb-3">
-											{event.title}
-										</h3>
+										<div className="flex justify-between items-center mb-3">
+											<Badge variant="secondary">{event.category}</Badge>
+										</div>
 
-										<p className="text-muted-foreground mb-4 leading-relaxed line-clamp-3">
+										<h3 className="text-xl font-bold mb-2">{event.title}</h3>
+
+										<p className="text-muted-foreground mb-4 line-clamp-3">
 											{event.description}
 										</p>
 
-										<div className="space-y-2 mb-4 text-sm">
-											<div className="flex items-center gap-2 text-muted-foreground">
-												<Calendar className="w-4 h-4" />
-												<span>
-													{formatDate(event.start_date || event.date)}
-												</span>
+										<div className="space-y-2 text-sm text-muted-foreground">
+											<div className="flex items-center gap-2">
+												<Calendar className="h-4 w-4" />
+												{formatDateTime(event.start_date)}
 											</div>
-											<div className="flex items-center gap-2 text-muted-foreground">
-												<Clock className="w-4 h-4" />
-												<span>{event.time}</span>
+
+											{event.end_date && (
+												<div className="flex items-center gap-2">
+													<Clock className="h-4 w-4" />
+													Ends: {formatDateTime(event.end_date)}
+												</div>
+											)}
+
+											<div className="flex items-center gap-2">
+												<MapPin className="h-4 w-4" />
+												{event.location}
 											</div>
-											<div className="flex items-center gap-2 text-muted-foreground">
-												<MapPin className="w-4 h-4" />
-												<span>{event.location}</span>
-											</div>
-											<div className="flex items-center gap-2 text-muted-foreground">
-												<Users className="w-4 h-4" />
-												<span>
-													{event.currentAttendees}/{event.maxAttendees}{' '}
-													attendees
-												</span>
+
+											<div className="flex items-center gap-2">
+												<Users className="h-4 w-4" />
+												{event.maxAttendees} Seats
 											</div>
 										</div>
 
-										{event.status === 'past' && event.outcomes && (
-											<div className="mb-4">
-												<p className="text-sm font-medium text-foreground mb-2">
-													Event Outcomes:
-												</p>
-												<p className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-lg">
-													{event.outcomes}
-												</p>
-											</div>
-										)}
-
-										<div className="mb-4">
-											<p className="text-sm font-medium text-foreground mb-1">
-												Speakers:
-											</p>
-											<p className="text-sm text-muted-foreground">
-												{Array.isArray(event.speakers)
-													? event.speakers.join(', ')
-													: event.speakers}
-											</p>
+										<div className="mt-4">
+											<Button className="w-full">
+												<ExternalLink className="mr-2 h-4 w-4" /> View
+												Details
+											</Button>
 										</div>
-
-										{event.status === 'past' && event.mediaCoverage && (
-											<div className="mb-4">
-												<p className="text-sm font-medium text-foreground mb-2">
-													Media Coverage:
-												</p>
-												<div className="space-y-1">
-													{event.mediaCoverage.map(
-														(media: any, idx: number) => (
-															<a
-																key={idx}
-																href={media.url}
-																target="_blank"
-																rel="noopener noreferrer"
-																className="flex items-center gap-2 text-sm text-primary hover:underline"
-															>
-																<ExternalLink className="w-3 h-3" />
-																{media.title} -{' '}
-																{media.source || media.platform}
-															</a>
-														)
-													)}
-												</div>
-											</div>
-										)}
-
-										{event.status === 'past' && event.photos && (
-											<div className="mb-4">
-												<p className="text-sm font-medium text-foreground mb-2">
-													Event Photos:
-												</p>
-												<div className="grid grid-cols-3 gap-2">
-													{event.photos
-														.slice(0, 3)
-														.map((photo: string, idx: number) => (
-															<img
-																key={idx}
-																src={photo}
-																alt={`Event photo ${idx + 1}`}
-																className="w-full h-16 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity"
-																onClick={() => {
-																	/* Could open lightbox here */
-																}}
-															/>
-														))}
-												</div>
-											</div>
-										)}
-
-										{event.status === 'upcoming' && (
-											<Button
-												asChild
-												className="w-full bg-primary text-primary-foreground"
-												data-testid={`register-event-${
-													event._id || event.id
-												}`}
-											>
-												<a
-													href={event.registrationUrl}
-													target="_blank"
-													rel="noopener noreferrer"
-												>
-													<ExternalLink className="w-4 h-4 mr-2" />
-													Register Now
-												</a>
-											</Button>
-										)}
-
-										{event.status === 'past' && (
-											<Button
-												variant="outline"
-												className="w-full"
-												disabled
-												data-testid={`event-completed-${
-													event._id || event.id
-												}`}
-											>
-												Event Completed
-											</Button>
-										)}
 									</CardContent>
 								</Card>
 							</motion.div>
@@ -295,29 +219,65 @@ export default function Events() {
 					</div>
 
 					{filteredEvents.length === 0 && (
-						<motion.div
-							initial={{ opacity: 0 }}
-							animate={{ opacity: 1 }}
-							className="text-center py-12"
-							data-testid="no-events"
-						>
-							<p className="text-muted-foreground text-lg">
-								No events found matching your criteria.
-							</p>
-							<Button
-								variant="outline"
-								onClick={() => setSelectedType('All')}
-								className="mt-4"
-								data-testid="clear-event-filters"
-							>
-								Clear Filters
-							</Button>
-						</motion.div>
+						<p className="text-center text-muted-foreground py-10">No events found.</p>
 					)}
 				</div>
 			</section>
 
-			{/* Calendar Integration CTA removed per design request */}
+			{/* Modal */}
+			<Dialog open={!!selectedEvent} onOpenChange={() => setSelectedEvent(null)}>
+				<DialogContent className="max-w-2xl">
+					{modalLoading ? (
+						<div className="py-10 text-center">Loading...</div>
+					) : selectedEvent ? (
+						<>
+							<DialogHeader>
+								<DialogTitle className="text-2xl font-bold">
+									{selectedEvent.title}
+								</DialogTitle>
+							</DialogHeader>
+
+							<img
+								src={`${baseURL}${selectedEvent.image.replace(/\\/g, '/')}`}
+								alt={selectedEvent.title}
+								className="w-full h-64 object-cover rounded-lg mb-4"
+							/>
+
+							<p className="text-muted-foreground mb-4">
+								{selectedEvent.description}
+							</p>
+
+							<div className="space-y-2 text-sm">
+								<p>
+									<strong>Date:</strong>{' '}
+									{formatDateTime(selectedEvent.start_date)}
+								</p>
+								{selectedEvent.end_date && (
+									<p>
+										<strong>Ends:</strong>{' '}
+										{formatDateTime(selectedEvent.end_date)}
+									</p>
+								)}
+								<p>
+									<strong>Location:</strong> {selectedEvent.location}
+								</p>
+								<p>
+									<strong>Category:</strong> {selectedEvent.category}
+								</p>
+								<p>
+									<strong>Experts:</strong> {selectedEvent.experts?.join(', ')}
+								</p>
+								<p>
+									<strong>Seats:</strong> {selectedEvent.maxAttendees}
+								</p>
+								<p>
+									<strong>Registered:</strong> {selectedEvent.currentAttendees}
+								</p>
+							</div>
+						</>
+					) : null}
+				</DialogContent>
+			</Dialog>
 		</div>
 	);
 }
