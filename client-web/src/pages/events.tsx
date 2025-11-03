@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Calendar, MapPin, Clock, Users, ExternalLink, Search } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -17,6 +18,8 @@ export default function Events() {
 	const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
 	const [modalLoading, setModalLoading] = useState(false);
 	const [searchQuery, setSearchQuery] = useState('');
+	const [categories, setCategories] = useState<string[]>(['All']);
+	const [selectedCategory, setSelectedCategory] = useState('All');
 
 	useEffect(() => {
 		const fetchEvents = async () => {
@@ -24,7 +27,15 @@ export default function Events() {
 				const res = await fetch(`${baseURL}user/get-events`);
 				if (!res.ok) throw new Error('Failed to fetch events');
 				const json = await res.json();
-				setEvents(json.data || []);
+				const data = json.data || [];
+				setEvents(data);
+
+				const uniqueCategories = [
+					'All',
+					...new Set(data.map((e: any) => e.category).filter(Boolean)),
+				];
+
+				setCategories(uniqueCategories);
 			} catch (err: any) {
 				setError(err.message || 'Error fetching events');
 			} finally {
@@ -86,11 +97,50 @@ export default function Events() {
 
 	if (loading) {
 		return (
-			<div className="flex justify-center items-center h-64">
-				<div className="text-center">
-					<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
-					<p className="mt-3 text-primary">Loading Events...</p>
-				</div>
+			<div className="min-h-screen pt-20">
+				<section className="py-24 bg-gradient-to-br from-gtu-base to-gtu-light">
+					<div className="max-w-7xl mx-auto px-6 lg:px-16">
+						<div className="text-center">
+							<div className="h-10 w-56 bg-gray-300/50 mx-auto rounded-lg animate-pulse"></div>
+							<div className="h-5 w-80 bg-gray-200/50 mx-auto rounded-lg mt-4 animate-pulse"></div>
+						</div>
+					</div>
+				</section>
+
+				<section className="py-6 bg-background border-b">
+					<div className="max-w-7xl mx-auto px-6 lg:px-16">
+						<div className="flex flex-col gap-3 md:gap-40 md:flex-row md:items-center md:justify-between">
+							<div className="flex-1"></div>
+							<div className="flex justify-center w-full md:w-auto order-1 md:order-none mx-auto">
+								<div className="h-10 w-64 bg-gray-200 rounded-lg animate-pulse"></div>
+							</div>
+							<div className="h-10 w-full md:w-72 lg:w-80 bg-gray-200 rounded-lg animate-pulse"></div>
+						</div>
+					</div>
+				</section>
+
+				<section className="py-16 bg-background">
+					<div className="max-w-7xl mx-auto px-6 lg:px-16">
+						<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+							{[1, 2, 3, 4].map((i) => (
+								<div
+									key={i}
+									className="rounded-xl border shadow-sm overflow-hidden animate-pulse"
+								>
+									<div className="w-full h-48 bg-gray-300"></div>
+									<div className="p-6 space-y-4">
+										<div className="h-5 w-24 bg-gray-300 rounded"></div>
+										<div className="h-6 w-3/4 bg-gray-300 rounded"></div>
+										<div className="h-4 w-full bg-gray-200 rounded"></div>
+										<div className="h-4 w-5/6 bg-gray-200 rounded"></div>
+
+										<div className="mt-4 h-10 w-full bg-gray-300 rounded"></div>
+									</div>
+								</div>
+							))}
+						</div>
+					</div>
+				</section>
 			</div>
 		);
 	}
@@ -125,8 +175,7 @@ export default function Events() {
 
 			<section className="py-6 bg-background border-b">
 				<div className="max-w-7xl mx-auto px-6 lg:px-16">
-					<div className="flex flex-col gap-3 md:gap-40 md:flex-row md:items-center md:justify-between">
-						<div className="flex-1"></div>
+					<div className="space-y-10">
 						<div className="flex justify-center w-full md:w-auto order-1 md:order-none mx-auto">
 							<Tabs value={activeTab} onValueChange={setActiveTab}>
 								<TabsList className="grid grid-cols-3 w-auto">
@@ -137,14 +186,32 @@ export default function Events() {
 							</Tabs>
 						</div>
 
-						<div className="relative w-full md:w-72 lg:w-80 md:ml-auto order-2">
+						<div className="text-center">
+							<h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wide">
+								Category
+							</h3>
+							<div className="flex justify-center w-full md:w-auto order-1 md:order-none mx-auto">
+								<Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
+									<TabsList className="flex flex-wrap gap-2 px-2">
+										{categories.map((cat) => (
+											<TabsTrigger key={cat} value={cat}>
+												{cat}
+											</TabsTrigger>
+										))}
+									</TabsList>
+								</Tabs>
+							</div>
+						</div>
+
+						<div className="max-w-md mx-auto relative">
 							<Search className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
-							<input
+							<Input
 								type="text"
 								placeholder="Search events..."
-								className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-primary/20"
 								value={searchQuery}
 								onChange={(e) => setSearchQuery(e.target.value)}
+								className="pl-10"
+								data-testid="search-input"
 							/>
 						</div>
 					</div>
@@ -178,7 +245,7 @@ export default function Events() {
 
 										<h3 className="text-xl font-bold mb-2">{event.title}</h3>
 
-										<p className="text-muted-foreground mb-4 line-clamp-3">
+										<p className="text-muted-foreground mb-4 line-clamp-1">
 											{event.description}
 										</p>
 

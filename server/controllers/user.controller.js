@@ -24,14 +24,14 @@ async function fetchEvents(req, res) {
 
 async function fetchEventById(req, res) {
 	try {
-		const event = await eventModel.findOne({ _id: req.params.id, status: 'published' });
+		const event = await eventModel.findOne({
+			_id: req.params.id,
+			status: 'published',
+		});
 
 		if (!event) return res.status(404).json({ message: 'Event not found or not published' });
 
-		res.status(200).json({
-			success: true,
-			data: event,
-		});
+		res.status(200).json({ success: true, data: event });
 	} catch (error) {
 		console.error('Fetch Event By ID Error:', error);
 		res.status(500).json({ message: 'Internal server error' });
@@ -41,7 +41,8 @@ async function fetchEventById(req, res) {
 // PROGRAMS
 async function fetchPrograms(req, res) {
 	try {
-		const programs = await programModel.find().sort({ created_at: -1 });
+		const programs = await programModel.find({ status: 'published' }).sort({ created_at: -1 });
+
 		res.status(200).json({ success: true, count: programs.length, data: programs });
 	} catch (error) {
 		console.error('Fetch Programs Error:', error);
@@ -51,8 +52,13 @@ async function fetchPrograms(req, res) {
 
 async function fetchProgramById(req, res) {
 	try {
-		const program = await programModel.findById(req.params.id);
-		if (!program) return res.status(404).json({ message: 'Program not found' });
+		const program = await programModel.findOne({
+			_id: req.params.id,
+			status: 'published',
+		});
+
+		if (!program)
+			return res.status(404).json({ message: 'Program not found or not published' });
 
 		res.status(200).json({ success: true, data: program });
 	} catch (error) {
@@ -64,7 +70,8 @@ async function fetchProgramById(req, res) {
 // NEWS
 async function fetchNews(req, res) {
 	try {
-		const news = await newsModel.find().sort({ created_at: -1 });
+		const news = await newsModel.find({ status: 'published' }).sort({ created_at: -1 });
+
 		res.status(200).json({ success: true, count: news.length, data: news });
 	} catch (error) {
 		console.error('Fetch News Error:', error);
@@ -74,8 +81,12 @@ async function fetchNews(req, res) {
 
 async function fetchNewsById(req, res) {
 	try {
-		const news = await newsModel.findById(req.params.id);
-		if (!news) return res.status(404).json({ message: 'News not found' });
+		const news = await newsModel.findOne({
+			_id: req.params.id,
+			status: 'published',
+		});
+
+		if (!news) return res.status(404).json({ message: 'News not found or not published' });
 
 		res.status(200).json({ success: true, data: news });
 	} catch (error) {
@@ -87,7 +98,8 @@ async function fetchNewsById(req, res) {
 // GALLERY
 async function fetchGallery(req, res) {
 	try {
-		const gallery = await galleryModel.find().sort({ created_at: -1 });
+		const gallery = await galleryModel.find({ status: 'published' }).sort({ created_at: -1 });
+
 		res.status(200).json({ success: true, count: gallery.length, data: gallery });
 	} catch (error) {
 		console.error('Fetch Gallery Error:', error);
@@ -97,8 +109,13 @@ async function fetchGallery(req, res) {
 
 async function fetchGalleryById(req, res) {
 	try {
-		const gallery = await galleryModel.findById(req.params.id);
-		if (!gallery) return res.status(404).json({ message: 'Gallery item not found' });
+		const gallery = await galleryModel.findOne({
+			_id: req.params.id,
+			status: 'published',
+		});
+
+		if (!gallery)
+			return res.status(404).json({ message: 'Gallery item not found or not published' });
 
 		res.status(200).json({ success: true, data: gallery });
 	} catch (error) {
@@ -110,7 +127,8 @@ async function fetchGalleryById(req, res) {
 // REPORTS
 async function fetchReports(req, res) {
 	try {
-		const reports = await reportModel.find().sort({ created_at: -1 });
+		const reports = await reportModel.find({ status: 'published' }).sort({ created_at: -1 });
+
 		res.status(200).json({ success: true, count: reports.length, data: reports });
 	} catch (error) {
 		console.error('Fetch Reports Error:', error);
@@ -120,8 +138,12 @@ async function fetchReports(req, res) {
 
 async function fetchReportById(req, res) {
 	try {
-		const report = await reportModel.findById(req.params.id);
-		if (!report) return res.status(404).json({ message: 'Report not found' });
+		const report = await reportModel.findOne({
+			_id: req.params.id,
+			status: 'published',
+		});
+
+		if (!report) return res.status(404).json({ message: 'Report not found or not published' });
 
 		res.status(200).json({ success: true, data: report });
 	} catch (error) {
@@ -133,7 +155,8 @@ async function fetchReportById(req, res) {
 // STARTUPS
 async function fetchStartups(req, res) {
 	try {
-		const startups = await startupModel.find().sort({ created_at: -1 });
+		const startups = await startupModel.find({ status: 'published' }).sort({ created_at: -1 });
+
 		res.status(200).json({ success: true, count: startups.length, data: startups });
 	} catch (error) {
 		console.error('Fetch Startups Error:', error);
@@ -143,8 +166,13 @@ async function fetchStartups(req, res) {
 
 async function fetchStartupById(req, res) {
 	try {
-		const startup = await startupModel.findById(req.params.id);
-		if (!startup) return res.status(404).json({ message: 'Startup not found' });
+		const startup = await startupModel.findOne({
+			_id: req.params.id,
+			status: 'published',
+		});
+
+		if (!startup)
+			return res.status(404).json({ message: 'Startup not found or not published' });
 
 		res.status(200).json({ success: true, data: startup });
 	} catch (error) {
