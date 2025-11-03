@@ -26,4 +26,12 @@ router.get('/get-report/:id', userController.fetchReportById);
 router.get('/get-startups', userController.fetchStartups);
 router.get('/get-startup/:id', userController.fetchStartupById);
 
+// FAQS
+router.get('/get-faqs', userController.fetchFAQs);
+router.get('/get-faq/:id', userController.fetchFAQById);
+
+// TEAM
+router.get('/get-team-members', userController.fetchTeamMembers);
+router.get('/get-team-member/:id', userController.fetchTeamMemberById);
+
 module.exports = router;

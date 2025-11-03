@@ -13,11 +13,11 @@ export default function Gallery() {
 	useEffect(() => {
 		const fetchGalleries = async () => {
 			try {
-				const res = await fetch(`${baseURL}admin/get-galleries`);
-				const data = await res.json();
-				// Filter only published galleries
-				const published = data.filter((g: any) => g.status === 'published');
-				setGalleries(published);
+				const res = await fetch(`${baseURL}user/get-gallery`);
+				if (!res.ok) throw new Error('Failed to fetch galleries');
+				const json = await res.json();
+				const data = json.data || [];
+				setGalleries(data);
 			} catch (error) {
 				console.error('Error fetching galleries:', error);
 			} finally {
@@ -25,7 +25,7 @@ export default function Gallery() {
 			}
 		};
 		fetchGalleries();
-	}, []);
+	}, [baseURL]);
 
 	// Demo videos
 	const demoVideos = [
@@ -118,7 +118,7 @@ export default function Gallery() {
 												>
 													<div className="relative h-48">
 														<img
-															src={`${baseURL}${img}`}
+															src={`${baseURL}${img.replace(/\\/g, '/')}`}
 															alt={`${gallery.title} - ${idx + 1}`}
 															className="w-full h-full object-cover"
 														/>
@@ -139,9 +139,9 @@ export default function Gallery() {
 					{active && tab === 'photos' ? (
 						<Lightbox
 							src={`${baseURL}${
-								galleries.find((g) => g._id === active.galleryId)?.images[
+								(galleries.find((g) => g._id === active.galleryId)?.images[
 									active.idx
-								] || ''
+								] || '').replace(/\\/g, '/')
 							}`}
 							alt={galleries.find((g) => g._id === active.galleryId)?.title || ''}
 							onClose={() => setActive(null)}

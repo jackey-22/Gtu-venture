@@ -1,11 +1,35 @@
 import PageShell from "./page-shell";
 import { motion } from "framer-motion";
-import { Twitter, Linkedin } from "lucide-react";
+import { useEffect, useState } from "react";
 import BoardSection from "@/components/team/board";
 import { boardDirectors, boardAdvisors } from "@/lib/boardData";
-import { gtuVentureTeam } from "@/lib/gtuTeamData";
 
 export default function Team() {
+  const baseURL = import.meta.env.VITE_URL;
+  const [teamMembers, setTeamMembers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchTeamMembers = async () => {
+      try {
+        const res = await fetch(`${baseURL}user/get-team-members`);
+        if (!res.ok) throw new Error('Failed to fetch team members');
+        const json = await res.json();
+        const data = json.data || [];
+        setTeamMembers(data);
+      } catch (err: any) {
+        setError(err.message || 'Error fetching team members');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTeamMembers();
+  }, [baseURL]);
+
+  const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.06 } } };
+  const itemVariants = { hidden: { y: 10, opacity: 0 }, visible: { y: 0, opacity: 1, transition: { duration: 0.45 } } };
+
   return (
     <PageShell title="Team & Mentors" subtitle="Meet the core team, mentors, and advisors who support GTU Ventures' mission.">
       {/* GTU Venture Team */}
@@ -15,28 +39,56 @@ export default function Team() {
           <p className="text-muted-foreground mt-2">The team that runs day-to-day incubation and programs.</p>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {(() => {
-            const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.06 } } };
-            const itemVariants = { hidden: { y: 10, opacity: 0 }, visible: { y: 0, opacity: 1, transition: { duration: 0.45 } } };
-
-            return (
-              <motion.div variants={containerVariants} initial="hidden" animate="visible" className="contents">
-                {gtuVentureTeam.map((p: any, i: number) => (
-                  <motion.article variants={itemVariants} key={i} className="overflow-hidden rounded-2xl shadow-lg bg-card border border-transparent text-center p-6">
-                    <div className="h-2 bg-secondary/80 rounded-t" />
-                    <div className="p-4">
-                      <div className="h-24 w-24 bg-gray-100 rounded-full mx-auto mb-4 overflow-hidden flex items-center justify-center text-2xl font-semibold">{(p.name || 'U').charAt(0)}</div>
-                      <div className="font-semibold">{p.name}</div>
-                      <div className="text-sm text-muted-foreground">{p.role}</div>
-                      {p.bio ? <div className="mt-3 text-sm">{p.bio}</div> : null}
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
+              <p className="mt-3 text-primary">Loading Team...</p>
+            </div>
+          </div>
+        ) : error ? (
+          <div className="flex justify-center items-center h-64">
+            <p className="text-red-500">{error}</p>
+          </div>
+        ) : teamMembers.length === 0 ? (
+          <div className="text-center text-muted-foreground py-10">No team members found.</div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <motion.div variants={containerVariants} initial="hidden" animate="visible" className="contents">
+              {teamMembers.map((p: any, i: number) => (
+                <motion.article variants={itemVariants} key={p._id || i} className="overflow-hidden rounded-2xl shadow-lg bg-card border border-transparent text-center p-6">
+                  <div className="h-2 bg-secondary/80 rounded-t" />
+                  <div className="p-4">
+                    {p.photo ? (
+                      <img
+                        src={`${baseURL}${p.photo.replace(/\\/g, '/')}`}
+                        alt={p.name}
+                        className="h-24 w-24 rounded-full mx-auto mb-4 object-cover"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                          if (fallback) fallback.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
+                    <div 
+                      className={`h-24 w-24 bg-gray-100 rounded-full mx-auto mb-4 overflow-hidden ${p.photo ? 'hidden' : 'flex'} items-center justify-center text-2xl font-semibold`}
+                      style={{ display: p.photo ? 'none' : 'flex' }}
+                    >
+                      {(p.name || 'U').charAt(0)}
                     </div>
-                  </motion.article>
-                ))}
-              </motion.div>
-            );
-          })()}
-        </div>
+                    <div className="font-semibold">{p.name}</div>
+                    <div className="text-sm text-muted-foreground">{p.role}</div>
+                    {p.bio ? <div className="mt-3 text-sm text-muted-foreground">{p.bio}</div> : null}
+                    {p.label && typeof p.label === 'object' && p.label.title && (
+                      <div className="mt-2 text-xs text-primary">{p.label.title}</div>
+                    )}
+                  </div>
+                </motion.article>
+              ))}
+            </motion.div>
+          </div>
+        )}
       </div>
 
       {/* Board of Directors & Advisors */}

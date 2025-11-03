@@ -5,6 +5,8 @@ const newsModel = require('../models/news.model');
 const programModel = require('../models/program.model');
 const reportModel = require('../models/report.model');
 const startupModel = require('../models/startup.model');
+const faqModel = require('../models/faq.model');
+const teamMemberModel = require('../models/teamMember.model');
 
 // EVENTS
 async function fetchEvents(req, res) {
@@ -181,6 +183,62 @@ async function fetchStartupById(req, res) {
 	}
 }
 
+// FAQS
+async function fetchFAQs(req, res) {
+	try {
+		const faqs = await faqModel.find({ status: 'published' }).sort({ priority: 1, created_at: -1 });
+
+		res.status(200).json({ success: true, count: faqs.length, data: faqs });
+	} catch (error) {
+		console.error('Fetch FAQs Error:', error);
+		res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function fetchFAQById(req, res) {
+	try {
+		const faq = await faqModel.findOne({
+			_id: req.params.id,
+			status: 'published',
+		});
+
+		if (!faq) return res.status(404).json({ message: 'FAQ not found or not published' });
+
+		res.status(200).json({ success: true, data: faq });
+	} catch (error) {
+		console.error('Fetch FAQ By ID Error:', error);
+		res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+// TEAM
+async function fetchTeamMembers(req, res) {
+	try {
+		const members = await teamMemberModel
+			.find()
+			.populate('label')
+			.sort({ priority: 1, createdAt: -1 });
+
+		res.status(200).json({ success: true, count: members.length, data: members });
+	} catch (error) {
+		console.error('Fetch Team Members Error:', error);
+		res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function fetchTeamMemberById(req, res) {
+	try {
+		const member = await teamMemberModel.findById(req.params.id).populate('label');
+
+		if (!member) return res.status(404).json({ message: 'Team member not found' });
+
+		res.status(200).json({ success: true, data: member });
+	} catch (error) {
+		console.error('Fetch Team Member By ID Error:', error);
+		res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
 module.exports = {
 	fetchEvents,
 	fetchEventById,
@@ -194,4 +252,8 @@ module.exports = {
 	fetchReportById,
 	fetchStartups,
 	fetchStartupById,
+	fetchFAQs,
+	fetchFAQById,
+	fetchTeamMembers,
+	fetchTeamMemberById,
 };

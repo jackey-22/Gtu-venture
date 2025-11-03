@@ -1,10 +1,30 @@
 import PageShell from "./page-shell";
-import { getAll } from "@/lib/contentStore";
 import { motion } from "framer-motion";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 
 export default function Reports() {
-  const items = getAll<any>("reports");
+  const baseURL = import.meta.env.VITE_URL;
+  const [reports, setReports] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [filter, setFilter] = useState<string>('All');
+
+  useEffect(() => {
+    const fetchReports = async () => {
+      try {
+        const res = await fetch(`${baseURL}user/get-reports`);
+        if (!res.ok) throw new Error('Failed to fetch reports');
+        const json = await res.json();
+        const data = json.data || [];
+        setReports(data);
+      } catch (err: any) {
+        setError(err.message || 'Error fetching reports');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchReports();
+  }, [baseURL]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -16,15 +36,43 @@ export default function Reports() {
     visible: { y: 0, opacity: 1, transition: { duration: 0.5 } },
   };
 
-  const demo = [
-    { id: 'r1', title: 'GTU Ventures - 2024 Impact Report', body: 'Summary of achievements and impact metrics including startups supported and funding disbursed.', url: '#', tag: 'Impact', thumb: 'https://images.unsplash.com/photo-1532635243-1b31d6b29d3b?auto=format&fit=crop&w=800&q=60' },
-    { id: 'r2', title: 'Annual Report 2023', body: 'Highlights from 2023 including program expansion and partnerships.', url: '#', tag: 'Annual', thumb: 'https://images.unsplash.com/photo-1524499982521-1ffd58dd89ea?auto=format&fit=crop&w=800&q=60' }
-  ];
+  const tags = useMemo(() => {
+    const categories = reports.map((r) => r.category || 'Uncategorized').filter(Boolean);
+    return ['All', ...Array.from(new Set(categories))];
+  }, [reports]);
 
-  const [filter, setFilter] = useState<string>('All');
-  const tags = useMemo(() => ['All', ...Array.from(new Set(demo.map((d) => d.tag)))], []);
-  const list = items.length ? items : demo;
-  const visible = list.filter((l: any) => filter === 'All' || l.tag === filter);
+  const visible = useMemo(() => {
+    return reports.filter((r: any) => filter === 'All' || (r.category || 'Uncategorized') === filter);
+  }, [reports, filter]);
+
+  if (loading) {
+    return (
+      <PageShell
+        title="Annual & Impact Reports"
+        subtitle="Download our annual and impact reports to review GTU Ventures' performance and outcomes."
+      >
+        <div className="flex justify-center items-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-3 text-primary">Loading Reports...</p>
+          </div>
+        </div>
+      </PageShell>
+    );
+  }
+
+  if (error) {
+    return (
+      <PageShell
+        title="Annual & Impact Reports"
+        subtitle="Download our annual and impact reports to review GTU Ventures' performance and outcomes."
+      >
+        <div className="flex justify-center items-center h-64">
+          <p className="text-red-500">{error}</p>
+        </div>
+      </PageShell>
+    );
+  }
 
   return (
     <PageShell
@@ -54,30 +102,51 @@ export default function Reports() {
         <div className="text-sm text-muted-foreground text-center md:text-right">{visible.length} reports</div>
       </div>
 
-      <motion.div variants={containerVariants} initial="hidden" animate="visible" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {visible.map((it: any, i: number) => (
-          <motion.article
-            variants={itemVariants}
-            key={it.id ?? i}
-            className="bg-card rounded-3xl overflow-hidden border shadow-sm hover-lift cursor-pointer"
-          >
-            <img src={it.thumb} alt={it.title} className="w-full h-48 object-cover" />
-
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-2">
-                <div className="font-semibold text-lg">{it.title}</div>
-                <div className="text-xs px-2 py-1 bg-accent/10 text-accent rounded">{it.tag}</div>
+      {visible.length === 0 ? (
+        <div className="text-center text-muted-foreground py-10">
+          No reports found.
+        </div>
+      ) : (
+        <motion.div variants={containerVariants} initial="hidden" animate="visible" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {visible.map((it: any, i: number) => (
+            <motion.article
+              variants={itemVariants}
+              key={it._id ?? i}
+              className="bg-card rounded-3xl overflow-hidden border shadow-sm hover-lift cursor-pointer"
+            >
+              <div className="w-full h-48 bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center">
+                <svg className="w-16 h-16 text-primary/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
               </div>
 
-              <div className="text-muted-foreground text-sm leading-relaxed mb-4">{it.body}</div>
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="font-semibold text-lg">{it.title}</div>
+                  {it.category && (
+                    <div className="text-xs px-2 py-1 bg-accent/10 text-accent rounded">{it.category}</div>
+                  )}
+                </div>
 
-              <div className="mt-2">
-                <a href={it.url ?? '#'} className="text-primary font-medium">Download PDF</a>
+                {it.description && (
+                  <div className="text-muted-foreground text-sm leading-relaxed mb-4">{it.description}</div>
+                )}
+
+                <div className="mt-2">
+                  <a 
+                    href={it.fileUrl ? `${baseURL}${it.fileUrl.replace(/\\/g, '/')}` : '#'} 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary font-medium hover:underline"
+                  >
+                    Download PDF
+                  </a>
+                </div>
               </div>
-            </div>
-          </motion.article>
-        ))}
-      </motion.div>
+            </motion.article>
+          ))}
+        </motion.div>
+      )}
     </PageShell>
   );
 }

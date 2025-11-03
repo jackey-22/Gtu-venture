@@ -13,9 +13,10 @@ export default function News() {
 	useEffect(() => {
 		const fetchNews = async () => {
 			try {
-				const res = await fetch(`${baseURL}admin/get-news`);
+				const res = await fetch(`${baseURL}user/get-news`);
 				if (!res.ok) throw new Error('Failed to fetch news');
-				const data = await res.json();
+				const json = await res.json();
+				const data = json.data || [];
 				setArticles(data);
 			} catch (err: any) {
 				setError(err.message || 'Error fetching news');
@@ -103,33 +104,35 @@ export default function News() {
 			>
 				{visibleArticles.map((article, idx) => (
 					<motion.div
-						key={article.id ?? idx}
+						key={article._id ?? idx}
 						variants={itemVariants}
 						className="bg-card rounded-2xl shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-all"
 						onClick={() => setSelected(article)}
 					>
-						<img
-							src={article.thumb}
-							alt={article.title}
-							className="w-full h-48 object-cover"
-							onError={(e) => {
-								e.currentTarget.style.display = 'none';
-							}}
-						/>
+						{article.images && article.images.length > 0 && (
+							<img
+								src={`${baseURL}${article.images[0].replace(/\\/g, '/')}`}
+								alt={article.title}
+								className="w-full h-48 object-cover"
+								onError={(e) => {
+									e.currentTarget.style.display = 'none';
+								}}
+							/>
+						)}
 						<div className="p-5">
 							<div className="flex items-center justify-between mb-2">
 								<span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-									{article.category}
+									{article.category || 'Uncategorized'}
 								</span>
 								<span className="text-xs text-muted-foreground">
-									{article.date}
+									{article.date ? new Date(article.date).toLocaleDateString() : article.created_at ? new Date(article.created_at).toLocaleDateString() : ''}
 								</span>
 							</div>
 							<h3 className="text-lg font-bold text-foreground mb-2">
 								{article.title}
 							</h3>
 							<p className="text-sm text-muted-foreground line-clamp-3">
-								{article.description}
+								{article.content || article.description || ''}
 							</p>
 						</div>
 					</motion.div>
@@ -147,9 +150,9 @@ export default function News() {
 						>
 							×
 						</button>
-						{selected.thumb && (
+						{selected.images && selected.images.length > 0 && (
 							<img
-								src={selected.thumb}
+								src={`${baseURL}${selected.images[0].replace(/\\/g, '/')}`}
 								alt={selected.title}
 								className="w-full h-56 object-cover rounded-t-3xl"
 							/>
@@ -157,23 +160,18 @@ export default function News() {
 						<div className="p-8">
 							<div className="flex items-center justify-between mb-2">
 								<span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-									{selected.category}
+									{selected.category || 'Uncategorized'}
 								</span>
 								<span className="text-xs text-muted-foreground">
-									{selected.date}
+									{selected.date ? new Date(selected.date).toLocaleDateString() : selected.created_at ? new Date(selected.created_at).toLocaleDateString() : ''}
 								</span>
 							</div>
 							<h2 className="text-2xl font-bold text-foreground mb-4">
 								{selected.title}
 							</h2>
 							<div className="text-muted-foreground text-base leading-relaxed whitespace-pre-line mb-4">
-								{selected.body}
+								{selected.content || selected.body || ''}
 							</div>
-							{selected.description && (
-								<div className="prose prose-neutral max-w-none text-foreground text-base leading-relaxed">
-									{selected.description}
-								</div>
-							)}
 						</div>
 					</div>
 				</div>
