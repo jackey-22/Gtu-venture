@@ -140,14 +140,13 @@ export default function Carousel3D() {
 	};
 
 	return shouldHide ? (
-		<div className="h-[clamp(12rem,30vw,18rem)] w-full flex items-center justify-center"></div>
+		<div className="h-72 w-full flex items-center justify-center"></div>
 	) : (
-		<section className="w-full flex justify-center py-[clamp(3rem,8vw,8rem)] overflow-hidden">
-			<div className="w-full max-w-4xl px-[clamp(1rem,4vw,1rem)]">
-				<div className="relative pt-[clamp(2rem,5vw,5rem)]">
+		<section className="w-full flex justify-center py-32">
+			<div className="w-full max-w-4xl px-4">
+				<div className="relative pt-12 md:pt-16 lg:pt-20">
 					<div
-						className="carousel-3d w-full overflow-hidden relative z-10"
-						style={{ height: 'clamp(14rem, 35vw, 20rem)' }}
+						className="carousel-3d w-full h-56 md:h-72 lg:h-80 overflow-visible relative z-10"
 						onMouseEnter={() => setIsPaused(true)}
 						onMouseLeave={() => setIsPaused(false)}
 						aria-roledescription="carousel"
@@ -172,12 +171,12 @@ export default function Carousel3D() {
 										}}
 									/>
 
-									<div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end p-[clamp(0.75rem,2vw,1rem)] rounded-2xl">
+									<div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end p-4 rounded-2xl">
 										<div className="text-white">
-											<h3 className="font-semibold" style={{ fontSize: 'clamp(0.875rem, 1.5vw + 0.25rem, 1.125rem)' }}>
+											<h3 className="text-sm md:text-lg font-semibold">
 												{item.title}
 											</h3>
-											<p className="opacity-90" style={{ fontSize: 'clamp(0.75rem, 1.2vw + 0.25rem, 0.875rem)' }}>
+											<p className="text-xs md:text-sm opacity-90">
 												{item.description}
 											</p>
 										</div>
@@ -186,9 +185,9 @@ export default function Carousel3D() {
 							))}
 						</div>
 
-						<div className="flex justify-center items-center gap-[clamp(0.5rem,2vw,1rem)] mt-[clamp(2rem,5vw,4rem)]">
+						<div className="flex justify-center items-center space-x-4 mt-16">
 							<button
-								className="carousel-btn flex-shrink-0"
+								className="carousel-btn"
 								onClick={() => {
 									prevSlide();
 									setIsPaused(true);
@@ -196,19 +195,18 @@ export default function Carousel3D() {
 								}}
 								aria-label="Previous slide"
 							>
-								<ChevronLeft className="text-primary bg-white rounded-full shadow hover:bg-primary hover:text-white transition-colors" style={{ width: 'clamp(2rem, 5vw, 2.5rem)', height: 'clamp(2rem, 5vw, 2.5rem)', padding: 'clamp(0.375rem, 1vw, 0.5rem)' }} />
+								<ChevronLeft className="text-primary text-xl p-2 bg-white rounded-full shadow w-10 h-10 hover:bg-primary hover:text-white transition-colors" />
 							</button>
 
-							<div className="flex gap-[clamp(0.25rem,1vw,0.5rem)]">
+							<div className="flex space-x-2">
 								{carouselItems.map((_, index) => (
 									<button
 										key={index}
-										className={`rounded-full transition-colors ${
+										className={`w-2.5 h-2.5 rounded-full transition-colors ${
 											index === currentIndex
 												? 'bg-gtu-primary'
 												: 'bg-gray-300'
 										}`}
-										style={{ width: 'clamp(0.375rem, 1vw, 0.625rem)', height: 'clamp(0.375rem, 1vw, 0.625rem)' }}
 										onClick={() => {
 											goToSlide(index);
 											setIsPaused(true);
@@ -220,7 +218,7 @@ export default function Carousel3D() {
 							</div>
 
 							<button
-								className="carousel-btn flex-shrink-0"
+								className="carousel-btn"
 								onClick={() => {
 									nextSlide();
 									setIsPaused(true);
@@ -228,12 +226,12 @@ export default function Carousel3D() {
 								}}
 								aria-label="Next slide"
 							>
-								<ChevronRight className="text-primary bg-white rounded-full shadow hover:bg-primary hover:text-white transition-colors" style={{ width: 'clamp(2rem, 5vw, 2.5rem)', height: 'clamp(2rem, 5vw, 2.5rem)', padding: 'clamp(0.375rem, 1vw, 0.5rem)' }} />
+								<ChevronRight className="text-primary text-xl p-2 bg-white rounded-full shadow w-10 h-10 hover:bg-primary hover:text-white transition-colors" />
 							</button>
 						</div>
 					</div>
 
-					<div className="h-[clamp(1rem,3vw,2.5rem)]" />
+					<div className="h-6 md:h-8 lg:h-10" />
 				</div>
 			</div>
 		</section>

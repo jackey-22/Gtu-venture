@@ -35,7 +35,14 @@ function AnimatedNumber({
 		return () => window.clearInterval(id);
 	}, [target, duration]);
 
-	return <div className="text-white font-bold" style={{ fontSize: 'clamp(1.25rem, 2vw + 0.5rem, 1.5rem)' }}>{format(value)}</div>;
+	return (
+		<div
+			className="text-white font-bold"
+			style={{ fontSize: 'clamp(1.25rem, 2vw + 0.5rem, 1.5rem)' }}
+		>
+			{format(value)}
+		</div>
+	);
 }
 
 export default function Hero() {
@@ -92,7 +99,7 @@ export default function Hero() {
 		? heroData.title.split("Gujarat's Largest")
 		: ['Ignite Your Startup Journey in ', "Gujarat's Largest", ' Student Ecosystem'];
 	return (
-		<section className="hero-depth relative min-h-screen lg:h-screen pt-[max(4rem,calc(4rem+env(safe-area-inset-top)))] pb-[max(2rem,calc(2rem+env(safe-area-inset-bottom)))] my-0 flex items-center justify-center overflow-hidden">
+		<section className="hero-depth relative min-h-screen lg:h-screen pt-[max(9rem,calc(4rem+env(safe-area-inset-top)))] pb-[max(2rem,calc(2rem+env(safe-area-inset-bottom)))] my-0 flex items-center justify-center overflow-hidden">
 			<div
 				className="absolute left-0 right-0 top-0 bottom-0 pointer-events-none"
 				style={{ zIndex: 5 }}
@@ -167,7 +174,9 @@ export default function Hero() {
 									className="flex items-center justify-center gap-2"
 								>
 									<Rocket className="w-[clamp(1rem,2vw,1.25rem)] h-[clamp(1rem,2vw,1.25rem)]" />
-									<span className="whitespace-nowrap">{heroData.primaryButtonText}</span>
+									<span className="whitespace-nowrap">
+										{heroData.primaryButtonText}
+									</span>
 								</a>
 							</Button>
 						)}
@@ -184,7 +193,9 @@ export default function Hero() {
 									href={heroData.secondaryButtonLink}
 									className="flex items-center justify-center gap-2"
 								>
-									<span className="whitespace-nowrap">{heroData.secondaryButtonText}</span>
+									<span className="whitespace-nowrap">
+										{heroData.secondaryButtonText}
+									</span>
 									<ChevronDown className="w-4 h-4" />
 								</a>
 							</Button>
