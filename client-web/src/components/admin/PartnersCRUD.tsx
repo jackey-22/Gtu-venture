@@ -338,41 +338,54 @@ export default function PartnersCRUD() {
 
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 				{partners.map((partner) => (
-					<Card key={partner._id}>
+					<Card key={partner._id} className="hover:shadow-md transition rounded-xl">
 						<CardContent className="p-4">
-							<div className="flex justify-between items-start">
-								<div className="flex-1 flex items-start gap-4">
+							<div className="flex justify-between items-start gap-3">
+								<div className="flex gap-3 flex-1 min-w-0">
 									{partner.logo && (
 										<img
 											src={`${baseURL}${partner.logo.replace(/\\/g, '/')}`}
 											alt={partner.name}
-											className="w-16 h-16 object-contain"
+											className="w-14 h-14 object-cover rounded-lg border flex-shrink-0"
 										/>
 									)}
-									<div className="flex-1">
-										<div className="flex items-center gap-2 mb-2">
-											<h3 className="font-bold text-lg">{partner.name}</h3>
+
+									<div className="flex flex-col flex-1 min-w-0">
+										<div className="flex items-center gap-2 mb-2 flex-wrap">
+											<h3 className="font-bold text-lg line-clamp-2">
+												{partner.name}
+											</h3>
 											<Badge
 												variant={
 													partner.status === 'published'
 														? 'default'
 														: 'secondary'
 												}
+												className="flex-shrink-0"
 											>
 												{partner.status}
 											</Badge>
-											<Badge variant="outline">{partner.category}</Badge>
 										</div>
-										<p className="text-sm text-muted-foreground">
-											{partner.description}
+
+										<p className="text-sm text-muted-foreground line-clamp-3 mb-2">
+											{partner.description || 'No description available'}
 										</p>
-										<div className="mt-2 flex gap-2 text-xs text-muted-foreground">
-											{partner.type && <span>Type: {partner.type}</span>}
-											{partner.focus && <span>Focus: {partner.focus}</span>}
+
+										<div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+											{partner.type && (
+												<span className="whitespace-nowrap">Type: {partner.type}</span>
+											)}
+											{partner.focus && (
+												<span className="whitespace-nowrap">Focus: {partner.focus}</span>
+											)}
+											<Badge variant="outline" className="text-xs flex-shrink-0">
+												{partner.category}
+											</Badge>
 										</div>
 									</div>
 								</div>
-								<div className="flex gap-2">
+
+								<div className="flex gap-2 flex-shrink-0">
 									<Button
 										variant="outline"
 										size="sm"
@@ -408,8 +421,11 @@ export default function PartnersCRUD() {
 						</CardContent>
 					</Card>
 				))}
+
 				{partners.length === 0 && (
-					<div className="text-center text-muted-foreground py-8">No partners found</div>
+					<div className="text-center text-muted-foreground py-8 col-span-full">
+						No partners found
+					</div>
 				)}
 			</div>
 		</div>

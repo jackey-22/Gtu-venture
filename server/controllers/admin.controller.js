@@ -1061,7 +1061,9 @@ async function addApplication(req, res) {
 		});
 
 		await newApplication.save();
-		return res.status(201).json({ message: 'Application created successfully', application: newApplication });
+		return res
+			.status(201)
+			.json({ message: 'Application created successfully', application: newApplication });
 	} catch (error) {
 		console.error(error);
 		return res.status(500).json({ message: 'Internal server error' });
@@ -1145,7 +1147,9 @@ async function updateApplication(req, res) {
 			return res.status(404).json({ message: 'Application not found' });
 		}
 
-		return res.status(200).json({ message: 'Application updated successfully', application: updatedApplication });
+		return res
+			.status(200)
+			.json({ message: 'Application updated successfully', application: updatedApplication });
 	} catch (error) {
 		console.error(error);
 		return res.status(500).json({ message: 'Internal server error' });
@@ -1169,7 +1173,19 @@ async function deleteApplication(req, res) {
 // Career
 async function addCareer(req, res) {
 	try {
-		const { title, body, type, category, startup, details, requirements, benefits, location, status, publishedAt } = req.body;
+		const {
+			title,
+			body,
+			type,
+			category,
+			startup,
+			details,
+			requirements,
+			benefits,
+			location,
+			status,
+			publishedAt,
+		} = req.body;
 		if (!title) {
 			return res.status(400).json({ message: 'Missing required fields' });
 		}
@@ -1222,7 +1238,19 @@ async function getCareerById(req, res) {
 async function updateCareer(req, res) {
 	try {
 		const { id } = req.params;
-		const { title, body, type, category, startup, details, requirements, benefits, location, status, publishedAt } = req.body;
+		const {
+			title,
+			body,
+			type,
+			category,
+			startup,
+			details,
+			requirements,
+			benefits,
+			location,
+			status,
+			publishedAt,
+		} = req.body;
 
 		const updatedData = {
 			title,
@@ -1247,7 +1275,9 @@ async function updateCareer(req, res) {
 			return res.status(404).json({ message: 'Career not found' });
 		}
 
-		return res.status(200).json({ message: 'Career updated successfully', career: updatedCareer });
+		return res
+			.status(200)
+			.json({ message: 'Career updated successfully', career: updatedCareer });
 	} catch (error) {
 		console.error(error);
 		return res.status(500).json({ message: 'Internal server error' });
@@ -1271,7 +1301,8 @@ async function deleteCareer(req, res) {
 // Partner
 async function addPartner(req, res) {
 	try {
-		const { name, logo, description, website, type, focus, category, status, publishedAt } = req.body;
+		const { name, logo, description, website, type, focus, category, status, publishedAt } =
+			req.body;
 		if (!name || !category) {
 			return res.status(400).json({ message: 'Missing required fields' });
 		}
@@ -1291,7 +1322,9 @@ async function addPartner(req, res) {
 		});
 
 		await newPartner.save();
-		return res.status(201).json({ message: 'Partner created successfully', partner: newPartner });
+		return res
+			.status(201)
+			.json({ message: 'Partner created successfully', partner: newPartner });
 	} catch (error) {
 		console.error(error);
 		return res.status(500).json({ message: 'Internal server error' });
@@ -1324,7 +1357,8 @@ async function getPartnerById(req, res) {
 async function updatePartner(req, res) {
 	try {
 		const { id } = req.params;
-		const { name, logo, description, website, type, focus, category, status, publishedAt } = req.body;
+		const { name, logo, description, website, type, focus, category, status, publishedAt } =
+			req.body;
 
 		const image = req.file ? req.file.path.slice(6) : null;
 
@@ -1350,7 +1384,9 @@ async function updatePartner(req, res) {
 			return res.status(404).json({ message: 'Partner not found' });
 		}
 
-		return res.status(200).json({ message: 'Partner updated successfully', partner: updatedPartner });
+		return res
+			.status(200)
+			.json({ message: 'Partner updated successfully', partner: updatedPartner });
 	} catch (error) {
 		console.error(error);
 		return res.status(500).json({ message: 'Internal server error' });
@@ -1374,7 +1410,7 @@ async function deletePartner(req, res) {
 // Facility
 async function addFacility(req, res) {
 	try {
-		const { title, body, icon, action, status, publishedAt } = req.body;
+		const { title, body, action, status, category, publishedAt } = req.body;
 		if (!title) {
 			return res.status(400).json({ message: 'Missing required fields' });
 		}
@@ -1382,14 +1418,16 @@ async function addFacility(req, res) {
 		const newFacility = new facilityModel({
 			title,
 			body,
-			icon,
 			action,
+			category,
 			status: status || 'draft',
 			publishedAt,
 		});
 
 		await newFacility.save();
-		return res.status(201).json({ message: 'Facility created successfully', facility: newFacility });
+		return res
+			.status(201)
+			.json({ message: 'Facility created successfully', facility: newFacility });
 	} catch (error) {
 		console.error(error);
 		return res.status(500).json({ message: 'Internal server error' });
@@ -1422,14 +1460,14 @@ async function getFacilityById(req, res) {
 async function updateFacility(req, res) {
 	try {
 		const { id } = req.params;
-		const { title, body, icon, action, status, publishedAt } = req.body;
+		const { title, body, action, status, category, publishedAt } = req.body;
 
 		const updatedData = {
 			title,
 			body,
-			icon,
 			action,
 			status,
+			category,
 			publishedAt,
 		};
 
@@ -1442,7 +1480,9 @@ async function updateFacility(req, res) {
 			return res.status(404).json({ message: 'Facility not found' });
 		}
 
-		return res.status(200).json({ message: 'Facility updated successfully', facility: updatedFacility });
+		return res
+			.status(200)
+			.json({ message: 'Facility updated successfully', facility: updatedFacility });
 	} catch (error) {
 		console.error(error);
 		return res.status(500).json({ message: 'Internal server error' });
@@ -1481,7 +1521,9 @@ async function addInitiative(req, res) {
 		});
 
 		await newInitiative.save();
-		return res.status(201).json({ message: 'Initiative created successfully', initiative: newInitiative });
+		return res
+			.status(201)
+			.json({ message: 'Initiative created successfully', initiative: newInitiative });
 	} catch (error) {
 		console.error(error);
 		return res.status(500).json({ message: 'Internal server error' });
@@ -1534,7 +1576,9 @@ async function updateInitiative(req, res) {
 			return res.status(404).json({ message: 'Initiative not found' });
 		}
 
-		return res.status(200).json({ message: 'Initiative updated successfully', initiative: updatedInitiative });
+		return res
+			.status(200)
+			.json({ message: 'Initiative updated successfully', initiative: updatedInitiative });
 	} catch (error) {
 		console.error(error);
 		return res.status(500).json({ message: 'Internal server error' });
@@ -1574,7 +1618,10 @@ async function addContactMessage(req, res) {
 		});
 
 		await newContactMessage.save();
-		return res.status(201).json({ message: 'Contact message submitted successfully', contactMessage: newContactMessage });
+		return res.status(201).json({
+			message: 'Contact message submitted successfully',
+			contactMessage: newContactMessage,
+		});
 	} catch (error) {
 		console.error(error);
 		return res.status(500).json({ message: 'Internal server error' });
@@ -1629,7 +1676,10 @@ async function updateContactMessage(req, res) {
 			return res.status(404).json({ message: 'Contact message not found' });
 		}
 
-		return res.status(200).json({ message: 'Contact message updated successfully', contactMessage: updatedContactMessage });
+		return res.status(200).json({
+			message: 'Contact message updated successfully',
+			contactMessage: updatedContactMessage,
+		});
 	} catch (error) {
 		console.error(error);
 		return res.status(500).json({ message: 'Internal server error' });
@@ -1666,7 +1716,10 @@ async function addCircular(req, res) {
 			if (Array.isArray(tags)) {
 				tagsArray = tags;
 			} else if (typeof tags === 'string') {
-				tagsArray = tags.split(',').map(t => t.trim()).filter(Boolean);
+				tagsArray = tags
+					.split(',')
+					.map((t) => t.trim())
+					.filter(Boolean);
 			}
 		}
 
@@ -1683,7 +1736,9 @@ async function addCircular(req, res) {
 		});
 
 		await newCircular.save();
-		return res.status(201).json({ message: 'Circular created successfully', circular: newCircular });
+		return res
+			.status(201)
+			.json({ message: 'Circular created successfully', circular: newCircular });
 	} catch (error) {
 		console.error(error);
 		return res.status(500).json({ message: 'Internal server error' });
@@ -1726,7 +1781,10 @@ async function updateCircular(req, res) {
 			if (Array.isArray(tags)) {
 				tagsArray = tags;
 			} else if (typeof tags === 'string') {
-				tagsArray = tags.split(',').map(t => t.trim()).filter(Boolean);
+				tagsArray = tags
+					.split(',')
+					.map((t) => t.trim())
+					.filter(Boolean);
 			}
 		}
 
@@ -1752,7 +1810,9 @@ async function updateCircular(req, res) {
 			return res.status(404).json({ message: 'Circular not found' });
 		}
 
-		return res.status(200).json({ message: 'Circular updated successfully', circular: updatedCircular });
+		return res
+			.status(200)
+			.json({ message: 'Circular updated successfully', circular: updatedCircular });
 	} catch (error) {
 		console.error(error);
 		return res.status(500).json({ message: 'Internal server error' });

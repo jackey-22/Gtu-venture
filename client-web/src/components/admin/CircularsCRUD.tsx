@@ -350,27 +350,32 @@ export default function CircularsCRUD() {
 				{circulars.map((circular) => (
 					<Card key={circular._id}>
 						<CardContent className="p-4">
-							<div className="flex justify-between items-start">
-								<div className="flex-1">
-									<div className="flex items-center gap-2 mb-2">
-										<h3 className="font-bold text-lg">{circular.title}</h3>
+							<div className="flex justify-between items-start gap-3">
+								<div className="flex-1 min-w-0">
+									<div className="flex items-center gap-2 mb-2 flex-wrap">
+										<h3 className="font-bold text-lg line-clamp-2">
+											{circular.title}
+										</h3>
 										<Badge
 											variant={
 												circular.status === 'published'
 													? 'default'
 													: 'secondary'
 											}
+											className="flex-shrink-0"
 										>
 											{circular.status}
 										</Badge>
-										<Badge variant="outline">{circular.type}</Badge>
+										<Badge variant="outline" className="flex-shrink-0">
+											{circular.type}
+										</Badge>
 									</div>
 									{circular.summary && (
-										<p className="text-sm text-muted-foreground mb-2">
+										<p className="text-sm text-muted-foreground line-clamp-3 mb-2">
 											{circular.summary}
 										</p>
 									)}
-									<div className="flex gap-2 flex-wrap mt-2">
+									<div className="flex gap-2 flex-wrap mb-2">
 										{circular.tags?.map((tag, i) => (
 											<Badge key={i} variant="outline" className="text-xs">
 												{tag}
@@ -378,12 +383,12 @@ export default function CircularsCRUD() {
 										))}
 									</div>
 									{circular.date && (
-										<div className="text-xs text-muted-foreground mt-2">
+										<div className="text-xs text-muted-foreground">
 											Date: {new Date(circular.date).toLocaleDateString()}
 										</div>
 									)}
 								</div>
-								<div className="flex gap-2">
+								<div className="flex gap-2 flex-shrink-0">
 									<Button
 										variant="outline"
 										size="sm"
@@ -422,7 +427,9 @@ export default function CircularsCRUD() {
 					</Card>
 				))}
 				{circulars.length === 0 && (
-					<div className="text-center text-muted-foreground py-8">No circulars found</div>
+					<div className="text-center text-muted-foreground py-8 col-span-full">
+						No circulars found
+					</div>
 				)}
 			</div>
 		</div>

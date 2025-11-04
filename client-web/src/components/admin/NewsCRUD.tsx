@@ -11,6 +11,7 @@ import {
 	SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 import {
 	Dialog,
 	DialogContent,
@@ -203,13 +204,14 @@ export default function NewsCRUD() {
 	// 		</>
 	// 	);
 
+	if (loading) {
+		return <div className="p-6">Loading news...</div>;
+	}
+
 	return (
-		<div className="space-y-6 relative">
-			<div className="flex justify-between items-center">
-				<div>
-					<h2 className="text-2xl font-bold">News Management</h2>
-					<p className="text-muted-foreground">Manage news articles</p>
-				</div>
+		<div className="p-6 space-y-6">
+			<div className="flex justify-between items-center flex-wrap gap-4">
+				<h2 className="text-2xl font-bold">News Management</h2>
 
 				<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
 					<DialogTrigger asChild>
@@ -457,23 +459,43 @@ export default function NewsCRUD() {
 				</Dialog>
 			</div>
 
-			{loading || actionLoading ? (
-				<div className="flex justify-center items-center h-64">
-					<div className="text-center">
-						<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
-						<p className="mt-3 text-primary">Loading News...</p>
-					</div>
-				</div>
-			) : (
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-					{news.map((n) => (
-						<div
-							key={n._id}
-							className="border rounded-md shadow p-4 bg-white space-y-5 px-5"
-						>
-							<div className="flex justify-between items-center">
-								<h3 className="text-xl font-bold">{n.title}</h3>
-								<div className="flex gap-2">
+			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+				{news.map((n) => (
+					<Card key={n._id}>
+						<CardContent className="p-4">
+							<div className="flex justify-between items-start gap-3">
+								<div className="flex-1 min-w-0">
+									<div className="flex items-center gap-2 mb-2 flex-wrap">
+										<h3 className="font-bold text-lg line-clamp-2">{n.title}</h3>
+										<Badge
+											variant={
+												n.status === 'published'
+													? 'default'
+													: 'secondary'
+											}
+											className="flex-shrink-0"
+										>
+											{n.status}
+										</Badge>
+									</div>
+									<p className="text-sm text-muted-foreground line-clamp-3 mb-2">
+										{n.content}
+									</p>
+									<div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground mb-2">
+										{n.date && (
+											<div className="flex items-center gap-1">
+												<Calendar className="w-3 h-3" />
+												<span>{new Date(n.date).toLocaleDateString()}</span>
+											</div>
+										)}
+										{n.category && (
+											<Badge variant="outline" className="text-xs">
+												{n.category}
+											</Badge>
+										)}
+									</div>
+								</div>
+								<div className="flex gap-2 flex-shrink-0">
 									<Button
 										variant="outline"
 										size="sm"
@@ -483,15 +505,15 @@ export default function NewsCRUD() {
 									</Button>
 									<AlertDialog>
 										<AlertDialogTrigger asChild>
-											<Button variant="outline" size="sm">
+											<Button variant="destructive" size="sm">
 												<Trash2 className="w-4 h-4" />
 											</Button>
 										</AlertDialogTrigger>
 										<AlertDialogContent>
 											<AlertDialogHeader>
-												<AlertDialogTitle>Delete News</AlertDialogTitle>
+												<AlertDialogTitle>Delete News?</AlertDialogTitle>
 												<AlertDialogDescription>
-													Are you sure you want to delete "{n.title}"?
+													This action cannot be undone.
 												</AlertDialogDescription>
 											</AlertDialogHeader>
 											<AlertDialogFooter>
@@ -506,26 +528,15 @@ export default function NewsCRUD() {
 									</AlertDialog>
 								</div>
 							</div>
-
-							<div className="space-y-5">
-								<p className="text-muted-foreground line-clamp-2">{n.content}</p>
-								<div className="bottom-0 text-sm text-gray-500">
-									{n.date && (
-										<p>
-											<Calendar className="inline w-4 h-4 mr-1 my-auto" />
-											{new Date(n.date).toLocaleString()}
-										</p>
-									)}
-								</div>
-								<div className="flex items-center gap-3 mt-2">
-									<Badge className={getStatusColor(n.status)}>{n.status}</Badge>
-									{n.category && <Badge variant="outline">{n.category}</Badge>}
-								</div>
-							</div>
-						</div>
-					))}
-				</div>
-			)}
+						</CardContent>
+					</Card>
+				))}
+				{news.length === 0 && (
+					<div className="text-center text-muted-foreground py-8 col-span-full">
+						No news found
+					</div>
+				)}
+			</div>
 		</div>
 	);
 }

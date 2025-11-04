@@ -4,7 +4,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+	DialogDescription,
+} from '@/components/ui/dialog';
 import { Lightbulb, Zap, Target, Clock } from 'lucide-react';
 
 const programIcons = {
@@ -26,7 +32,7 @@ export default function Programs() {
 			try {
 				const res = await fetch(`${baseApi}user/get-programs`);
 				const data = await res.json();
-        // console.log(data);
+				// console.log(data);
 				setPrograms(data.data || []);
 			} catch (err) {
 				console.error('Failed to fetch programs:', err);
@@ -120,10 +126,18 @@ export default function Programs() {
 										animate={{ opacity: 1, y: 0 }}
 										transition={{ duration: 0.6, delay: index * 0.1 }}
 									>
-										<Card className="h-full hover-lift cursor-pointer" onClick={() => setSelectedProgram(program)}>
-											<CardContent className="p-8">
-												<div className="bg-primary/10 rounded-2xl p-4 w-fit mb-6">
-													<Icon className="w-8 h-8 text-primary" />
+										<Card
+											className="h-full hover-lift cursor-pointer group"
+											onClick={(e) => {
+												const ignore = ['BUTTON', 'svg', 'path'];
+												if (!ignore.includes(e.target.tagName)) {
+													setSelectedProgram(program);
+												}
+											}}
+										>
+											<CardContent className="p-8 flex flex-col h-full">
+												<div className="rounded-2xl p-4 w-fit mb-6 bg-primary/10 group-hover:bg-primary transition-colors">
+													<Icon className="w-8 h-8 text-primary group-hover:text-primary-foreground transition-colors" />
 												</div>
 												<h3 className="text-2xl font-bold text-foreground mb-4 line-clamp-2">
 													{program.title}
@@ -137,7 +151,6 @@ export default function Programs() {
 														{program.duration}
 													</div>
 													<Badge
-                    
 														variant="secondary"
 														className="capitalize p-1"
 													>
@@ -145,7 +158,11 @@ export default function Programs() {
 													</Badge>
 												</div>
 
-												<Tabs defaultValue="benefits" className="w-full">
+												<Tabs
+													defaultValue="benefits"
+													className="w-full mb-5"
+													onClick={(e) => e.stopPropagation()}
+												>
 													<TabsList className="grid w-full grid-cols-2">
 														<TabsTrigger value="benefits">
 															Benefits
@@ -193,7 +210,8 @@ export default function Programs() {
 
 												<Button
 													asChild
-													className="w-full mb-2 bg-primary text-primary-foreground"
+													className="w-full bg-primary text-primary-foreground mt-auto"
+													onClick={(e) => e.stopPropagation()}
 												>
 													<a href="/apply">Apply for {program.title}</a>
 												</Button>
@@ -216,7 +234,10 @@ export default function Programs() {
 								<div className="flex items-center gap-4 mb-4">
 									<div className="bg-primary/10 rounded-2xl p-4">
 										{(() => {
-											const Icon = programIcons[selectedProgram.stage as keyof typeof programIcons] || Lightbulb;
+											const Icon =
+												programIcons[
+													selectedProgram.stage as keyof typeof programIcons
+												] || Lightbulb;
 											return <Icon className="w-8 h-8 text-primary" />;
 										})()}
 									</div>
@@ -250,29 +271,40 @@ export default function Programs() {
 
 									<TabsContent value="benefits" className="mt-4">
 										<ul className="space-y-3 text-sm">
-											{selectedProgram.benefits?.map((benefit: string, i: number) => (
-												<li key={i} className="flex items-start gap-3">
-													<div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-													<span className="text-muted-foreground">{benefit}</span>
-												</li>
-											))}
+											{selectedProgram.benefits?.map(
+												(benefit: string, i: number) => (
+													<li key={i} className="flex items-start gap-3">
+														<div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+														<span className="text-muted-foreground">
+															{benefit}
+														</span>
+													</li>
+												)
+											)}
 										</ul>
 									</TabsContent>
 
 									<TabsContent value="eligibility" className="mt-4">
 										<ul className="space-y-3 text-sm">
-											{selectedProgram.eligibility?.map((criterion: string, i: number) => (
-												<li key={i} className="flex items-start gap-3">
-													<div className="w-1.5 h-1.5 bg-success rounded-full mt-2 flex-shrink-0"></div>
-													<span className="text-muted-foreground">{criterion}</span>
-												</li>
-											))}
+											{selectedProgram.eligibility?.map(
+												(criterion: string, i: number) => (
+													<li key={i} className="flex items-start gap-3">
+														<div className="w-1.5 h-1.5 bg-success rounded-full mt-2 flex-shrink-0"></div>
+														<span className="text-muted-foreground">
+															{criterion}
+														</span>
+													</li>
+												)
+											)}
 										</ul>
 									</TabsContent>
 								</Tabs>
 
 								<div className="pt-4">
-									<Button asChild className="w-full bg-primary text-primary-foreground">
+									<Button
+										asChild
+										className="w-full bg-primary text-primary-foreground"
+									>
 										<a href="/apply">Apply for {selectedProgram.title}</a>
 									</Button>
 								</div>

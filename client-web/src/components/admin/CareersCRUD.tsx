@@ -305,34 +305,39 @@ export default function CareersCRUD() {
 				{careers.map((career) => (
 					<Card key={career._id}>
 						<CardContent className="p-4">
-							<div className="flex justify-between items-start">
-								<div className="flex-1">
-									<div className="flex items-center gap-2 mb-2">
-										<h3 className="font-bold text-lg">{career.title}</h3>
+							<div className="flex justify-between items-start gap-3">
+								<div className="flex-1 min-w-0">
+									<div className="flex items-center gap-2 mb-2 flex-wrap">
+										<h3 className="font-bold text-lg line-clamp-2">
+											{career.title}
+										</h3>
 										<Badge
 											variant={
 												career.status === 'published'
 													? 'default'
 													: 'secondary'
 											}
+											className="flex-shrink-0"
 										>
 											{career.status}
 										</Badge>
 									</div>
-									<p className="text-sm text-muted-foreground">
+									<p className="text-sm text-muted-foreground line-clamp-3 mb-2">
 										{career.details || career.body}
 									</p>
-									<div className="mt-2 flex gap-2 text-xs text-muted-foreground">
-										{career.type && <span>Type: {career.type}</span>}
+									<div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+										{career.type && (
+											<span className="whitespace-nowrap">Type: {career.type}</span>
+										)}
 										{career.category && (
-											<span>Category: {career.category}</span>
+											<span className="whitespace-nowrap">Category: {career.category}</span>
 										)}
 										{career.location && (
-											<span>Location: {career.location}</span>
+											<span className="whitespace-nowrap">Location: {career.location}</span>
 										)}
 									</div>
 								</div>
-								<div className="flex gap-2">
+								<div className="flex gap-2 flex-shrink-0">
 									<Button
 										variant="outline"
 										size="sm"
@@ -369,7 +374,9 @@ export default function CareersCRUD() {
 					</Card>
 				))}
 				{careers.length === 0 && (
-					<div className="text-center text-muted-foreground py-8">No careers found</div>
+					<div className="text-center text-muted-foreground py-8 col-span-full">
+						No careers found
+					</div>
 				)}
 			</div>
 		</div>

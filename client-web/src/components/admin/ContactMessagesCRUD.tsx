@@ -184,31 +184,40 @@ export default function ContactMessagesCRUD() {
 				{messages.map((message) => (
 					<Card key={message._id}>
 						<CardContent className="p-4">
-							<div className="flex justify-between items-start">
-								<div className="flex-1">
-									<div className="flex items-center gap-2 mb-2">
-										<h3 className="font-bold text-lg">{message.subject}</h3>
-										<Badge variant={getStatusColor(message.status)}>
+							<div className="flex justify-between items-start gap-3">
+								<div className="flex-1 min-w-0">
+									<div className="flex items-center gap-2 mb-2 flex-wrap">
+										<h3 className="font-bold text-lg line-clamp-2">
+											{message.subject}
+										</h3>
+										<Badge
+											variant={getStatusColor(message.status)}
+											className="flex-shrink-0"
+										>
 											{message.status}
 										</Badge>
 									</div>
 									<div className="grid grid-cols-2 gap-2 text-sm text-muted-foreground mb-2">
-										<div>
-											<strong>From:</strong> {message.name}
+										<div className="min-w-0">
+											<strong>From:</strong>{' '}
+											<span className="truncate">{message.name}</span>
 										</div>
-										<div>
-											<strong>Email:</strong> {message.email}
+										<div className="min-w-0">
+											<strong>Email:</strong>{' '}
+											<span className="break-all">{message.email}</span>
 										</div>
-										<div>
-											<strong>Phone:</strong> {message.phone}
+										<div className="min-w-0">
+											<strong>Phone:</strong>{' '}
+											<span className="break-all">{message.phone}</span>
 										</div>
 										{message.role && (
-											<div>
-												<strong>Role:</strong> {message.role}
+											<div className="min-w-0">
+												<strong>Role:</strong>{' '}
+												<span className="truncate">{message.role}</span>
 											</div>
 										)}
 									</div>
-									<p className="text-sm text-muted-foreground mb-2">
+									<p className="text-sm text-muted-foreground line-clamp-3 mb-2">
 										{message.message}
 									</p>
 									{message.created_at && (
@@ -218,7 +227,7 @@ export default function ContactMessagesCRUD() {
 										</div>
 									)}
 								</div>
-								<div className="flex gap-2">
+								<div className="flex gap-2 flex-shrink-0">
 									<Button
 										variant="outline"
 										size="sm"
@@ -257,7 +266,7 @@ export default function ContactMessagesCRUD() {
 					</Card>
 				))}
 				{messages.length === 0 && (
-					<div className="text-center text-muted-foreground py-8">
+					<div className="text-center text-muted-foreground py-8 col-span-full">
 						No contact messages found
 					</div>
 				)}

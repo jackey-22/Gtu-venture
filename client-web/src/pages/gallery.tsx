@@ -89,7 +89,7 @@ export default function Gallery() {
 							No galleries found.
 						</div>
 					) : (
-						<div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-8">
+						<div className="grid grid-cols-1 gap-10 mb-8">
 							{galleries.map((gallery) => (
 								<div key={gallery._id} className="">
 									<div className="text-lg font-semibold text-foreground mb-4 text-center md:text-left">
@@ -104,26 +104,32 @@ export default function Gallery() {
 										variants={containerVariants}
 										initial="hidden"
 										animate="visible"
-										className="grid grid-cols-1 gap-4"
+										className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
 									>
 										{gallery.images &&
 											gallery.images.map((img: string, idx: number) => (
 												<motion.div
 													variants={itemVariants}
 													key={`${gallery._id}-${idx}`}
-													className="overflow-hidden rounded-2xl shadow-lg bg-card border border-transparent transform hover:scale-105 transition cursor-pointer"
+													className="group overflow-hidden rounded-2xl shadow-lg bg-card border border-border transform hover:scale-[1.03] hover:shadow-xl transition-all duration-300 cursor-pointer"
 													onClick={() =>
 														setActive({ galleryId: gallery._id, idx })
 													}
 												>
 													<div className="relative h-48">
 														<img
-															src={`${baseURL}${img.replace(/\\/g, '/')}`}
+															src={`${baseURL}${img.replace(
+																/\\/g,
+																'/'
+															)}`}
 															alt={`${gallery.title} - ${idx + 1}`}
-															className="w-full h-full object-cover"
+															className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
 														/>
-														<div className="absolute inset-0 flex items-end p-3">
-															<div className="bg-black/50 text-white px-3 py-1 rounded text-sm">
+
+														<div className="absolute inset-0 bg-gradient-to-b from-black/0 via-black/20 to-black/60 opacity-0 group-hover:opacity-100 transition-all duration-500" />
+
+														<div className="absolute inset-0 flex items-end p-3 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500">
+															<div className="bg-black/60 backdrop-blur-sm text-white px-3 py-1 rounded text-sm font-medium shadow-md">
 																{gallery.title}
 															</div>
 														</div>
@@ -135,21 +141,20 @@ export default function Gallery() {
 							))}
 						</div>
 					)}
-					{/* Lightbox for photos */}
+
 					{active && tab === 'photos' ? (
 						<Lightbox
-							src={`${baseURL}${
-								(galleries.find((g) => g._id === active.galleryId)?.images[
+							src={`${baseURL}${(
+								galleries.find((g) => g._id === active.galleryId)?.images[
 									active.idx
-								] || '').replace(/\\/g, '/')
-							}`}
+								] || ''
+							).replace(/\\/g, '/')}`}
 							alt={galleries.find((g) => g._id === active.galleryId)?.title || ''}
 							onClose={() => setActive(null)}
 						/>
 					) : null}
 				</TabsContent>
 
-				{/* Videos Tab */}
 				<TabsContent value="videos">
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
 						{demoVideos.map((vid, i) => (

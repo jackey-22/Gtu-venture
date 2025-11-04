@@ -196,13 +196,14 @@ export default function EventsCRUD() {
 		}
 	};
 
+	if (loading) {
+		return <div className="p-6">Loading events...</div>;
+	}
+
 	return (
-		<div className="space-y-6">
-			<div className="flex justify-between items-center">
-				<div>
-					<h2 className="text-2xl font-bold">Events Management</h2>
-					<p className="text-muted-foreground">Manage all events and programs</p>
-				</div>
+		<div className="p-6 space-y-6">
+			<div className="flex justify-between items-center flex-wrap gap-4">
+				<h2 className="text-2xl font-bold">Events Management</h2>
 				<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
 					<DialogTrigger asChild>
 						<Button onClick={resetForm}>
@@ -413,23 +414,51 @@ export default function EventsCRUD() {
 				</Dialog>
 			</div>
 
-			{loading || actionLoading ? (
-				<div className="flex justify-center items-center h-64">
-					<div className="text-center">
-						<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
-						<p className="mt-3 text-primary">Loading Events...</p>
-					</div>
-				</div>
-			) : (
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-					{events.map((event) => (
-						<div
-							key={event._id}
-							className="border rounded-md shadow p-4 bg-white space-y-5 px-5 flex flex-col h-full"
-						>
-							<div className="flex justify-between items-center mb-2">
-								<h3 className="text-xl font-bold">{event.title}</h3>
-								<div className="flex gap-2">
+			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+				{events.map((event) => (
+					<Card key={event._id}>
+						<CardContent className="p-4">
+							<div className="flex justify-between items-start gap-3">
+								<div className="flex-1 min-w-0">
+									<div className="flex items-center gap-2 mb-2 flex-wrap">
+										<h3 className="font-bold text-lg line-clamp-2">
+											{event.title}
+										</h3>
+										<Badge
+											variant={
+												event.status === 'published'
+													? 'default'
+													: 'secondary'
+											}
+											className="flex-shrink-0"
+										>
+											{event.status}
+										</Badge>
+									</div>
+									<p className="text-sm text-muted-foreground line-clamp-3 mb-2">
+										{event.description}
+									</p>
+									<div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground mb-2">
+										{(event.start_date || event.end_date) && (
+											<div className="flex items-center gap-1">
+												<Calendar className="w-3 h-3" />
+												<span>
+													{event.start_date
+														? new Date(event.start_date).toLocaleDateString()
+														: 'N/A'}
+													{event.end_date &&
+														` - ${new Date(event.end_date).toLocaleDateString()}`}
+												</span>
+											</div>
+										)}
+										{event.category && (
+											<Badge variant="outline" className="text-xs">
+												{event.category}
+											</Badge>
+										)}
+									</div>
+								</div>
+								<div className="flex gap-2 flex-shrink-0">
 									<Button
 										variant="outline"
 										size="sm"
@@ -439,15 +468,15 @@ export default function EventsCRUD() {
 									</Button>
 									<AlertDialog>
 										<AlertDialogTrigger asChild>
-											<Button variant="outline" size="sm">
+											<Button variant="destructive" size="sm">
 												<Trash2 className="w-4 h-4" />
 											</Button>
 										</AlertDialogTrigger>
 										<AlertDialogContent>
 											<AlertDialogHeader>
-												<AlertDialogTitle>Delete Event</AlertDialogTitle>
+												<AlertDialogTitle>Delete Event?</AlertDialogTitle>
 												<AlertDialogDescription>
-													Are you sure you want to delete "{event.title}"?
+													This action cannot be undone.
 												</AlertDialogDescription>
 											</AlertDialogHeader>
 											<AlertDialogFooter>
@@ -462,38 +491,15 @@ export default function EventsCRUD() {
 									</AlertDialog>
 								</div>
 							</div>
-
-							<p className="text-muted-foreground line-clamp-2 flex-grow">
-								{event.description}
-							</p>
-
-							<div className="mt-auto space-y-4">
-								<div className="text-sm text-gray-500">
-									<p>
-										<Calendar className="inline w-4 h-4 mr-1" />
-										{event.start_date
-											? new Date(event.start_date).toLocaleString()
-											: 'N/A'}{' '}
-										-{' '}
-										{event.end_date
-											? new Date(event.end_date).toLocaleString()
-											: 'N/A'}
-									</p>
-								</div>
-
-								<div className="flex items-center gap-3 mt-2">
-									<Badge className={getStatusColor(event.status)}>
-										{event.status}
-									</Badge>
-									{event.category && (
-										<Badge variant="outline">{event.category}</Badge>
-									)}
-								</div>
-							</div>
-						</div>
-					))}
-				</div>
-			)}
+						</CardContent>
+					</Card>
+				))}
+				{events.length === 0 && (
+					<div className="text-center text-muted-foreground py-8 col-span-full">
+						No events found
+					</div>
+				)}
+			</div>
 		</div>
 	);
 }

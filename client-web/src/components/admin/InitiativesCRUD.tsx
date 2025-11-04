@@ -236,27 +236,30 @@ export default function InitiativesCRUD() {
 				{initiatives.map((initiative) => (
 					<Card key={initiative._id}>
 						<CardContent className="p-4">
-							<div className="flex justify-between items-start">
-								<div className="flex-1">
-									<div className="flex items-center gap-2 mb-2">
-										<h3 className="font-bold text-lg">{initiative.title}</h3>
+							<div className="flex justify-between items-start gap-3">
+								<div className="flex-1 min-w-0">
+									<div className="flex items-center gap-2 mb-2 flex-wrap">
+										<h3 className="font-bold text-lg line-clamp-2">
+											{initiative.title}
+										</h3>
 										<Badge
 											variant={
 												initiative.status === 'published'
 													? 'default'
 													: 'secondary'
 											}
+											className="flex-shrink-0"
 										>
 											{initiative.status}
 										</Badge>
 									</div>
-									<p className="text-sm text-muted-foreground">
+									<p className="text-sm text-muted-foreground line-clamp-3 mb-2">
 										{initiative.body}
 									</p>
 									{initiative.outcomes && (
 										<div className="mt-2">
 											<strong className="text-sm">Outcomes:</strong>
-											<p className="text-sm text-muted-foreground">
+											<p className="text-sm text-muted-foreground line-clamp-2">
 												{initiative.outcomes}
 											</p>
 										</div>
@@ -264,13 +267,13 @@ export default function InitiativesCRUD() {
 									{initiative.caseStudy && (
 										<div className="mt-2">
 											<strong className="text-sm">Case Study:</strong>
-											<p className="text-sm text-muted-foreground italic">
+											<p className="text-sm text-muted-foreground line-clamp-2">
 												{initiative.caseStudy}
 											</p>
 										</div>
 									)}
 								</div>
-								<div className="flex gap-2">
+								<div className="flex gap-2 flex-shrink-0">
 									<Button
 										variant="outline"
 										size="sm"
@@ -309,7 +312,7 @@ export default function InitiativesCRUD() {
 					</Card>
 				))}
 				{initiatives.length === 0 && (
-					<div className="text-center text-muted-foreground py-8">
+					<div className="text-center text-muted-foreground py-8 col-span-full">
 						No initiatives found
 					</div>
 				)}

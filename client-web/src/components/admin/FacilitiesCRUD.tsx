@@ -37,8 +37,8 @@ interface FacilityType {
 	_id: string;
 	title: string;
 	body?: string;
-	icon?: string;
 	action?: string;
+	category?: 'infrastructure' | 'services' | 'tools';
 	status: 'draft' | 'published' | 'archived';
 }
 
@@ -51,8 +51,8 @@ export default function FacilitiesCRUD() {
 	const [formData, setFormData] = useState({
 		title: '',
 		body: '',
-		icon: '',
 		action: '',
+		category: 'infrastructure' as 'infrastructure' | 'services' | 'tools',
 		status: 'draft' as 'draft' | 'published' | 'archived',
 	});
 
@@ -106,8 +106,8 @@ export default function FacilitiesCRUD() {
 		setFormData({
 			title: facility.title || '',
 			body: facility.body || '',
-			icon: facility.icon || '',
 			action: facility.action || '',
+			category: facility.category || 'infrastructure',
 			status: facility.status,
 		});
 		setIsDialogOpen(true);
@@ -139,8 +139,8 @@ export default function FacilitiesCRUD() {
 		setFormData({
 			title: '',
 			body: '',
-			icon: '',
 			action: '',
+			category: 'infrastructure',
 			status: 'draft',
 		});
 	};
@@ -187,16 +187,6 @@ export default function FacilitiesCRUD() {
 								/>
 							</div>
 							<div>
-								<Label>Icon (icon name)</Label>
-								<Input
-									value={formData.icon}
-									onChange={(e) =>
-										setFormData({ ...formData, icon: e.target.value })
-									}
-									placeholder="Box, Wrench, etc."
-								/>
-							</div>
-							<div>
 								<Label>Action</Label>
 								<Input
 									value={formData.action}
@@ -205,6 +195,26 @@ export default function FacilitiesCRUD() {
 									}
 									placeholder="Request Desk, Book Lab, etc."
 								/>
+							</div>
+							<div>
+								<Label>Category *</Label>
+								<Select
+									value={formData.category}
+									onValueChange={(value: any) =>
+										setFormData({ ...formData, category: value })
+									}
+								>
+									<SelectTrigger>
+										<SelectValue />
+									</SelectTrigger>
+									<SelectContent>
+										<SelectItem value="infrastructure">
+											Infrastructure
+										</SelectItem>
+										<SelectItem value="services">Services</SelectItem>
+										<SelectItem value="tools">Tools & Downloads</SelectItem>
+									</SelectContent>
+								</Select>
 							</div>
 							<div>
 								<Label>Status</Label>
@@ -236,27 +246,40 @@ export default function FacilitiesCRUD() {
 				{facilities.map((facility) => (
 					<Card key={facility._id}>
 						<CardContent className="p-4">
-							<div className="flex justify-between items-start">
-								<div className="flex-1">
-									<div className="flex items-center gap-2 mb-2">
-										<h3 className="font-bold text-lg">{facility.title}</h3>
+							<div className="flex justify-between items-start gap-3">
+								<div className="flex-1 min-w-0">
+									<div className="flex items-center gap-2 mb-2 flex-wrap">
+										<h3 className="font-bold text-lg line-clamp-2">
+											{facility.title}
+										</h3>
 										<Badge
 											variant={
 												facility.status === 'published'
 													? 'default'
 													: 'secondary'
 											}
+											className="flex-shrink-0"
 										>
 											{facility.status}
 										</Badge>
 									</div>
-									<p className="text-sm text-muted-foreground">{facility.body}</p>
-									<div className="mt-2 flex gap-2 text-xs text-muted-foreground">
-										{facility.icon && <span>Icon: {facility.icon}</span>}
-										{facility.action && <span>Action: {facility.action}</span>}
+									<p className="text-sm text-muted-foreground line-clamp-3 mb-2">
+										{facility.body}
+									</p>
+									<div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+										{facility.category && (
+											<Badge variant="outline" className="capitalize flex-shrink-0">
+												{facility.category === 'tools'
+													? 'Tools & Downloads'
+													: facility.category}
+											</Badge>
+										)}
+										{facility.action && (
+											<span className="whitespace-nowrap">Action: {facility.action}</span>
+										)}
 									</div>
 								</div>
-								<div className="flex gap-2">
+								<div className="flex gap-2 flex-shrink-0">
 									<Button
 										variant="outline"
 										size="sm"
@@ -295,7 +318,7 @@ export default function FacilitiesCRUD() {
 					</Card>
 				))}
 				{facilities.length === 0 && (
-					<div className="text-center text-muted-foreground py-8">
+					<div className="text-center text-muted-foreground py-8 col-span-full">
 						No facilities found
 					</div>
 				)}

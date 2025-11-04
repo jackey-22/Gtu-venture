@@ -85,6 +85,10 @@ export default function Events() {
 		filteredEvents = events.filter((e) => new Date(e.start_date) < now);
 	}
 
+	if (selectedCategory !== 'All') {
+		filteredEvents = filteredEvents.filter((e) => e.category === selectedCategory);
+	}
+
 	const searchLower = searchQuery.toLowerCase();
 	filteredEvents = filteredEvents.filter(
 		(e) =>
@@ -243,7 +247,9 @@ export default function Events() {
 											<Badge variant="secondary">{event.category}</Badge>
 										</div>
 
-										<h3 className="text-xl font-bold mb-2 line-clamp-2">{event.title}</h3>
+										<h3 className="text-xl font-bold mb-2 line-clamp-2">
+											{event.title}
+										</h3>
 
 										<p className="text-muted-foreground mb-4 line-clamp-2">
 											{event.description}
@@ -332,7 +338,8 @@ export default function Events() {
 									<strong>Category:</strong> {selectedEvent.category}
 								</p>
 								<p className="break-words">
-									<strong>Experts:</strong> {selectedEvent.experts?.join(', ') || 'N/A'}
+									<strong>Experts:</strong>{' '}
+									{selectedEvent.experts?.join(', ') || 'N/A'}
 								</p>
 								<p>
 									<strong>Seats:</strong> {selectedEvent.maxAttendees}

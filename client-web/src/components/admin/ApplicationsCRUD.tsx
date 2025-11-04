@@ -231,37 +231,44 @@ export default function ApplicationsCRUD() {
 				{applications.map((application) => (
 					<Card key={application._id}>
 						<CardContent className="p-4">
-							<div className="flex justify-between items-start">
-								<div className="flex-1">
-									<div className="flex items-center gap-2 mb-2">
-										<h3 className="font-bold text-lg">
+							<div className="flex justify-between items-start gap-3">
+								<div className="flex-1 min-w-0">
+									<div className="flex items-center gap-2 mb-2 flex-wrap">
+										<h3 className="font-bold text-lg line-clamp-2">
 											{application.startupName}
 										</h3>
-										<Badge variant={getStatusColor(application.status)}>
+										<Badge
+											variant={getStatusColor(application.status)}
+											className="flex-shrink-0"
+										>
 											{application.status}
 										</Badge>
 									</div>
 									<div className="grid grid-cols-2 gap-2 text-sm text-muted-foreground mb-2">
-										<div>
-											<strong>Email:</strong> {application.email}
+										<div className="min-w-0">
+											<strong>Email:</strong>{' '}
+											<span className="break-all">{application.email}</span>
 										</div>
-										<div>
-											<strong>Mobile:</strong> {application.mobile}
+										<div className="min-w-0">
+											<strong>Mobile:</strong>{' '}
+											<span className="break-all">{application.mobile}</span>
 										</div>
 										{application.city && (
-											<div>
-												<strong>City:</strong> {application.city}
+											<div className="min-w-0">
+												<strong>City:</strong>{' '}
+												<span className="truncate">{application.city}</span>
 											</div>
 										)}
 										{application.stage && (
-											<div>
-												<strong>Stage:</strong> {application.stage}
+											<div className="min-w-0">
+												<strong>Stage:</strong>{' '}
+												<span className="truncate">{application.stage}</span>
 											</div>
 										)}
 									</div>
 									{application.idea && (
-										<p className="text-sm text-muted-foreground mb-2">
-											{application.idea.substring(0, 100)}...
+										<p className="text-sm text-muted-foreground line-clamp-3 mb-2">
+											{application.idea}
 										</p>
 									)}
 									{application.created_at && (
@@ -271,7 +278,7 @@ export default function ApplicationsCRUD() {
 										</div>
 									)}
 								</div>
-								<div className="flex gap-2">
+								<div className="flex gap-2 flex-shrink-0">
 									<Button
 										variant="outline"
 										size="sm"
@@ -310,7 +317,7 @@ export default function ApplicationsCRUD() {
 					</Card>
 				))}
 				{applications.length === 0 && (
-					<div className="text-center text-muted-foreground py-8">
+					<div className="text-center text-muted-foreground py-8 col-span-full">
 						No applications found
 					</div>
 				)}
