@@ -58,9 +58,9 @@ export default function Navbar() {
 								<Link
 									key={item.name}
 									href={item.href}
-									className={`relative text-[16px] font-medium transition-all text-black
-                    ${active ? 'text-primary font-semibold' : 'text-gray-700 hover:text-primary'}
-                  `}
+									className={`relative text-[16px] font-medium transition-all
+										${active ? 'text-primary font-semibold' : 'text-black hover:text-primary'}
+									`}
 								>
 									{item.name}
 
