@@ -4,11 +4,33 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from '@/components/ui/dialog';
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+	AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 
 interface InitiativeType {
@@ -55,10 +77,16 @@ export default function InitiativesCRUD() {
 		e.preventDefault();
 		setActionLoading(true);
 		try {
-			const pathName = editingInitiative ? `admin/update-initiative/${editingInitiative._id}` : 'admin/add-initiative';
+			const pathName = editingInitiative
+				? `admin/update-initiative/${editingInitiative._id}`
+				: 'admin/add-initiative';
 			const data = await fetchPost({ pathName, body: JSON.stringify(formData) });
 			if (data?.message?.toLowerCase().includes('success')) {
-				alert(editingInitiative ? 'Initiative updated successfully' : 'Initiative added successfully');
+				alert(
+					editingInitiative
+						? 'Initiative updated successfully'
+						: 'Initiative added successfully'
+				);
 				setIsDialogOpen(false);
 				resetForm();
 				await fetchInitiatives();
@@ -88,7 +116,10 @@ export default function InitiativesCRUD() {
 	const handleDelete = async (id: string) => {
 		setActionLoading(true);
 		try {
-			const data = await fetchPost({ pathName: `admin/delete-initiative/${id}`, body: JSON.stringify({}) });
+			const data = await fetchPost({
+				pathName: `admin/delete-initiative/${id}`,
+				body: JSON.stringify({}),
+			});
 			if (data?.message?.toLowerCase().includes('deleted')) {
 				alert('Initiative deleted successfully');
 				await fetchInitiatives();
@@ -131,28 +162,58 @@ export default function InitiativesCRUD() {
 					</DialogTrigger>
 					<DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
 						<DialogHeader>
-							<DialogTitle>{editingInitiative ? 'Edit Initiative' : 'Add Initiative'}</DialogTitle>
+							<DialogTitle>
+								{editingInitiative ? 'Edit Initiative' : 'Add Initiative'}
+							</DialogTitle>
 						</DialogHeader>
 						<form onSubmit={handleSubmit} className="space-y-4">
 							<div>
 								<Label>Title *</Label>
-								<Input value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
+								<Input
+									value={formData.title}
+									onChange={(e) =>
+										setFormData({ ...formData, title: e.target.value })
+									}
+									required
+								/>
 							</div>
 							<div>
 								<Label>Body/Description</Label>
-								<Textarea value={formData.body} onChange={(e) => setFormData({ ...formData, body: e.target.value })} />
+								<Textarea
+									value={formData.body}
+									onChange={(e) =>
+										setFormData({ ...formData, body: e.target.value })
+									}
+								/>
 							</div>
 							<div>
 								<Label>Outcomes</Label>
-								<Textarea value={formData.outcomes} onChange={(e) => setFormData({ ...formData, outcomes: e.target.value })} placeholder="Key outcomes and achievements" />
+								<Textarea
+									value={formData.outcomes}
+									onChange={(e) =>
+										setFormData({ ...formData, outcomes: e.target.value })
+									}
+									placeholder="Key outcomes and achievements"
+								/>
 							</div>
 							<div>
 								<Label>Case Study</Label>
-								<Textarea value={formData.caseStudy} onChange={(e) => setFormData({ ...formData, caseStudy: e.target.value })} placeholder="Case study or success story" />
+								<Textarea
+									value={formData.caseStudy}
+									onChange={(e) =>
+										setFormData({ ...formData, caseStudy: e.target.value })
+									}
+									placeholder="Case study or success story"
+								/>
 							</div>
 							<div>
 								<Label>Status</Label>
-								<Select value={formData.status} onValueChange={(value: any) => setFormData({ ...formData, status: value })}>
+								<Select
+									value={formData.status}
+									onValueChange={(value: any) =>
+										setFormData({ ...formData, status: value })
+									}
+								>
 									<SelectTrigger>
 										<SelectValue />
 									</SelectTrigger>
@@ -171,7 +232,7 @@ export default function InitiativesCRUD() {
 				</Dialog>
 			</div>
 
-			<div className="grid gap-4">
+			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 				{initiatives.map((initiative) => (
 					<Card key={initiative._id}>
 						<CardContent className="p-4">
@@ -179,24 +240,42 @@ export default function InitiativesCRUD() {
 								<div className="flex-1">
 									<div className="flex items-center gap-2 mb-2">
 										<h3 className="font-bold text-lg">{initiative.title}</h3>
-										<Badge variant={initiative.status === 'published' ? 'default' : 'secondary'}>{initiative.status}</Badge>
+										<Badge
+											variant={
+												initiative.status === 'published'
+													? 'default'
+													: 'secondary'
+											}
+										>
+											{initiative.status}
+										</Badge>
 									</div>
-									<p className="text-sm text-muted-foreground">{initiative.body}</p>
+									<p className="text-sm text-muted-foreground">
+										{initiative.body}
+									</p>
 									{initiative.outcomes && (
 										<div className="mt-2">
 											<strong className="text-sm">Outcomes:</strong>
-											<p className="text-sm text-muted-foreground">{initiative.outcomes}</p>
+											<p className="text-sm text-muted-foreground">
+												{initiative.outcomes}
+											</p>
 										</div>
 									)}
 									{initiative.caseStudy && (
 										<div className="mt-2">
 											<strong className="text-sm">Case Study:</strong>
-											<p className="text-sm text-muted-foreground italic">{initiative.caseStudy}</p>
+											<p className="text-sm text-muted-foreground italic">
+												{initiative.caseStudy}
+											</p>
 										</div>
 									)}
 								</div>
 								<div className="flex gap-2">
-									<Button variant="outline" size="sm" onClick={() => handleEdit(initiative)}>
+									<Button
+										variant="outline"
+										size="sm"
+										onClick={() => handleEdit(initiative)}
+									>
 										<Edit className="w-4 h-4" />
 									</Button>
 									<AlertDialog>
@@ -207,12 +286,20 @@ export default function InitiativesCRUD() {
 										</AlertDialogTrigger>
 										<AlertDialogContent>
 											<AlertDialogHeader>
-												<AlertDialogTitle>Delete Initiative?</AlertDialogTitle>
-												<AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
+												<AlertDialogTitle>
+													Delete Initiative?
+												</AlertDialogTitle>
+												<AlertDialogDescription>
+													This action cannot be undone.
+												</AlertDialogDescription>
 											</AlertDialogHeader>
 											<AlertDialogFooter>
 												<AlertDialogCancel>Cancel</AlertDialogCancel>
-												<AlertDialogAction onClick={() => handleDelete(initiative._id)}>Delete</AlertDialogAction>
+												<AlertDialogAction
+													onClick={() => handleDelete(initiative._id)}
+												>
+													Delete
+												</AlertDialogAction>
 											</AlertDialogFooter>
 										</AlertDialogContent>
 									</AlertDialog>
@@ -221,9 +308,12 @@ export default function InitiativesCRUD() {
 						</CardContent>
 					</Card>
 				))}
-				{initiatives.length === 0 && <div className="text-center text-muted-foreground py-8">No initiatives found</div>}
+				{initiatives.length === 0 && (
+					<div className="text-center text-muted-foreground py-8">
+						No initiatives found
+					</div>
+				)}
 			</div>
 		</div>
 	);
 }
-

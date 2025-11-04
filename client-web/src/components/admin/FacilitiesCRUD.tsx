@@ -4,11 +4,33 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from '@/components/ui/dialog';
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+	AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 
 interface FacilityType {
@@ -55,10 +77,16 @@ export default function FacilitiesCRUD() {
 		e.preventDefault();
 		setActionLoading(true);
 		try {
-			const pathName = editingFacility ? `admin/update-facility/${editingFacility._id}` : 'admin/add-facility';
+			const pathName = editingFacility
+				? `admin/update-facility/${editingFacility._id}`
+				: 'admin/add-facility';
 			const data = await fetchPost({ pathName, body: JSON.stringify(formData) });
 			if (data?.message?.toLowerCase().includes('success')) {
-				alert(editingFacility ? 'Facility updated successfully' : 'Facility added successfully');
+				alert(
+					editingFacility
+						? 'Facility updated successfully'
+						: 'Facility added successfully'
+				);
 				setIsDialogOpen(false);
 				resetForm();
 				await fetchFacilities();
@@ -88,7 +116,10 @@ export default function FacilitiesCRUD() {
 	const handleDelete = async (id: string) => {
 		setActionLoading(true);
 		try {
-			const data = await fetchPost({ pathName: `admin/delete-facility/${id}`, body: JSON.stringify({}) });
+			const data = await fetchPost({
+				pathName: `admin/delete-facility/${id}`,
+				body: JSON.stringify({}),
+			});
 			if (data?.message?.toLowerCase().includes('deleted')) {
 				alert('Facility deleted successfully');
 				await fetchFacilities();
@@ -131,28 +162,58 @@ export default function FacilitiesCRUD() {
 					</DialogTrigger>
 					<DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
 						<DialogHeader>
-							<DialogTitle>{editingFacility ? 'Edit Facility' : 'Add Facility'}</DialogTitle>
+							<DialogTitle>
+								{editingFacility ? 'Edit Facility' : 'Add Facility'}
+							</DialogTitle>
 						</DialogHeader>
 						<form onSubmit={handleSubmit} className="space-y-4">
 							<div>
 								<Label>Title *</Label>
-								<Input value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
+								<Input
+									value={formData.title}
+									onChange={(e) =>
+										setFormData({ ...formData, title: e.target.value })
+									}
+									required
+								/>
 							</div>
 							<div>
 								<Label>Body/Description</Label>
-								<Textarea value={formData.body} onChange={(e) => setFormData({ ...formData, body: e.target.value })} />
+								<Textarea
+									value={formData.body}
+									onChange={(e) =>
+										setFormData({ ...formData, body: e.target.value })
+									}
+								/>
 							</div>
 							<div>
 								<Label>Icon (icon name)</Label>
-								<Input value={formData.icon} onChange={(e) => setFormData({ ...formData, icon: e.target.value })} placeholder="Box, Wrench, etc." />
+								<Input
+									value={formData.icon}
+									onChange={(e) =>
+										setFormData({ ...formData, icon: e.target.value })
+									}
+									placeholder="Box, Wrench, etc."
+								/>
 							</div>
 							<div>
 								<Label>Action</Label>
-								<Input value={formData.action} onChange={(e) => setFormData({ ...formData, action: e.target.value })} placeholder="Request Desk, Book Lab, etc." />
+								<Input
+									value={formData.action}
+									onChange={(e) =>
+										setFormData({ ...formData, action: e.target.value })
+									}
+									placeholder="Request Desk, Book Lab, etc."
+								/>
 							</div>
 							<div>
 								<Label>Status</Label>
-								<Select value={formData.status} onValueChange={(value: any) => setFormData({ ...formData, status: value })}>
+								<Select
+									value={formData.status}
+									onValueChange={(value: any) =>
+										setFormData({ ...formData, status: value })
+									}
+								>
 									<SelectTrigger>
 										<SelectValue />
 									</SelectTrigger>
@@ -171,7 +232,7 @@ export default function FacilitiesCRUD() {
 				</Dialog>
 			</div>
 
-			<div className="grid gap-4">
+			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 				{facilities.map((facility) => (
 					<Card key={facility._id}>
 						<CardContent className="p-4">
@@ -179,7 +240,15 @@ export default function FacilitiesCRUD() {
 								<div className="flex-1">
 									<div className="flex items-center gap-2 mb-2">
 										<h3 className="font-bold text-lg">{facility.title}</h3>
-										<Badge variant={facility.status === 'published' ? 'default' : 'secondary'}>{facility.status}</Badge>
+										<Badge
+											variant={
+												facility.status === 'published'
+													? 'default'
+													: 'secondary'
+											}
+										>
+											{facility.status}
+										</Badge>
 									</div>
 									<p className="text-sm text-muted-foreground">{facility.body}</p>
 									<div className="mt-2 flex gap-2 text-xs text-muted-foreground">
@@ -188,7 +257,11 @@ export default function FacilitiesCRUD() {
 									</div>
 								</div>
 								<div className="flex gap-2">
-									<Button variant="outline" size="sm" onClick={() => handleEdit(facility)}>
+									<Button
+										variant="outline"
+										size="sm"
+										onClick={() => handleEdit(facility)}
+									>
 										<Edit className="w-4 h-4" />
 									</Button>
 									<AlertDialog>
@@ -199,12 +272,20 @@ export default function FacilitiesCRUD() {
 										</AlertDialogTrigger>
 										<AlertDialogContent>
 											<AlertDialogHeader>
-												<AlertDialogTitle>Delete Facility?</AlertDialogTitle>
-												<AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
+												<AlertDialogTitle>
+													Delete Facility?
+												</AlertDialogTitle>
+												<AlertDialogDescription>
+													This action cannot be undone.
+												</AlertDialogDescription>
 											</AlertDialogHeader>
 											<AlertDialogFooter>
 												<AlertDialogCancel>Cancel</AlertDialogCancel>
-												<AlertDialogAction onClick={() => handleDelete(facility._id)}>Delete</AlertDialogAction>
+												<AlertDialogAction
+													onClick={() => handleDelete(facility._id)}
+												>
+													Delete
+												</AlertDialogAction>
 											</AlertDialogFooter>
 										</AlertDialogContent>
 									</AlertDialog>
@@ -213,9 +294,12 @@ export default function FacilitiesCRUD() {
 						</CardContent>
 					</Card>
 				))}
-				{facilities.length === 0 && <div className="text-center text-muted-foreground py-8">No facilities found</div>}
+				{facilities.length === 0 && (
+					<div className="text-center text-muted-foreground py-8">
+						No facilities found
+					</div>
+				)}
 			</div>
 		</div>
 	);
 }
-

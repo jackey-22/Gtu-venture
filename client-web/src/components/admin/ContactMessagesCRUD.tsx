@@ -4,11 +4,33 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from '@/components/ui/dialog';
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+	AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Edit, Trash2, Mail } from 'lucide-react';
 
 interface ContactMessageType {
@@ -101,7 +123,10 @@ export default function ContactMessagesCRUD() {
 	const handleDelete = async (id: string) => {
 		setActionLoading(true);
 		try {
-			const data = await fetchPost({ pathName: `admin/delete-contact-message/${id}`, body: JSON.stringify({}) });
+			const data = await fetchPost({
+				pathName: `admin/delete-contact-message/${id}`,
+				body: JSON.stringify({}),
+			});
 			if (data?.message?.toLowerCase().includes('deleted')) {
 				alert('Contact message deleted successfully');
 				await fetchMessages();
@@ -132,11 +157,16 @@ export default function ContactMessagesCRUD() {
 
 	const getStatusColor = (status: string) => {
 		switch (status) {
-			case 'new': return 'default';
-			case 'read': return 'secondary';
-			case 'replied': return 'default';
-			case 'archived': return 'outline';
-			default: return 'outline';
+			case 'new':
+				return 'default';
+			case 'read':
+				return 'secondary';
+			case 'replied':
+				return 'default';
+			case 'archived':
+				return 'outline';
+			default:
+				return 'outline';
 		}
 	};
 
@@ -150,7 +180,7 @@ export default function ContactMessagesCRUD() {
 				<h2 className="text-2xl font-bold">Contact Messages Management</h2>
 			</div>
 
-			<div className="grid gap-4">
+			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 				{messages.map((message) => (
 					<Card key={message._id}>
 						<CardContent className="p-4">
@@ -158,23 +188,42 @@ export default function ContactMessagesCRUD() {
 								<div className="flex-1">
 									<div className="flex items-center gap-2 mb-2">
 										<h3 className="font-bold text-lg">{message.subject}</h3>
-										<Badge variant={getStatusColor(message.status)}>{message.status}</Badge>
+										<Badge variant={getStatusColor(message.status)}>
+											{message.status}
+										</Badge>
 									</div>
 									<div className="grid grid-cols-2 gap-2 text-sm text-muted-foreground mb-2">
-										<div><strong>From:</strong> {message.name}</div>
-										<div><strong>Email:</strong> {message.email}</div>
-										<div><strong>Phone:</strong> {message.phone}</div>
-										{message.role && <div><strong>Role:</strong> {message.role}</div>}
+										<div>
+											<strong>From:</strong> {message.name}
+										</div>
+										<div>
+											<strong>Email:</strong> {message.email}
+										</div>
+										<div>
+											<strong>Phone:</strong> {message.phone}
+										</div>
+										{message.role && (
+											<div>
+												<strong>Role:</strong> {message.role}
+											</div>
+										)}
 									</div>
-									<p className="text-sm text-muted-foreground mb-2">{message.message}</p>
+									<p className="text-sm text-muted-foreground mb-2">
+										{message.message}
+									</p>
 									{message.created_at && (
 										<div className="text-xs text-muted-foreground">
-											Received: {new Date(message.created_at).toLocaleDateString()}
+											Received:{' '}
+											{new Date(message.created_at).toLocaleDateString()}
 										</div>
 									)}
 								</div>
 								<div className="flex gap-2">
-									<Button variant="outline" size="sm" onClick={() => handleEdit(message)}>
+									<Button
+										variant="outline"
+										size="sm"
+										onClick={() => handleEdit(message)}
+									>
 										<Edit className="w-4 h-4" />
 									</Button>
 									<AlertDialog>
@@ -185,12 +234,20 @@ export default function ContactMessagesCRUD() {
 										</AlertDialogTrigger>
 										<AlertDialogContent>
 											<AlertDialogHeader>
-												<AlertDialogTitle>Delete Contact Message?</AlertDialogTitle>
-												<AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
+												<AlertDialogTitle>
+													Delete Contact Message?
+												</AlertDialogTitle>
+												<AlertDialogDescription>
+													This action cannot be undone.
+												</AlertDialogDescription>
 											</AlertDialogHeader>
 											<AlertDialogFooter>
 												<AlertDialogCancel>Cancel</AlertDialogCancel>
-												<AlertDialogAction onClick={() => handleDelete(message._id)}>Delete</AlertDialogAction>
+												<AlertDialogAction
+													onClick={() => handleDelete(message._id)}
+												>
+													Delete
+												</AlertDialogAction>
 											</AlertDialogFooter>
 										</AlertDialogContent>
 									</AlertDialog>
@@ -199,7 +256,11 @@ export default function ContactMessagesCRUD() {
 						</CardContent>
 					</Card>
 				))}
-				{messages.length === 0 && <div className="text-center text-muted-foreground py-8">No contact messages found</div>}
+				{messages.length === 0 && (
+					<div className="text-center text-muted-foreground py-8">
+						No contact messages found
+					</div>
+				)}
 			</div>
 
 			<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -211,34 +272,75 @@ export default function ContactMessagesCRUD() {
 						<div className="grid grid-cols-2 gap-4">
 							<div>
 								<Label>Name *</Label>
-								<Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />
+								<Input
+									value={formData.name}
+									onChange={(e) =>
+										setFormData({ ...formData, name: e.target.value })
+									}
+									required
+								/>
 							</div>
 							<div>
 								<Label>Email *</Label>
-								<Input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} required />
+								<Input
+									type="email"
+									value={formData.email}
+									onChange={(e) =>
+										setFormData({ ...formData, email: e.target.value })
+									}
+									required
+								/>
 							</div>
 						</div>
 						<div className="grid grid-cols-2 gap-4">
 							<div>
 								<Label>Phone *</Label>
-								<Input value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} required />
+								<Input
+									value={formData.phone}
+									onChange={(e) =>
+										setFormData({ ...formData, phone: e.target.value })
+									}
+									required
+								/>
 							</div>
 							<div>
 								<Label>Role</Label>
-								<Input value={formData.role} onChange={(e) => setFormData({ ...formData, role: e.target.value })} />
+								<Input
+									value={formData.role}
+									onChange={(e) =>
+										setFormData({ ...formData, role: e.target.value })
+									}
+								/>
 							</div>
 						</div>
 						<div>
 							<Label>Subject *</Label>
-							<Input value={formData.subject} onChange={(e) => setFormData({ ...formData, subject: e.target.value })} required />
+							<Input
+								value={formData.subject}
+								onChange={(e) =>
+									setFormData({ ...formData, subject: e.target.value })
+								}
+								required
+							/>
 						</div>
 						<div>
 							<Label>Message *</Label>
-							<Textarea value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })} required />
+							<Textarea
+								value={formData.message}
+								onChange={(e) =>
+									setFormData({ ...formData, message: e.target.value })
+								}
+								required
+							/>
 						</div>
 						<div>
 							<Label>Status</Label>
-							<Select value={formData.status} onValueChange={(value: any) => setFormData({ ...formData, status: value })}>
+							<Select
+								value={formData.status}
+								onValueChange={(value: any) =>
+									setFormData({ ...formData, status: value })
+								}
+							>
 								<SelectTrigger>
 									<SelectValue />
 								</SelectTrigger>
@@ -252,7 +354,13 @@ export default function ContactMessagesCRUD() {
 						</div>
 						<div>
 							<Label>Notes</Label>
-							<Textarea value={formData.notes} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} placeholder="Internal notes about this message" />
+							<Textarea
+								value={formData.notes}
+								onChange={(e) =>
+									setFormData({ ...formData, notes: e.target.value })
+								}
+								placeholder="Internal notes about this message"
+							/>
 						</div>
 						<Button type="submit" disabled={actionLoading}>
 							{actionLoading ? 'Updating...' : 'Update'}
@@ -263,4 +371,3 @@ export default function ContactMessagesCRUD() {
 		</div>
 	);
 }
-

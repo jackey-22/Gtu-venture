@@ -4,11 +4,33 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from '@/components/ui/dialog';
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+	AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 
 interface CareerType {
@@ -67,10 +89,14 @@ export default function CareersCRUD() {
 		try {
 			const payload = {
 				...formData,
-				requirements: formData.requirements ? formData.requirements.split('\n').filter(Boolean) : [],
+				requirements: formData.requirements
+					? formData.requirements.split('\n').filter(Boolean)
+					: [],
 				benefits: formData.benefits ? formData.benefits.split('\n').filter(Boolean) : [],
 			};
-			const pathName = editingCareer ? `admin/update-career/${editingCareer._id}` : 'admin/add-career';
+			const pathName = editingCareer
+				? `admin/update-career/${editingCareer._id}`
+				: 'admin/add-career';
 			const data = await fetchPost({ pathName, body: JSON.stringify(payload) });
 			if (data?.message?.toLowerCase().includes('success')) {
 				alert(editingCareer ? 'Career updated successfully' : 'Career added successfully');
@@ -108,7 +134,10 @@ export default function CareersCRUD() {
 	const handleDelete = async (id: string) => {
 		setActionLoading(true);
 		try {
-			const data = await fetchPost({ pathName: `admin/delete-career/${id}`, body: JSON.stringify({}) });
+			const data = await fetchPost({
+				pathName: `admin/delete-career/${id}`,
+				body: JSON.stringify({}),
+			});
 			if (data?.message?.toLowerCase().includes('deleted')) {
 				alert('Career deleted successfully');
 				await fetchCareers();
@@ -156,50 +185,104 @@ export default function CareersCRUD() {
 					</DialogTrigger>
 					<DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
 						<DialogHeader>
-							<DialogTitle>{editingCareer ? 'Edit Career' : 'Add Career'}</DialogTitle>
+							<DialogTitle>
+								{editingCareer ? 'Edit Career' : 'Add Career'}
+							</DialogTitle>
 						</DialogHeader>
 						<form onSubmit={handleSubmit} className="space-y-4">
 							<div>
 								<Label>Title *</Label>
-								<Input value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
+								<Input
+									value={formData.title}
+									onChange={(e) =>
+										setFormData({ ...formData, title: e.target.value })
+									}
+									required
+								/>
 							</div>
 							<div>
 								<Label>Body</Label>
-								<Textarea value={formData.body} onChange={(e) => setFormData({ ...formData, body: e.target.value })} />
+								<Textarea
+									value={formData.body}
+									onChange={(e) =>
+										setFormData({ ...formData, body: e.target.value })
+									}
+								/>
 							</div>
 							<div className="grid grid-cols-2 gap-4">
 								<div>
 									<Label>Type</Label>
-									<Input value={formData.type} onChange={(e) => setFormData({ ...formData, type: e.target.value })} placeholder="Full-time, Internship, etc." />
+									<Input
+										value={formData.type}
+										onChange={(e) =>
+											setFormData({ ...formData, type: e.target.value })
+										}
+										placeholder="Full-time, Internship, etc."
+									/>
 								</div>
 								<div>
 									<Label>Category</Label>
-									<Input value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} />
+									<Input
+										value={formData.category}
+										onChange={(e) =>
+											setFormData({ ...formData, category: e.target.value })
+										}
+									/>
 								</div>
 							</div>
 							<div>
 								<Label>Startup/Company</Label>
-								<Input value={formData.startup} onChange={(e) => setFormData({ ...formData, startup: e.target.value })} />
+								<Input
+									value={formData.startup}
+									onChange={(e) =>
+										setFormData({ ...formData, startup: e.target.value })
+									}
+								/>
 							</div>
 							<div>
 								<Label>Details</Label>
-								<Textarea value={formData.details} onChange={(e) => setFormData({ ...formData, details: e.target.value })} />
+								<Textarea
+									value={formData.details}
+									onChange={(e) =>
+										setFormData({ ...formData, details: e.target.value })
+									}
+								/>
 							</div>
 							<div>
 								<Label>Requirements (one per line)</Label>
-								<Textarea value={formData.requirements} onChange={(e) => setFormData({ ...formData, requirements: e.target.value })} />
+								<Textarea
+									value={formData.requirements}
+									onChange={(e) =>
+										setFormData({ ...formData, requirements: e.target.value })
+									}
+								/>
 							</div>
 							<div>
 								<Label>Benefits (one per line)</Label>
-								<Textarea value={formData.benefits} onChange={(e) => setFormData({ ...formData, benefits: e.target.value })} />
+								<Textarea
+									value={formData.benefits}
+									onChange={(e) =>
+										setFormData({ ...formData, benefits: e.target.value })
+									}
+								/>
 							</div>
 							<div>
 								<Label>Location</Label>
-								<Input value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} />
+								<Input
+									value={formData.location}
+									onChange={(e) =>
+										setFormData({ ...formData, location: e.target.value })
+									}
+								/>
 							</div>
 							<div>
 								<Label>Status</Label>
-								<Select value={formData.status} onValueChange={(value: any) => setFormData({ ...formData, status: value })}>
+								<Select
+									value={formData.status}
+									onValueChange={(value: any) =>
+										setFormData({ ...formData, status: value })
+									}
+								>
 									<SelectTrigger>
 										<SelectValue />
 									</SelectTrigger>
@@ -218,7 +301,7 @@ export default function CareersCRUD() {
 				</Dialog>
 			</div>
 
-			<div className="grid gap-4">
+			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 				{careers.map((career) => (
 					<Card key={career._id}>
 						<CardContent className="p-4">
@@ -226,17 +309,35 @@ export default function CareersCRUD() {
 								<div className="flex-1">
 									<div className="flex items-center gap-2 mb-2">
 										<h3 className="font-bold text-lg">{career.title}</h3>
-										<Badge variant={career.status === 'published' ? 'default' : 'secondary'}>{career.status}</Badge>
+										<Badge
+											variant={
+												career.status === 'published'
+													? 'default'
+													: 'secondary'
+											}
+										>
+											{career.status}
+										</Badge>
 									</div>
-									<p className="text-sm text-muted-foreground">{career.details || career.body}</p>
+									<p className="text-sm text-muted-foreground">
+										{career.details || career.body}
+									</p>
 									<div className="mt-2 flex gap-2 text-xs text-muted-foreground">
 										{career.type && <span>Type: {career.type}</span>}
-										{career.category && <span>Category: {career.category}</span>}
-										{career.location && <span>Location: {career.location}</span>}
+										{career.category && (
+											<span>Category: {career.category}</span>
+										)}
+										{career.location && (
+											<span>Location: {career.location}</span>
+										)}
 									</div>
 								</div>
 								<div className="flex gap-2">
-									<Button variant="outline" size="sm" onClick={() => handleEdit(career)}>
+									<Button
+										variant="outline"
+										size="sm"
+										onClick={() => handleEdit(career)}
+									>
 										<Edit className="w-4 h-4" />
 									</Button>
 									<AlertDialog>
@@ -248,11 +349,17 @@ export default function CareersCRUD() {
 										<AlertDialogContent>
 											<AlertDialogHeader>
 												<AlertDialogTitle>Delete Career?</AlertDialogTitle>
-												<AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
+												<AlertDialogDescription>
+													This action cannot be undone.
+												</AlertDialogDescription>
 											</AlertDialogHeader>
 											<AlertDialogFooter>
 												<AlertDialogCancel>Cancel</AlertDialogCancel>
-												<AlertDialogAction onClick={() => handleDelete(career._id)}>Delete</AlertDialogAction>
+												<AlertDialogAction
+													onClick={() => handleDelete(career._id)}
+												>
+													Delete
+												</AlertDialogAction>
 											</AlertDialogFooter>
 										</AlertDialogContent>
 									</AlertDialog>
@@ -261,9 +368,10 @@ export default function CareersCRUD() {
 						</CardContent>
 					</Card>
 				))}
-				{careers.length === 0 && <div className="text-center text-muted-foreground py-8">No careers found</div>}
+				{careers.length === 0 && (
+					<div className="text-center text-muted-foreground py-8">No careers found</div>
+				)}
 			</div>
 		</div>
 	);
 }
-

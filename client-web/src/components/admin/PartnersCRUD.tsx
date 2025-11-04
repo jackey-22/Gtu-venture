@@ -4,11 +4,33 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from '@/components/ui/dialog';
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+	AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Plus, Edit, Trash2, Upload } from 'lucide-react';
 
 const baseURL = import.meta.env.VITE_URL;
@@ -78,7 +100,9 @@ export default function PartnersCRUD() {
 				formDataToSend.append('logo', formData.logo);
 			}
 
-			const pathName = editingPartner ? `admin/update-partner/${editingPartner._id}` : 'admin/add-partner';
+			const pathName = editingPartner
+				? `admin/update-partner/${editingPartner._id}`
+				: 'admin/add-partner';
 			const response = await fetch(`${baseURL}${pathName}`, {
 				method: 'POST',
 				headers: {
@@ -89,7 +113,9 @@ export default function PartnersCRUD() {
 
 			const data = await response.json();
 			if (data?.message?.toLowerCase().includes('success')) {
-				alert(editingPartner ? 'Partner updated successfully' : 'Partner added successfully');
+				alert(
+					editingPartner ? 'Partner updated successfully' : 'Partner added successfully'
+				);
 				setIsDialogOpen(false);
 				resetForm();
 				await fetchPartners();
@@ -123,7 +149,10 @@ export default function PartnersCRUD() {
 	const handleDelete = async (id: string) => {
 		setActionLoading(true);
 		try {
-			const data = await fetchPost({ pathName: `admin/delete-partner/${id}`, body: JSON.stringify({}) });
+			const data = await fetchPost({
+				pathName: `admin/delete-partner/${id}`,
+				body: JSON.stringify({}),
+			});
 			if (data?.message?.toLowerCase().includes('deleted')) {
 				alert('Partner deleted successfully');
 				await fetchPartners();
@@ -170,16 +199,29 @@ export default function PartnersCRUD() {
 					</DialogTrigger>
 					<DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
 						<DialogHeader>
-							<DialogTitle>{editingPartner ? 'Edit Partner' : 'Add Partner'}</DialogTitle>
+							<DialogTitle>
+								{editingPartner ? 'Edit Partner' : 'Add Partner'}
+							</DialogTitle>
 						</DialogHeader>
 						<form onSubmit={handleSubmit} className="space-y-4">
 							<div>
 								<Label>Name *</Label>
-								<Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />
+								<Input
+									value={formData.name}
+									onChange={(e) =>
+										setFormData({ ...formData, name: e.target.value })
+									}
+									required
+								/>
 							</div>
 							<div>
 								<Label>Category *</Label>
-								<Select value={formData.category} onValueChange={(value: any) => setFormData({ ...formData, category: value })}>
+								<Select
+									value={formData.category}
+									onValueChange={(value: any) =>
+										setFormData({ ...formData, category: value })
+									}
+								>
 									<SelectTrigger>
 										<SelectValue />
 									</SelectTrigger>
@@ -197,43 +239,85 @@ export default function PartnersCRUD() {
 								{logoFile ? (
 									<div className="flex items-center gap-2">
 										<span className="text-sm">{logoFile.name}</span>
-										<Button type="button" variant="outline" size="sm" onClick={() => setLogoFile(null)}>Remove</Button>
+										<Button
+											type="button"
+											variant="outline"
+											size="sm"
+											onClick={() => setLogoFile(null)}
+										>
+											Remove
+										</Button>
 									</div>
 								) : (
 									<div className="flex items-center gap-2">
 										<Input
 											type="file"
 											accept="image/*"
-											onChange={(e) => setLogoFile(e.target.files?.[0] || null)}
+											onChange={(e) =>
+												setLogoFile(e.target.files?.[0] || null)
+											}
 											className="cursor-pointer"
 										/>
 										{formData.logo && (
-											<img src={`${baseURL}${formData.logo.replace(/\\/g, '/')}`} alt="Current logo" className="w-16 h-16 object-contain" />
+											<img
+												src={`${baseURL}${formData.logo.replace(
+													/\\/g,
+													'/'
+												)}`}
+												alt="Current logo"
+												className="w-16 h-16 object-contain"
+											/>
 										)}
 									</div>
 								)}
 							</div>
 							<div>
 								<Label>Description</Label>
-								<Textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} />
+								<Textarea
+									value={formData.description}
+									onChange={(e) =>
+										setFormData({ ...formData, description: e.target.value })
+									}
+								/>
 							</div>
 							<div className="grid grid-cols-2 gap-4">
 								<div>
 									<Label>Website</Label>
-									<Input value={formData.website} onChange={(e) => setFormData({ ...formData, website: e.target.value })} />
+									<Input
+										value={formData.website}
+										onChange={(e) =>
+											setFormData({ ...formData, website: e.target.value })
+										}
+									/>
 								</div>
 								<div>
 									<Label>Type</Label>
-									<Input value={formData.type} onChange={(e) => setFormData({ ...formData, type: e.target.value })} placeholder="Government, Corporate, etc." />
+									<Input
+										value={formData.type}
+										onChange={(e) =>
+											setFormData({ ...formData, type: e.target.value })
+										}
+										placeholder="Government, Corporate, etc."
+									/>
 								</div>
 							</div>
 							<div>
 								<Label>Focus</Label>
-								<Input value={formData.focus} onChange={(e) => setFormData({ ...formData, focus: e.target.value })} />
+								<Input
+									value={formData.focus}
+									onChange={(e) =>
+										setFormData({ ...formData, focus: e.target.value })
+									}
+								/>
 							</div>
 							<div>
 								<Label>Status</Label>
-								<Select value={formData.status} onValueChange={(value: any) => setFormData({ ...formData, status: value })}>
+								<Select
+									value={formData.status}
+									onValueChange={(value: any) =>
+										setFormData({ ...formData, status: value })
+									}
+								>
 									<SelectTrigger>
 										<SelectValue />
 									</SelectTrigger>
@@ -252,22 +336,36 @@ export default function PartnersCRUD() {
 				</Dialog>
 			</div>
 
-			<div className="grid gap-4">
+			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 				{partners.map((partner) => (
 					<Card key={partner._id}>
 						<CardContent className="p-4">
 							<div className="flex justify-between items-start">
 								<div className="flex-1 flex items-start gap-4">
 									{partner.logo && (
-										<img src={`${baseURL}${partner.logo.replace(/\\/g, '/')}`} alt={partner.name} className="w-16 h-16 object-contain" />
+										<img
+											src={`${baseURL}${partner.logo.replace(/\\/g, '/')}`}
+											alt={partner.name}
+											className="w-16 h-16 object-contain"
+										/>
 									)}
 									<div className="flex-1">
 										<div className="flex items-center gap-2 mb-2">
 											<h3 className="font-bold text-lg">{partner.name}</h3>
-											<Badge variant={partner.status === 'published' ? 'default' : 'secondary'}>{partner.status}</Badge>
+											<Badge
+												variant={
+													partner.status === 'published'
+														? 'default'
+														: 'secondary'
+												}
+											>
+												{partner.status}
+											</Badge>
 											<Badge variant="outline">{partner.category}</Badge>
 										</div>
-										<p className="text-sm text-muted-foreground">{partner.description}</p>
+										<p className="text-sm text-muted-foreground">
+											{partner.description}
+										</p>
 										<div className="mt-2 flex gap-2 text-xs text-muted-foreground">
 											{partner.type && <span>Type: {partner.type}</span>}
 											{partner.focus && <span>Focus: {partner.focus}</span>}
@@ -275,7 +373,11 @@ export default function PartnersCRUD() {
 									</div>
 								</div>
 								<div className="flex gap-2">
-									<Button variant="outline" size="sm" onClick={() => handleEdit(partner)}>
+									<Button
+										variant="outline"
+										size="sm"
+										onClick={() => handleEdit(partner)}
+									>
 										<Edit className="w-4 h-4" />
 									</Button>
 									<AlertDialog>
@@ -287,11 +389,17 @@ export default function PartnersCRUD() {
 										<AlertDialogContent>
 											<AlertDialogHeader>
 												<AlertDialogTitle>Delete Partner?</AlertDialogTitle>
-												<AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
+												<AlertDialogDescription>
+													This action cannot be undone.
+												</AlertDialogDescription>
 											</AlertDialogHeader>
 											<AlertDialogFooter>
 												<AlertDialogCancel>Cancel</AlertDialogCancel>
-												<AlertDialogAction onClick={() => handleDelete(partner._id)}>Delete</AlertDialogAction>
+												<AlertDialogAction
+													onClick={() => handleDelete(partner._id)}
+												>
+													Delete
+												</AlertDialogAction>
 											</AlertDialogFooter>
 										</AlertDialogContent>
 									</AlertDialog>
@@ -300,9 +408,10 @@ export default function PartnersCRUD() {
 						</CardContent>
 					</Card>
 				))}
-				{partners.length === 0 && <div className="text-center text-muted-foreground py-8">No partners found</div>}
+				{partners.length === 0 && (
+					<div className="text-center text-muted-foreground py-8">No partners found</div>
+				)}
 			</div>
 		</div>
 	);
 }
-
