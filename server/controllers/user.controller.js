@@ -13,6 +13,15 @@ const facilityModel = require('../models/facility.model');
 const initiativeModel = require('../models/initiative.model');
 const circularModel = require('../models/circular.model');
 const contactMessageModel = require('../models/contactMessage.model');
+const heroModel = require('../models/hero.model');
+const carouselItemModel = require('../models/carouselItem.model');
+const featuredGridModel = require('../models/featuredGrid.model');
+const programHighlightModel = require('../models/programHighlight.model');
+const metricModel = require('../models/metric.model');
+const aboutSectionModel = require('../models/aboutSection.model');
+const successStoryModel = require('../models/successStory.model');
+const testimonialModel = require('../models/testimonial.model');
+const newsletterSubscriptionModel = require('../models/newsletterSubscription.model');
 
 // EVENTS
 async function fetchEvents(req, res) {
@@ -458,11 +467,137 @@ async function submitApplication(req, res) {
 			status: 'pending',
 		});
 
-		await newApplication.save();
-		return res.status(201).json({ success: true, message: 'Application submitted successfully' });
+				await newApplication.save();
+		return res.status(201).json({ success: true, message: 'Application submitted successfully' });                                                  
 	} catch (error) {
 		console.error('Submit Application Error:', error);
-		return res.status(500).json({ message: 'Internal server error' });
+		return res.status(500).json({ message: 'Internal server error' });                                                                              
+	}
+}
+
+// Hero Section
+async function fetchHero(req, res) {
+	try {
+		const hero = await heroModel.findOne({ isActive: true }).sort({ created_at: -1 });
+		res.status(200).json({ success: true, data: hero });
+	} catch (error) {
+		console.error('Fetch Hero Error:', error);
+		res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+// Carousel Items
+async function fetchCarouselItems(req, res) {
+	try {
+		const items = await carouselItemModel.find({ status: 'published' }).sort({ order: 1, created_at: -1 });
+		res.status(200).json({ success: true, count: items.length, data: items });
+	} catch (error) {
+		console.error('Fetch Carousel Items Error:', error);
+		res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+// Featured Grid
+async function fetchFeaturedGrids(req, res) {
+	try {
+		const items = await featuredGridModel.find({ status: 'published' }).sort({ order: 1, created_at: -1 });
+		res.status(200).json({ success: true, count: items.length, data: items });
+	} catch (error) {
+		console.error('Fetch Featured Grids Error:', error);
+		res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+// Program Highlights
+async function fetchProgramHighlights(req, res) {
+	try {
+		const items = await programHighlightModel.find({ status: 'published' }).sort({ order: 1, created_at: -1 });
+		res.status(200).json({ success: true, count: items.length, data: items });
+	} catch (error) {
+		console.error('Fetch Program Highlights Error:', error);
+		res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+// Metrics
+async function fetchMetrics(req, res) {
+	try {
+		const metrics = await metricModel.find({ status: 'published' }).sort({ order: 1, created_at: -1 });
+		res.status(200).json({ success: true, count: metrics.length, data: metrics });
+	} catch (error) {
+		console.error('Fetch Metrics Error:', error);
+		res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+// About Section
+async function fetchAboutSection(req, res) {
+	try {
+		const section = await aboutSectionModel.findOne({ isActive: true }).sort({ created_at: -1 });
+		res.status(200).json({ success: true, data: section });
+	} catch (error) {
+		console.error('Fetch About Section Error:', error);
+		res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+// Success Stories
+async function fetchSuccessStories(req, res) {
+	try {
+		const stories = await successStoryModel.find({ status: 'published' }).sort({ order: 1, created_at: -1 });
+		res.status(200).json({ success: true, count: stories.length, data: stories });
+	} catch (error) {
+		console.error('Fetch Success Stories Error:', error);
+		res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+// Testimonials
+async function fetchTestimonials(req, res) {
+	try {
+		const testimonials = await testimonialModel.find({ status: 'published' }).sort({ order: 1, created_at: -1 });
+		res.status(200).json({ success: true, count: testimonials.length, data: testimonials });
+	} catch (error) {
+		console.error('Fetch Testimonials Error:', error);
+		res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+// Newsletter Subscription
+async function subscribeNewsletter(req, res) {
+	try {
+		const { email } = req.body;
+
+		if (!email) {
+			return res.status(400).json({ success: false, message: 'Email is required' });
+		}
+
+		// Check if already subscribed
+		const existing = await newsletterSubscriptionModel.findOne({ email: email.toLowerCase() });
+		if (existing) {
+			if (existing.status === 'active') {
+				return res.status(200).json({ success: true, message: 'Email already subscribed' });
+			} else {
+				// Reactivate subscription
+				existing.status = 'active';
+				await existing.save();
+				return res.status(200).json({ success: true, message: 'Subscription reactivated successfully' });
+			}
+		}
+
+		const newSubscription = new newsletterSubscriptionModel({
+			email: email.toLowerCase(),
+			status: 'active',
+		});
+
+		await newSubscription.save();
+		return res.status(201).json({ success: true, message: 'Subscribed successfully' });
+	} catch (error) {
+		console.error('Subscribe Newsletter Error:', error);
+		if (error.code === 11000) {
+			return res.status(200).json({ success: true, message: 'Email already subscribed' });
+		}
+		return res.status(500).json({ success: false, message: 'Internal server error' });
 	}
 }
 
@@ -491,8 +626,17 @@ module.exports = {
 	fetchFacilityById,
 	fetchInitiatives,
 	fetchInitiativeById,
-	fetchCirculars,
-	fetchCircularById,
-	submitContactMessage,
-	submitApplication,
+	        fetchCirculars,
+        fetchCircularById,
+        submitContactMessage,
+        submitApplication,
+        fetchHero,
+        fetchCarouselItems,
+        fetchFeaturedGrids,
+        fetchProgramHighlights,
+        fetchMetrics,
+        fetchAboutSection,
+        fetchSuccessStories,
+        fetchTestimonials,
+        subscribeNewsletter,
 };

@@ -15,6 +15,15 @@ const facilityModel = require('../models/facility.model');
 const initiativeModel = require('../models/initiative.model');
 const contactMessageModel = require('../models/contactMessage.model');
 const circularModel = require('../models/circular.model');
+const heroModel = require('../models/hero.model');
+const carouselItemModel = require('../models/carouselItem.model');
+const featuredGridModel = require('../models/featuredGrid.model');
+const programHighlightModel = require('../models/programHighlight.model');
+const metricModel = require('../models/metric.model');
+const aboutSectionModel = require('../models/aboutSection.model');
+const successStoryModel = require('../models/successStory.model');
+const testimonialModel = require('../models/testimonial.model');
+const newsletterSubscriptionModel = require('../models/newsletterSubscription.model');
 const path = require('path');
 const fs = require('fs');
 
@@ -1889,6 +1898,879 @@ async function getDashboardCounts(req, res) {
 	}
 }
 
+// Hero Section
+async function addHero(req, res) {
+	try {
+		const {
+			title,
+			subtitle,
+			description,
+			primaryButtonText,
+			primaryButtonLink,
+			secondaryButtonText,
+			secondaryButtonLink,
+			isActive,
+		} = req.body;
+
+		if (!title || !description) {
+			return res.status(400).json({ message: 'Missing required fields' });
+		}
+
+		// Only allow one active hero, deactivate others
+		if (isActive) {
+			await heroModel.updateMany({}, { isActive: false });
+		}
+
+		const newHero = new heroModel({
+			title,
+			subtitle,
+			description,
+			primaryButtonText,
+			primaryButtonLink,
+			secondaryButtonText,
+			secondaryButtonLink,
+			isActive: isActive !== undefined ? isActive : true,
+		});
+
+		await newHero.save();
+		return res.status(201).json({ message: 'Hero created successfully', hero: newHero });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function getAllHeroes(req, res) {
+	try {
+		const heroes = await heroModel.find().sort({ created_at: -1 });
+		return res.status(200).json(heroes);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function getHeroById(req, res) {
+	try {
+		const hero = await heroModel.findById(req.params.id);
+		if (!hero) {
+			return res.status(404).json({ message: 'Hero not found' });
+		}
+		return res.status(200).json(hero);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function updateHero(req, res) {
+	try {
+		const { id } = req.params;
+		const {
+			title,
+			subtitle,
+			description,
+			primaryButtonText,
+			primaryButtonLink,
+			secondaryButtonText,
+			secondaryButtonLink,
+			isActive,
+		} = req.body;
+
+		// Only allow one active hero, deactivate others
+		if (isActive) {
+			await heroModel.updateMany({ _id: { $ne: id } }, { isActive: false });
+		}
+
+		const updatedHero = await heroModel.findByIdAndUpdate(
+			id,
+			{
+				title,
+				subtitle,
+				description,
+				primaryButtonText,
+				primaryButtonLink,
+				secondaryButtonText,
+				secondaryButtonLink,
+				isActive,
+			},
+			{ new: true, runValidators: true }
+		);
+
+		if (!updatedHero) {
+			return res.status(404).json({ message: 'Hero not found' });
+		}
+
+		return res.status(200).json({ message: 'Hero updated successfully', hero: updatedHero });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function deleteHero(req, res) {
+	try {
+		const { id } = req.params;
+		const deleted = await heroModel.findByIdAndDelete(id);
+		if (!deleted) {
+			return res.status(404).json({ message: 'Hero not found' });
+		}
+		return res.status(200).json({ message: 'Hero deleted successfully' });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+// Carousel Items
+async function addCarouselItem(req, res) {
+	try {
+		const { title, description, order, status } = req.body;
+		const image = req.file ? `/uploads/${req.file.filename}` : req.body.image;
+
+		if (!image || !title || !description) {
+			return res.status(400).json({ message: 'Missing required fields' });
+		}
+
+		const newItem = new carouselItemModel({
+			image,
+			title,
+			description,
+			order: order || 0,
+			status: status || 'published',
+		});
+
+		await newItem.save();
+		return res
+			.status(201)
+			.json({ message: 'Carousel item created successfully', item: newItem });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function getAllCarouselItems(req, res) {
+	try {
+		const items = await carouselItemModel.find().sort({ order: 1, created_at: -1 });
+		return res.status(200).json(items);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function getCarouselItemById(req, res) {
+	try {
+		const item = await carouselItemModel.findById(req.params.id);
+		if (!item) {
+			return res.status(404).json({ message: 'Carousel item not found' });
+		}
+		return res.status(200).json(item);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function updateCarouselItem(req, res) {
+	try {
+		const { id } = req.params;
+		const { title, description, order, status, existingImage } = req.body;
+
+		const image = req.file ? `/uploads/${req.file.filename}` : existingImage;
+
+		const updatedItem = await carouselItemModel.findByIdAndUpdate(
+			id,
+			{ image, title, description, order, status },
+			{ new: true, runValidators: true }
+		);
+
+		if (!updatedItem) {
+			return res.status(404).json({ message: 'Carousel item not found' });
+		}
+
+		return res
+			.status(200)
+			.json({ message: 'Carousel item updated successfully', item: updatedItem });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function deleteCarouselItem(req, res) {
+	try {
+		const { id } = req.params;
+		const deleted = await carouselItemModel.findByIdAndDelete(id);
+		if (!deleted) {
+			return res.status(404).json({ message: 'Carousel item not found' });
+		}
+		return res.status(200).json({ message: 'Carousel item deleted successfully' });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+// Featured Grid
+async function addFeaturedGrid(req, res) {
+	try {
+		const { title, description, link, linkText, type, stats, order, status } = req.body;
+
+		if (!title || !description) {
+			return res.status(400).json({ message: 'Missing required fields' });
+		}
+
+		let imagePath = null;
+		if (req.file) {
+			imagePath = '/uploads/featuredgrid/' + req.file.filename;
+		}
+
+		const newItem = new featuredGridModel({
+			title,
+			description,
+			image: imagePath,
+			link,
+			linkText,
+			type: type || 'text',
+			stats: stats ? JSON.parse(stats) : [],
+			order: order || 0,
+			status: status || 'published',
+		});
+
+		await newItem.save();
+		return res
+			.status(201)
+			.json({ message: 'Featured grid item created successfully', item: newItem });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function getAllFeaturedGrids(req, res) {
+	try {
+		const items = await featuredGridModel.find().sort({ order: 1, created_at: -1 });
+		return res.status(200).json(items);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function getFeaturedGridById(req, res) {
+	try {
+		const item = await featuredGridModel.findById(req.params.id);
+		if (!item) {
+			return res.status(404).json({ message: 'Featured grid item not found' });
+		}
+		return res.status(200).json(item);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function updateFeaturedGrid(req, res) {
+	try {
+		const { title, description, link, linkText, type, stats, order, status, existingImage } =
+			req.body;
+
+		let imagePath = existingImage || null;
+
+		if (req.file) {
+			imagePath = '/uploads/featuredgrid/' + req.file.filename;
+		}
+
+		const updatedItem = await featuredGridModel.findByIdAndUpdate(
+			req.params.id,
+			{
+				title,
+				description,
+				image: imagePath,
+				link,
+				linkText,
+				type,
+				stats: stats ? JSON.parse(stats) : [],
+				order,
+				status,
+			},
+			{ new: true }
+		);
+
+		if (!updatedItem) {
+			return res.status(404).json({ message: 'Featured grid item not found' });
+		}
+
+		return res.status(200).json({ message: 'Updated successfully', item: updatedItem });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function deleteFeaturedGrid(req, res) {
+	try {
+		const { id } = req.params;
+		const deleted = await featuredGridModel.findByIdAndDelete(id);
+		if (!deleted) {
+			return res.status(404).json({ message: 'Featured grid item not found' });
+		}
+		return res.status(200).json({ message: 'Featured grid item deleted successfully' });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+// Program Highlights
+async function addProgramHighlight(req, res) {
+	try {
+		const { title, description, icon, color, link, order, status } = req.body;
+
+		if (!title || !description || !icon) {
+			return res.status(400).json({ message: 'Missing required fields' });
+		}
+
+		const newItem = new programHighlightModel({
+			title,
+			description,
+			icon,
+			color: color || 'bg-primary/10 text-primary',
+			link,
+			order: order || 0,
+			status: status || 'published',
+		});
+
+		await newItem.save();
+		return res
+			.status(201)
+			.json({ message: 'Program highlight created successfully', item: newItem });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function getAllProgramHighlights(req, res) {
+	try {
+		const items = await programHighlightModel.find().sort({ order: 1, created_at: -1 });
+		return res.status(200).json(items);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function getProgramHighlightById(req, res) {
+	try {
+		const item = await programHighlightModel.findById(req.params.id);
+		if (!item) {
+			return res.status(404).json({ message: 'Program highlight not found' });
+		}
+		return res.status(200).json(item);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function updateProgramHighlight(req, res) {
+	try {
+		const { id } = req.params;
+		const { title, description, icon, color, link, order, status } = req.body;
+
+		const updatedItem = await programHighlightModel.findByIdAndUpdate(
+			id,
+			{ title, description, icon, color, link, order, status },
+			{ new: true, runValidators: true }
+		);
+
+		if (!updatedItem) {
+			return res.status(404).json({ message: 'Program highlight not found' });
+		}
+
+		return res
+			.status(200)
+			.json({ message: 'Program highlight updated successfully', item: updatedItem });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function deleteProgramHighlight(req, res) {
+	try {
+		const { id } = req.params;
+		const deleted = await programHighlightModel.findByIdAndDelete(id);
+		if (!deleted) {
+			return res.status(404).json({ message: 'Program highlight not found' });
+		}
+		return res.status(200).json({ message: 'Program highlight deleted successfully' });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+// Metrics
+async function addMetric(req, res) {
+	try {
+		const { label, value, prefix, suffix, order, status } = req.body;
+
+		if (!label || value === undefined) {
+			return res.status(400).json({ message: 'Missing required fields' });
+		}
+
+		const newMetric = new metricModel({
+			label,
+			value: Number(value),
+			prefix,
+			suffix,
+			order: order || 0,
+			status: status || 'published',
+		});
+
+		await newMetric.save();
+		return res.status(201).json({ message: 'Metric created successfully', metric: newMetric });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function getAllMetrics(req, res) {
+	try {
+		const metrics = await metricModel.find().sort({ order: 1, created_at: -1 });
+		return res.status(200).json(metrics);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function getMetricById(req, res) {
+	try {
+		const metric = await metricModel.findById(req.params.id);
+		if (!metric) {
+			return res.status(404).json({ message: 'Metric not found' });
+		}
+		return res.status(200).json(metric);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function updateMetric(req, res) {
+	try {
+		const { id } = req.params;
+		const { label, value, prefix, suffix, order, status } = req.body;
+
+		const updatedMetric = await metricModel.findByIdAndUpdate(
+			id,
+			{
+				label,
+				value: value !== undefined ? Number(value) : undefined,
+				prefix,
+				suffix,
+				order,
+				status,
+			},
+			{ new: true, runValidators: true }
+		);
+
+		if (!updatedMetric) {
+			return res.status(404).json({ message: 'Metric not found' });
+		}
+
+		return res
+			.status(200)
+			.json({ message: 'Metric updated successfully', metric: updatedMetric });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function deleteMetric(req, res) {
+	try {
+		const { id } = req.params;
+		const deleted = await metricModel.findByIdAndDelete(id);
+		if (!deleted) {
+			return res.status(404).json({ message: 'Metric not found' });
+		}
+		return res.status(200).json({ message: 'Metric deleted successfully' });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+// About Section
+async function addAboutSection(req, res) {
+	try {
+		const {
+			title,
+			description,
+			description2,
+			statCardValue,
+			statCardLabel,
+			buttonText,
+			buttonLink,
+			isActive,
+		} = req.body;
+
+		if (!title || !description) {
+			return res.status(400).json({ message: 'Missing required fields' });
+		}
+
+		let imagePath = null;
+		if (req.file) {
+			imagePath = `/uploads/${req.file.filename}`;
+		}
+
+		// Allow only one active section
+		if (isActive === 'true') {
+			await aboutSectionModel.updateMany({}, { isActive: false });
+		}
+
+		const newSection = new aboutSectionModel({
+			title,
+			description,
+			description2,
+			image: imagePath,
+			statCardValue,
+			statCardLabel,
+			buttonText,
+			buttonLink,
+			isActive: isActive === 'true',
+		});
+
+		await newSection.save();
+		return res.status(201).json({ message: 'About section created', section: newSection });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function getAllAboutSections(req, res) {
+	try {
+		const sections = await aboutSectionModel.find().sort({ created_at: -1 });
+		return res.status(200).json(sections);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function getAboutSectionById(req, res) {
+	try {
+		const section = await aboutSectionModel.findById(req.params.id);
+		if (!section) {
+			return res.status(404).json({ message: 'About section not found' });
+		}
+		return res.status(200).json(section);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function updateAboutSection(req, res) {
+	try {
+		const { id } = req.params;
+
+		const {
+			title,
+			description,
+			description2,
+			statCardValue,
+			statCardLabel,
+			buttonText,
+			buttonLink,
+			isActive,
+			existingImage,
+		} = req.body;
+
+		let imagePath = existingImage || null;
+
+		if (req.file) {
+			imagePath = `/uploads/${req.file.filename}`;
+		}
+
+		if (isActive === 'true') {
+			await aboutSectionModel.updateMany({ _id: { $ne: id } }, { isActive: false });
+		}
+
+		const updated = await aboutSectionModel.findByIdAndUpdate(
+			id,
+			{
+				title,
+				description,
+				description2,
+				image: imagePath,
+				statCardValue,
+				statCardLabel,
+				buttonText,
+				buttonLink,
+				isActive: isActive === 'true',
+			},
+			{ new: true }
+		);
+
+		if (!updated) {
+			return res.status(404).json({ message: 'About section not found' });
+		}
+
+		return res.status(200).json({ message: 'Updated successfully', section: updated });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function deleteAboutSection(req, res) {
+	try {
+		const { id } = req.params;
+		const deleted = await aboutSectionModel.findByIdAndDelete(id);
+		if (!deleted) {
+			return res.status(404).json({ message: 'About section not found' });
+		}
+		return res.status(200).json({ message: 'About section deleted successfully' });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+// Success Stories
+async function addSuccessStory(req, res) {
+	try {
+		const { title, description, icon, metric, order, status } = req.body;
+		const image = req.file ? `uploads/${req.file.filename}` : null;
+
+		if (!title || !description || !icon || !metric || !image) {
+			return res.status(400).json({ message: 'Missing required fields' });
+		}
+
+		const newStory = new successStoryModel({
+			title,
+			description,
+			icon,
+			metric,
+			image,
+			order: order || 0,
+			status: status || 'published',
+		});
+
+		await newStory.save();
+
+		res.status(201).json({ message: 'Success story created', story: newStory });
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function getAllSuccessStories(req, res) {
+	try {
+		const stories = await successStoryModel.find().sort({ order: 1, created_at: -1 });
+		return res.status(200).json(stories);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function getSuccessStoryById(req, res) {
+	try {
+		const story = await successStoryModel.findById(req.params.id);
+		if (!story) {
+			return res.status(404).json({ message: 'Success story not found' });
+		}
+		return res.status(200).json(story);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function updateSuccessStory(req, res) {
+	try {
+		const { id } = req.params;
+		const { title, description, icon, metric, order, status, existingImage } = req.body;
+
+		let image = existingImage;
+		if (req.file) {
+			image = `uploads/${req.file.filename}`;
+		}
+
+		const updatedStory = await successStoryModel.findByIdAndUpdate(
+			id,
+			{ title, description, icon, metric, image, order, status },
+			{ new: true, runValidators: true }
+		);
+
+		if (!updatedStory) {
+			return res.status(404).json({ message: 'Success story not found' });
+		}
+
+		res.json({ message: 'Success story updated', story: updatedStory });
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function deleteSuccessStory(req, res) {
+	try {
+		const { id } = req.params;
+		const deleted = await successStoryModel.findByIdAndDelete(id);
+		if (!deleted) {
+			return res.status(404).json({ message: 'Success story not found' });
+		}
+		return res.status(200).json({ message: 'Success story deleted successfully' });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+// Testimonials
+async function addTestimonial(req, res) {
+	try {
+		const { quote, author, position, order, status } = req.body;
+		const image = req.file ? `uploads/${req.file.filename}` : null;
+
+		if (!quote || !author || !position || !image) {
+			return res.status(400).json({ message: 'Missing required fields' });
+		}
+
+		const newTestimonial = new testimonialModel({
+			quote,
+			author,
+			position,
+			image,
+			order: order || 0,
+			status: status || 'published',
+		});
+
+		await newTestimonial.save();
+
+		return res.status(201).json({
+			message: 'Testimonial created successfully',
+			testimonial: newTestimonial,
+		});
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function getAllTestimonials(req, res) {
+	try {
+		const testimonials = await testimonialModel.find().sort({ order: 1, created_at: -1 });
+		return res.status(200).json(testimonials);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function getTestimonialById(req, res) {
+	try {
+		const testimonial = await testimonialModel.findById(req.params.id);
+		if (!testimonial) {
+			return res.status(404).json({ message: 'Testimonial not found' });
+		}
+		return res.status(200).json(testimonial);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function updateTestimonial(req, res) {
+	try {
+		const { id } = req.params;
+		const { quote, author, position, order, status } = req.body;
+
+		let image = req.body.image;
+
+		if (req.file) {
+			image = `uploads/${req.file.filename}`;
+		}
+
+		const updatedData = {
+			quote,
+			author,
+			position,
+			order,
+			status,
+			image,
+		};
+
+		const updatedTestimonial = await testimonialModel.findByIdAndUpdate(id, updatedData, {
+			new: true,
+			runValidators: true,
+		});
+
+		if (!updatedTestimonial) {
+			return res.status(404).json({ message: 'Testimonial not found' });
+		}
+
+		return res.status(200).json({
+			message: 'Testimonial updated successfully',
+			testimonial: updatedTestimonial,
+		});
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function deleteTestimonial(req, res) {
+	try {
+		const { id } = req.params;
+		const deleted = await testimonialModel.findByIdAndDelete(id);
+		if (!deleted) {
+			return res.status(404).json({ message: 'Testimonial not found' });
+		}
+		return res.status(200).json({ message: 'Testimonial deleted successfully' });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+// Newsletter Subscriptions
+async function getAllNewsletterSubscriptions(req, res) {
+	try {
+		const subscriptions = await newsletterSubscriptionModel.find().sort({ created_at: -1 });
+		return res.status(200).json(subscriptions);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function deleteNewsletterSubscription(req, res) {
+	try {
+		const { id } = req.params;
+		const deleted = await newsletterSubscriptionModel.findByIdAndDelete(id);
+		if (!deleted) {
+			return res.status(404).json({ message: 'Newsletter subscription not found' });
+		}
+		return res.status(200).json({ message: 'Newsletter subscription deleted successfully' });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
 module.exports = {
 	addEvent,
 	getAllEvents,
@@ -1971,4 +2853,46 @@ module.exports = {
 	updateCircular,
 	deleteCircular,
 	getDashboardCounts,
+	addHero,
+	getAllHeroes,
+	getHeroById,
+	updateHero,
+	deleteHero,
+	addCarouselItem,
+	getAllCarouselItems,
+	getCarouselItemById,
+	updateCarouselItem,
+	deleteCarouselItem,
+	addFeaturedGrid,
+	getAllFeaturedGrids,
+	getFeaturedGridById,
+	updateFeaturedGrid,
+	deleteFeaturedGrid,
+	addProgramHighlight,
+	getAllProgramHighlights,
+	getProgramHighlightById,
+	updateProgramHighlight,
+	deleteProgramHighlight,
+	addMetric,
+	getAllMetrics,
+	getMetricById,
+	updateMetric,
+	deleteMetric,
+	addAboutSection,
+	getAllAboutSections,
+	getAboutSectionById,
+	updateAboutSection,
+	deleteAboutSection,
+	addSuccessStory,
+	getAllSuccessStories,
+	getSuccessStoryById,
+	updateSuccessStory,
+	deleteSuccessStory,
+	addTestimonial,
+	getAllTestimonials,
+	getTestimonialById,
+	updateTestimonial,
+	deleteTestimonial,
+	getAllNewsletterSubscriptions,
+	deleteNewsletterSubscription,
 };

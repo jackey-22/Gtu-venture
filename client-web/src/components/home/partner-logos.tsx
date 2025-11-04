@@ -1,27 +1,52 @@
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { fetchGet } from "@/utils/fetch.utils";
 
-const partners = [
-  {
-    name: "MSME",
-    logo: "/incubators/MSME.png",
-  },
-  {
-    name: "Nodal Institute", 
-    logo: "/incubators/Nodalinstitute.png",
-  },
-  {
-    name: "SISFS",
-    logo: "/incubators/SISFS.png",
-  },
-  {
-    name: "SSIP",
-    logo: "/incubators/ssip-.png",
-  },
-  {
-    name: "Atal Innovation Mission",
-    logo: "/incubators/aim.png",
-  },
-];export default function PartnerLogos() {
+export default function PartnerLogos() {
+  const [partners, setPartners] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPartners = async () => {
+      try {
+        const response = await fetchGet({ pathName: 'user/get-partners' });
+        if (response?.success && response?.data) {
+          // Filter for partners with category 'funding' or similar
+          const fundingPartners = response.data.filter((p: any) => 
+            p.category === 'funding' || p.category === 'csr'
+          ).slice(0, 5); // Limit to 5 partners
+          setPartners(fundingPartners);
+        } else {
+          // Fallback to default partners
+          setPartners([
+            { name: "MSME", logo: "/incubators/MSME.png" },
+            { name: "Nodal Institute", logo: "/incubators/Nodalinstitute.png" },
+            { name: "SISFS", logo: "/incubators/SISFS.png" },
+            { name: "SSIP", logo: "/incubators/ssip-.png" },
+            { name: "Atal Innovation Mission", logo: "/incubators/aim.png" },
+          ]);
+        }
+      } catch (error) {
+        console.error('Error fetching partners:', error);
+        setPartners([
+          { name: "MSME", logo: "/incubators/MSME.png" },
+          { name: "Nodal Institute", logo: "/incubators/Nodalinstitute.png" },
+          { name: "SISFS", logo: "/incubators/SISFS.png" },
+          { name: "SSIP", logo: "/incubators/ssip-.png" },
+          { name: "Atal Innovation Mission", logo: "/incubators/aim.png" },
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPartners();
+  }, []);
+
+  if (loading || partners.length === 0) {
+    return null;
+  }
+
   return (
     <section className="py-16 bg-muted" data-testid="partner-logos">
       <div className="max-w-7xl mx-auto px-6 lg:px-16">

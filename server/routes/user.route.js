@@ -55,9 +55,36 @@ router.get('/get-circulars', userController.fetchCirculars);
 router.get('/get-circular/:id', userController.fetchCircularById);
 
 // CONTACT MESSAGE
-router.post('/submit-contact-message', userController.submitContactMessage);
+router.post('/submit-contact-message', userController.submitContactMessage);    
 
 // APPLICATION (submit only)
 router.post('/submit-application', userController.submitApplication);
+
+// HERO SECTION
+router.get('/get-hero', userController.fetchHero);
+
+// CAROUSEL ITEMS
+router.get('/get-carousel-items', userController.fetchCarouselItems);
+
+// FEATURED GRID
+router.get('/get-featured-grids', userController.fetchFeaturedGrids);
+
+// PROGRAM HIGHLIGHTS
+router.get('/get-program-highlights', userController.fetchProgramHighlights);
+
+// METRICS
+router.get('/get-metrics', userController.fetchMetrics);
+
+// ABOUT SECTION
+router.get('/get-about-section', userController.fetchAboutSection);
+
+// SUCCESS STORIES
+router.get('/get-success-stories', userController.fetchSuccessStories);
+
+// TESTIMONIALS
+router.get('/get-testimonials', userController.fetchTestimonials);
+
+// NEWSLETTER SUBSCRIPTION
+router.post('/subscribe-newsletter', userController.subscribeNewsletter);
 
 module.exports = router;

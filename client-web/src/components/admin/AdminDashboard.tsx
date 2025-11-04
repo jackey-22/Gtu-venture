@@ -13,6 +13,11 @@ import {
 	Users,
 	Settings,
 	Users as TeamIcon,
+	Home,
+	BarChart3,
+	Star,
+	MessageSquare,
+	Mail,
 } from 'lucide-react';
 import { Skeleton } from 'primereact/skeleton';
 import CountUp from 'react-countup';
@@ -32,9 +37,37 @@ import FacilitiesCRUD from './FacilitiesCRUD';
 import InitiativesCRUD from './InitiativesCRUD';
 import ContactMessagesCRUD from './ContactMessagesCRUD';
 import CircularsCRUD from './CircularsCRUD';
+import HeroCRUD from './HeroCRUD';
+import CarouselItemsCRUD from './CarouselItemsCRUD';
+import FeaturedGridCRUD from './FeaturedGridCRUD';
+import ProgramHighlightsCRUD from './ProgramHighlightsCRUD';
+import MetricsCRUD from './MetricsCRUD';
+import AboutSectionCRUD from './AboutSectionCRUD';
+import SuccessStoriesCRUD from './SuccessStoriesCRUD';
+import TestimonialsCRUD from './TestimonialsCRUD';
+import NewsletterSubscriptionsCRUD from './NewsletterSubscriptionsCRUD';
 import { setGlobalCursorStyle } from 'node_modules/react-resizable-panels/dist/declarations/src/utils/cursor';
 
 const contentSections = [
+	{ key: 'hero', label: 'Hero Section', component: HeroCRUD, icon: Home },
+	{ key: 'carouselItems', label: 'Carousel Items', component: CarouselItemsCRUD, icon: Image },
+	{ key: 'featuredGrid', label: 'Featured Grid', component: FeaturedGridCRUD, icon: BarChart3 },
+	{
+		key: 'programHighlights',
+		label: 'Program Highlights',
+		component: ProgramHighlightsCRUD,
+		icon: Award,
+	},
+	{ key: 'metrics', label: 'Metrics', component: MetricsCRUD, icon: BarChart3 },
+	{ key: 'aboutSection', label: 'About Section', component: AboutSectionCRUD, icon: HelpCircle },
+	{ key: 'successStories', label: 'Success Stories', component: SuccessStoriesCRUD, icon: Star },
+	{ key: 'testimonials', label: 'Testimonials', component: TestimonialsCRUD, icon: MessageSquare },
+	{
+		key: 'newsletterSubscriptions',
+		label: 'Newsletter Subscriptions',
+		component: NewsletterSubscriptionsCRUD,
+		icon: Mail,
+	},
 	{ key: 'news', label: 'News', component: NewsCRUD, icon: Newspaper },
 	{ key: 'events', label: 'Events', component: EventsCRUD, icon: Calendar },
 	{ key: 'programs', label: 'Programs', component: ProgramsCRUD, icon: Award },

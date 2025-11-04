@@ -9,6 +9,11 @@ import {
 	HelpCircle,
 	Users,
 	Settings,
+	Home,
+	BarChart3,
+	Star,
+	MessageSquare,
+	Mail,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -21,6 +26,15 @@ interface SidebarProps {
 
 const navItems = [
 	{ key: 'overview', label: 'Overview', icon: Settings },
+	{ key: 'hero', label: 'Hero Section', icon: Home },
+	{ key: 'carouselItems', label: 'Carousel Items', icon: Image },
+	{ key: 'featuredGrid', label: 'Featured Grid', icon: BarChart3 },
+	{ key: 'programHighlights', label: 'Program Highlights', icon: Award },
+	{ key: 'metrics', label: 'Metrics', icon: BarChart3 },
+	{ key: 'aboutSection', label: 'About Section', icon: HelpCircle },
+	{ key: 'successStories', label: 'Success Stories', icon: Star },
+	{ key: 'testimonials', label: 'Testimonials', icon: MessageSquare },
+	{ key: 'newsletterSubscriptions', label: 'Newsletter Subscriptions', icon: Mail },
 	{ key: 'news', label: 'News', icon: Newspaper },
 	{ key: 'events', label: 'Events', icon: Calendar },
 	{ key: 'programs', label: 'Programs', icon: Award },

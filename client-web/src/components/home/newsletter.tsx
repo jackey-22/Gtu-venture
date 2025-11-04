@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { fetchPost } from "@/utils/fetch.utils";
 
 export default function Newsletter() {
   const [email, setEmail] = useState("");
@@ -11,7 +12,7 @@ export default function Newsletter() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!email) {
       toast({
         title: "Email required",
@@ -32,17 +33,26 @@ export default function Newsletter() {
     }
 
     setIsLoading(true);
-    
+
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      toast({
-        title: "Success!",
-        description: "You've been subscribed to our newsletter.",
+      const response = await fetchPost({
+        pathName: 'user/subscribe-newsletter',
+        body: JSON.stringify({ email }),
       });
-      
-      setEmail("");
+
+      if (response?.success) {
+        toast({
+          title: "Success!",
+          description: response.message || "You've been subscribed to our newsletter.",
+        });
+        setEmail("");
+      } else {
+        toast({
+          title: "Error",
+          description: response?.message || "Something went wrong. Please try again.",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       toast({
         title: "Error",
@@ -69,7 +79,7 @@ export default function Newsletter() {
             stories delivered to your inbox.
           </p>
 
-          <form 
+          <form
             onSubmit={handleSubmit}
             className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto"
             data-testid="newsletter-form"
@@ -91,7 +101,7 @@ export default function Newsletter() {
               {isLoading ? "Subscribing..." : "Subscribe"}
             </Button>
           </form>
-          
+
           <p className="text-sm text-white/70 mt-4">
             We respect your privacy. Unsubscribe at any time.
           </p>

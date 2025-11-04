@@ -117,7 +117,11 @@ router.delete('/delete-career/:id', asyncRouteHandler(adminController.deleteCare
 router.post('/add-partner', upload.single('logo'), asyncRouteHandler(adminController.addPartner));
 router.get('/get-partners', asyncRouteHandler(adminController.getAllPartners));
 router.get('/get-partner/:id', asyncRouteHandler(adminController.getPartnerById));
-router.post('/update-partner/:id', upload.single('logo'), asyncRouteHandler(adminController.updatePartner));
+router.post(
+	'/update-partner/:id',
+	upload.single('logo'),
+	asyncRouteHandler(adminController.updatePartner)
+);
 router.delete('/delete-partner/:id', asyncRouteHandler(adminController.deletePartner));
 
 // Facility
@@ -138,16 +142,138 @@ router.delete('/delete-initiative/:id', asyncRouteHandler(adminController.delete
 router.get('/get-contact-messages', asyncRouteHandler(adminController.getAllContactMessages));
 router.get('/get-contact-message/:id', asyncRouteHandler(adminController.getContactMessageById));
 router.post('/update-contact-message/:id', asyncRouteHandler(adminController.updateContactMessage));
-router.delete('/delete-contact-message/:id', asyncRouteHandler(adminController.deleteContactMessage));
+router.delete(
+	'/delete-contact-message/:id',
+	asyncRouteHandler(adminController.deleteContactMessage)
+);
 
 // Circular
 router.post('/add-circular', upload.single('file'), asyncRouteHandler(adminController.addCircular));
 router.get('/get-circulars', asyncRouteHandler(adminController.getAllCirculars));
 router.get('/get-circular/:id', asyncRouteHandler(adminController.getCircularById));
-router.post('/update-circular/:id', upload.single('file'), asyncRouteHandler(adminController.updateCircular));
+router.post(
+	'/update-circular/:id',
+	upload.single('file'),
+	asyncRouteHandler(adminController.updateCircular)
+);
 router.delete('/delete-circular/:id', asyncRouteHandler(adminController.deleteCircular));
 
 // Dashbaord cnts
 router.get('/get-counts', asyncRouteHandler(adminController.getDashboardCounts));
+
+// Hero Section
+router.post('/add-hero', asyncRouteHandler(adminController.addHero));
+router.get('/get-heroes', asyncRouteHandler(adminController.getAllHeroes));
+router.get('/get-hero/:id', asyncRouteHandler(adminController.getHeroById));
+router.post('/update-hero/:id', asyncRouteHandler(adminController.updateHero));
+router.delete('/delete-hero/:id', asyncRouteHandler(adminController.deleteHero));
+
+// Carousel Items
+router.post(
+	'/add-carousel-item',
+	upload.single('image'),
+	asyncRouteHandler(adminController.addCarouselItem)
+);
+router.get('/get-carousel-items', asyncRouteHandler(adminController.getAllCarouselItems));
+router.get('/get-carousel-item/:id', asyncRouteHandler(adminController.getCarouselItemById));
+router.post(
+	'/update-carousel-item/:id',
+	upload.single('image'),
+	asyncRouteHandler(adminController.updateCarouselItem)
+);
+router.delete('/delete-carousel-item/:id', asyncRouteHandler(adminController.deleteCarouselItem));
+
+// Featured Grid
+router.post(
+	'/add-featured-grid',
+	upload.single('image'),
+	asyncRouteHandler(adminController.addFeaturedGrid)
+);
+router.get('/get-featured-grids', asyncRouteHandler(adminController.getAllFeaturedGrids));
+router.get('/get-featured-grid/:id', asyncRouteHandler(adminController.getFeaturedGridById));
+router.post(
+	'/update-featured-grid/:id',
+	upload.single('image'),
+	asyncRouteHandler(adminController.updateFeaturedGrid)
+);
+router.delete('/delete-featured-grid/:id', asyncRouteHandler(adminController.deleteFeaturedGrid));
+
+// Program Highlights
+router.post('/add-program-highlight', asyncRouteHandler(adminController.addProgramHighlight));
+router.get('/get-program-highlights', asyncRouteHandler(adminController.getAllProgramHighlights));
+router.get(
+	'/get-program-highlight/:id',
+	asyncRouteHandler(adminController.getProgramHighlightById)
+);
+router.post(
+	'/update-program-highlight/:id',
+	asyncRouteHandler(adminController.updateProgramHighlight)
+);
+router.delete(
+	'/delete-program-highlight/:id',
+	asyncRouteHandler(adminController.deleteProgramHighlight)
+);
+
+// Metrics
+router.post('/add-metric', asyncRouteHandler(adminController.addMetric));
+router.get('/get-metrics', asyncRouteHandler(adminController.getAllMetrics));
+router.get('/get-metric/:id', asyncRouteHandler(adminController.getMetricById));
+router.post('/update-metric/:id', asyncRouteHandler(adminController.updateMetric));
+router.delete('/delete-metric/:id', asyncRouteHandler(adminController.deleteMetric));
+
+// About Section
+router.post(
+	'/add-about-section',
+	upload.single('image'),
+	asyncRouteHandler(adminController.addAboutSection)
+);
+router.get('/get-about-sections', asyncRouteHandler(adminController.getAllAboutSections));
+router.get('/get-about-section/:id', asyncRouteHandler(adminController.getAboutSectionById));
+router.post(
+	'/update-about-section/:id',
+	upload.single('image'),
+	asyncRouteHandler(adminController.updateAboutSection)
+);
+router.delete('/delete-about-section/:id', asyncRouteHandler(adminController.deleteAboutSection));
+
+// Success Stories
+router.post(
+	'/add-success-story',
+	upload.single('image'),
+	asyncRouteHandler(adminController.addSuccessStory)
+);
+router.get('/get-success-stories', asyncRouteHandler(adminController.getAllSuccessStories));
+router.get('/get-success-story/:id', asyncRouteHandler(adminController.getSuccessStoryById));
+router.post(
+	'/update-success-story/:id',
+	upload.single('image'),
+	asyncRouteHandler(adminController.updateSuccessStory)
+);
+router.delete('/delete-success-story/:id', asyncRouteHandler(adminController.deleteSuccessStory));
+
+// Testimonials
+router.post(
+	'/add-testimonial',
+	upload.single('image'),
+	asyncRouteHandler(adminController.addTestimonial)
+);
+router.get('/get-testimonials', asyncRouteHandler(adminController.getAllTestimonials));
+router.get('/get-testimonial/:id', asyncRouteHandler(adminController.getTestimonialById));
+router.post(
+	'/update-testimonial/:id',
+	upload.single('image'),
+	asyncRouteHandler(adminController.updateTestimonial)
+);
+router.delete('/delete-testimonial/:id', asyncRouteHandler(adminController.deleteTestimonial));
+
+// Newsletter Subscriptions
+router.get(
+	'/get-newsletter-subscriptions',
+	asyncRouteHandler(adminController.getAllNewsletterSubscriptions)
+);
+router.delete(
+	'/delete-newsletter-subscription/:id',
+	asyncRouteHandler(adminController.deleteNewsletterSubscription)
+);
 
 module.exports = router;

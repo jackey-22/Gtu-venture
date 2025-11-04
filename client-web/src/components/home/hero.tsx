@@ -2,27 +2,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Rocket, DollarSign, Users, ChevronDown } from 'lucide-react';
 import { useEffect, useState } from 'react';
-
-const kpiData = [
-	{
-		label: 'Startups Supported',
-		target: 730,
-		format: (v: number) => `${Math.round(v)}+`,
-		icon: Rocket,
-	},
-	{
-		label: 'Funding Disbursed',
-		target: 21.17,
-		format: (v: number) => `₹${v.toFixed(2)}cr`,
-		icon: DollarSign,
-	},
-	{
-		label: 'Jobs Created',
-		target: 4100,
-		format: (v: number) => `${Math.round(v).toLocaleString()}+`,
-		icon: Users,
-	},
-];
+import { fetchGet } from '@/utils/fetch.utils';
 
 function AnimatedNumber({
 	target,
@@ -38,13 +18,13 @@ function AnimatedNumber({
 	useEffect(() => {
 		let start = 0;
 		const diff = target - start;
-		const stepTime = Math.max(Math.floor(duration / 60), 8);
+		const stepTime = Math.max(Math.floor(duration / 60), 8);        
 		let current = start;
 		const increment = diff / (duration / stepTime);
 
 		const id = window.setInterval(() => {
 			current += increment;
-			if ((increment > 0 && current >= target) || (increment < 0 && current <= target)) {
+			if ((increment > 0 && current >= target) || (increment < 0 && current <= target)) {                                                     
 				setValue(target);
 				window.clearInterval(id);
 			} else {
@@ -55,10 +35,56 @@ function AnimatedNumber({
 		return () => window.clearInterval(id);
 	}, [target, duration]);
 
-	return <div className="text-2xl font-bold text-white">{format(value)}</div>;
+	return <div className="text-2xl font-bold text-white">{format(value)}</div>;                                                                            
 }
 
 export default function Hero() {
+	const [heroData, setHeroData] = useState<any>(null);
+	const [loading, setLoading] = useState(true);
+
+	useEffect(() => {
+		const fetchHero = async () => {
+			try {
+				const response = await fetchGet({ pathName: 'user/get-hero' });
+				if (response?.success && response?.data) {
+					setHeroData(response.data);
+				} else {
+					// Fallback to default values
+					setHeroData({
+						title: "Ignite Your Startup Journey in Gujarat's Largest Student Ecosystem",
+						subtitle: null,
+						description: "Transform your bold ideas into thriving ventures with expert mentorship, substantial funding, and a dynamic community of innovators. Join GTU Ventures and turn your entrepreneurial dreams into reality.",
+						primaryButtonText: "Apply Now",
+						primaryButtonLink: "/apply",
+						secondaryButtonText: "Explore Programs",
+						secondaryButtonLink: "#programs",
+					});
+				}
+			} catch (error) {
+				console.error('Error fetching hero:', error);
+				// Fallback to default values
+				setHeroData({
+					title: "Ignite Your Startup Journey in Gujarat's Largest Student Ecosystem",
+					subtitle: null,
+					description: "Transform your bold ideas into thriving ventures with expert mentorship, substantial funding, and a dynamic community of innovators. Join GTU Ventures and turn your entrepreneurial dreams into reality.",
+					primaryButtonText: "Apply Now",
+					primaryButtonLink: "/apply",
+					secondaryButtonText: "Explore Programs",
+					secondaryButtonLink: "#programs",
+				});
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		fetchHero();
+	}, []);
+
+	if (loading || !heroData) {
+		return <section className="hero-depth relative h-screen min-h-[100vh] pt-28 my-0 flex items-center justify-center overflow-visible"></section>;
+	}
+
+	const titleParts = heroData.title ? heroData.title.split("Gujarat's Largest") : ["Ignite Your Startup Journey in ", "Gujarat's Largest", " Student Ecosystem"];
 	return (
 		<section className="hero-depth relative h-screen min-h-[100vh] pt-28 my-0 flex items-center justify-center overflow-visible">
 			<div
@@ -92,61 +118,60 @@ export default function Hero() {
 					transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
 					className="max-w-5xl mx-auto"
 				>
-					<motion.h1
-						initial={{ opacity: 0, y: 30 }}
-						animate={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-						className="font-display font-black tracking-tight mb-6 leading-tight text-hero"
-						data-testid="hero-headline"
-					>
-						Ignite Your Startup Journey in{' '}
-						<span className="text-gradient">Gujarat's Largest</span>{' '}
-						<br className="hidden md:block" />
-						Student Ecosystem
-					</motion.h1>
+					                                        <motion.h1
+                                                initial={{ opacity: 0, y: 30 }} 
+                                                animate={{ opacity: 1, y: 0 }}  
+                                                transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}                                            
+                                                className="font-display font-black tracking-tight mb-6 leading-tight text-hero"                                 
+                                                data-testid="hero-headline"     
+                                        >
+                                                {heroData.title || "Ignite Your Startup Journey in Gujarat's Largest Student Ecosystem"}
+                                        </motion.h1>
 
-					<motion.p
-						initial={{ opacity: 0, y: 30 }}
-						animate={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-						className="text-xl md:text-2xl text-white/90 mb-12 max-w-4xl mx-auto leading-relaxed font-medium"
-						data-testid="hero-description"
-					>
-						Transform your bold ideas into thriving ventures with expert mentorship,
-						substantial funding, and a dynamic community of innovators. Join GTU
-						Ventures and turn your entrepreneurial dreams into reality.
-					</motion.p>
+                                        <motion.p
+                                                initial={{ opacity: 0, y: 30 }} 
+                                                animate={{ opacity: 1, y: 0 }}  
+                                                transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}                                            
+                                                className="text-xl md:text-2xl text-white/90 mb-12 max-w-4xl mx-auto leading-relaxed font-medium"               
+                                                data-testid="hero-description"  
+                                        >
+                                                {heroData.description || "Transform your bold ideas into thriving ventures with expert mentorship, substantial funding, and a dynamic community of innovators. Join GTU Ventures and turn your entrepreneurial dreams into reality."}
+                                        </motion.p>
 
-					<motion.div
-						initial={{ opacity: 0, y: 30 }}
-						animate={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.8, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
-						className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-16"
-					>
-						<Button
-							asChild
-							size="lg"
-							className="btn-gradient text-white px-10 py-5 rounded-full font-bold text-lg shadow-2xl hover:shadow-purple-500/25"
-							data-testid="hero-apply-button"
-						>
-							<a href="/apply" className="flex items-center gap-2">
-								<Rocket className="w-5 h-5" />
-								Apply Now
-							</a>
-						</Button>
-						<Button
-							asChild
-							variant="outline"
-							size="lg"
-							className="text-white border-2 border-white/30 px-10 py-5 rounded-full font-semibold text-lg hover:bg-white/10 hover:border-white/50 bg-transparent backdrop-blur-sm"
-							data-testid="hero-explore-button"
-						>
-							<a href="#programs" className="flex items-center gap-2">
-								Explore Programs
-								<ChevronDown className="w-4 h-4" />
-							</a>
-						</Button>
-					</motion.div>
+                                        <motion.div
+                                                initial={{ opacity: 0, y: 30 }} 
+                                                animate={{ opacity: 1, y: 0 }}  
+                                                transition={{ duration: 0.8, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}                                            
+                                                className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-16"                                   
+                                        >
+                                                {heroData.primaryButtonText && heroData.primaryButtonLink && (
+                                                        <Button
+                                                                asChild
+                                                                size="lg"
+                                                                className="btn-gradient text-white px-10 py-5 rounded-full font-bold text-lg shadow-2xl hover:shadow-purple-500/25"                                                                     
+                                                                data-testid="hero-apply-button"                                                                         
+                                                        >
+                                                                <a href={heroData.primaryButtonLink} className="flex items-center gap-2">                                                   
+                                                                        <Rocket className="w-5 h-5" />                                                                  
+                                                                        {heroData.primaryButtonText}
+                                                                </a>
+                                                        </Button>
+                                                )}
+                                                {heroData.secondaryButtonText && heroData.secondaryButtonLink && (
+                                                        <Button
+                                                                asChild
+                                                                variant="outline"       
+                                                                size="lg"
+                                                                className="text-white border-2 border-white/30 px-10 py-5 rounded-full font-semibold text-lg hover:bg-white/10 hover:border-white/50 bg-transparent backdrop-blur-sm"                   
+                                                                data-testid="hero-explore-button"                                                                       
+                                                        >
+                                                                <a href={heroData.secondaryButtonLink} className="flex items-center gap-2">                                                
+                                                                        {heroData.secondaryButtonText}
+                                                                        <ChevronDown className="w-4 h-4" />                                                             
+                                                                </a>
+                                                        </Button>
+                                                )}
+                                        </motion.div>
 
 					{/* KPI Chips */}
 					{/* <motion.div
