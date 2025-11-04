@@ -56,13 +56,11 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpen, onCl
 	return (
 		<aside
 			className={cn(
-				'fixed md:static top-16 md:top-0 left-0 h-[calc(100vh-4rem)] md:h-screen w-60 hero-depth text-white shadow-lg z-40 transform transition-transform duration-300 ease-in-out',
+				'fixed md:static top-16 md:top-0 left-0 h-[calc(100vh-4rem)] md:h-screen w-60 hero-depth text-white shadow-lg z-40 transform transition-transform duration-300 ease-in-out overflow-y-auto sidebar-scroll',
 				isOpen ? 'translate-x-0' : '-translate-x-full',
 				'md:translate-x-0'
 			)}
-			style={{
-				height: 'calc(100vh - 4rem)',
-			}}
+			style={{ height: 'calc(100vh - 4rem)' }}
 		>
 			<div className="md:hidden flex items-center justify-between px-4 py-3 border-b border-gray-700">
 				<h2 className="text-lg font-semibold">GTU Ventures</h2>
