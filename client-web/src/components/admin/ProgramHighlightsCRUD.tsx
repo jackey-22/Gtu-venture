@@ -32,6 +32,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 import { fetchGet, fetchPost } from '../../utils/fetch.utils';
+import { IconPicker } from '@/components/ui/icon-picker';
 
 interface ProgramHighlight {
 	_id: string;
@@ -215,21 +216,18 @@ export default function ProgramHighlightsCRUD() {
 								/>
 							</div>
 
-							<div className="grid grid-cols-2 gap-4">
-								<div className="space-y-2">
-									<Label>Icon Name (Lucide) *</Label>
-									<Input
-										required
-										value={formData.icon}
-										onChange={(e) =>
-											setFormData({ ...formData, icon: e.target.value })
-										}
-										placeholder="e.g., TrendingUp, Award, Rocket"
-									/>
-									<p className="text-xs text-muted-foreground">
-										Use Lucide icon names (e.g., TrendingUp, Award, Rocket)
-									</p>
-								</div>
+															<div className="grid grid-cols-2 gap-4">
+									<div className="space-y-2">
+										<Label>Icon *</Label>
+										<IconPicker
+											required
+											value={formData.icon}
+											onValueChange={(value) =>
+												setFormData({ ...formData, icon: value })
+											}
+											placeholder="Select an icon"
+										/>
+									</div>
 								<div className="space-y-2">
 									<Label>Color Classes</Label>
 									<Input

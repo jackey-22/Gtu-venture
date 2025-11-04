@@ -32,6 +32,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Plus, Edit, Trash2, X } from 'lucide-react';
 import { fetchGet, fetchPost } from '../../utils/fetch.utils';
+import { IconPicker } from '@/components/ui/icon-picker';
 
 interface Stat {
 	label?: string;
@@ -341,39 +342,39 @@ export default function FeaturedGridCRUD() {
 										<Plus className="w-3 h-3 mr-1" /> Add Stat
 									</Button>
 								</div>
-								{formData.stats.map((stat, index) => (
-									<div key={index} className="grid grid-cols-4 gap-2 items-end">
-										<Input
-											placeholder="Label"
-											value={stat.label || ''}
-											onChange={(e) =>
-												updateStat(index, 'label', e.target.value)
-											}
-										/>
-										<Input
-											placeholder="Value"
-											value={stat.value || ''}
-											onChange={(e) =>
-												updateStat(index, 'value', e.target.value)
-											}
-										/>
-										<Input
-											placeholder="Icon"
-											value={stat.icon || ''}
-											onChange={(e) =>
-												updateStat(index, 'icon', e.target.value)
-											}
-										/>
-										<Button
-											type="button"
-											variant="destructive"
-											size="sm"
-											onClick={() => removeStat(index)}
-										>
-											<X className="w-4 h-4" />
-										</Button>
-									</div>
-								))}
+																	{formData.stats.map((stat, index) => (
+										<div key={index} className="grid grid-cols-4 gap-2 items-end">
+											<Input
+												placeholder="Label"
+												value={stat.label || ''}
+												onChange={(e) =>
+													updateStat(index, 'label', e.target.value)
+												}
+											/>
+											<Input
+												placeholder="Value"
+												value={stat.value || ''}
+												onChange={(e) =>
+													updateStat(index, 'value', e.target.value)
+												}
+											/>
+											<IconPicker
+												value={stat.icon || ''}
+												onValueChange={(value) =>
+													updateStat(index, 'icon', value)
+												}
+												placeholder="Icon"
+											/>
+											<Button
+												type="button"
+												variant="destructive"
+												size="sm"
+												onClick={() => removeStat(index)}
+											>
+												<X className="w-4 h-4" />
+											</Button>
+										</div>
+									))}
 							</div>
 
 							<div className="grid grid-cols-2 gap-4">

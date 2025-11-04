@@ -1,16 +1,10 @@
 import { motion } from 'framer-motion';
-import { Award, TrendingUp, Users, DollarSign } from 'lucide-react';
+import { TrendingUp } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { fetchGet } from '@/utils/fetch.utils';
+import { getIconComponent } from '@/utils/icon.utils';
 
 const baseURL = import.meta.env.VITE_URL;
-
-const iconMap: { [key: string]: any } = {
-	TrendingUp,
-	Award,
-	Users,
-	DollarSign,
-};
 
 const containerVariants = {
 	hidden: { opacity: 0 },
@@ -89,7 +83,7 @@ export default function SuccessStories() {
 					className="grid grid-cols-1 md:grid-cols-2 gap-8"
 				>
 					{successStories.map((story) => {
-						const IconComponent = iconMap[story.icon] || TrendingUp;
+						const IconComponent = getIconComponent(story.icon);
 						return (
 							<motion.div
 								key={story._id || story.id}

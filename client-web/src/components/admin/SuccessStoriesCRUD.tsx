@@ -32,6 +32,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 import { fetchGet, fetchPost } from '../../utils/fetch.utils';
+import { IconPicker } from '@/components/ui/icon-picker';
 
 interface SuccessStory {
 	_id: string;
@@ -231,18 +232,18 @@ export default function SuccessStoriesCRUD() {
 								/>
 							</div>
 
-							<div className="grid grid-cols-2 gap-4">
-								<div className="space-y-2">
-									<Label>Icon Name (Lucide) *</Label>
-									<Input
-										required
-										value={formData.icon}
-										onChange={(e) =>
-											setFormData({ ...formData, icon: e.target.value })
-										}
-										placeholder="e.g., TrendingUp, Award"
-									/>
-								</div>
+															<div className="grid grid-cols-2 gap-4">
+									<div className="space-y-2">
+										<Label>Icon *</Label>
+										<IconPicker
+											required
+											value={formData.icon}
+											onValueChange={(value) =>
+												setFormData({ ...formData, icon: value })
+											}
+											placeholder="Select an icon"
+										/>
+									</div>
 								<div className="space-y-2">
 									<Label>Metric *</Label>
 									<Input

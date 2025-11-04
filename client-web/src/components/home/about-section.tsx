@@ -101,7 +101,6 @@ export default function AboutSection() {
 						transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
 						className="relative"
 					>
-						{console.log('url: ', imageUrl)}
 						<img
 							src={imageUrl}
 							alt="GTU Ventures"
