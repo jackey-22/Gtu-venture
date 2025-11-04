@@ -58,7 +58,7 @@ export default function Navbar() {
 								<Link
 									key={item.name}
 									href={item.href}
-									className={`relative text-[16px] font-medium transition-all 
+									className={`relative text-[16px] font-medium transition-all text-black
                     ${active ? 'text-primary font-semibold' : 'text-gray-700 hover:text-primary'}
                   `}
 								>
@@ -79,7 +79,8 @@ export default function Navbar() {
 					<div className="flex items-center gap-3">
 						<Button
 							asChild
-							className="px-5 py-2.5 rounded-xl shadow-sm font-semibold bg-primary hover:bg-primary/90"
+							className="px-5 py-2.5 text-base rounded-xl shadow-sm font-semibold bg-primary hover:bg-primary/90"
+							size="xl"
 						>
 							<a href="/apply">Apply Now</a>
 						</Button>

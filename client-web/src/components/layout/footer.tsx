@@ -2,13 +2,6 @@ import { Link } from 'wouter';
 import { motion } from 'framer-motion';
 import { Twitter, Linkedin, Facebook } from 'lucide-react';
 
-const programLinks = [
-	{ name: 'Pre-incubation', href: '/programs#pre-incubation' },
-	{ name: 'Incubation', href: '/programs#incubation' },
-	{ name: 'Acceleration', href: '/programs#acceleration' },
-	{ name: 'Innovation Labs', href: '/programs#innovation-labs' },
-];
-
 const quickLinks = [
 	{ name: 'Home', href: '/home' },
 	{ name: 'About', href: '/about' },
@@ -51,8 +44,8 @@ export default function Footer() {
 			{/* Gradient bar */}
 			<div className="h-1 bg-gradient-to-r from-primary via-secondary to-accent"></div>
 
-			<div className="max-w-7xl mx-auto px-6 lg:px-16 py-16">
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 mb-12">
+			<div className="max-w-10xl mx-auto px-6 lg:px-16 py-16">
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-10 md:gap-48 lg:gap-64 mb-12">
 					{/* Brand */}
 					<div className="md:col-span-2">
 						<img src="/gtuv.png" alt="GTU Ventures" className="h-12 w-auto mb-6" />
@@ -77,26 +70,6 @@ export default function Footer() {
 								);
 							})}
 						</div>
-					</div>
-
-					{/* Programs */}
-					<div>
-						<h4 className="text-lg font-semibold mb-4">Programs</h4>
-						<ul className="space-y-2 text-white/80">
-							{programLinks.map((link) => (
-								<li key={link.name}>
-									<Link
-										href={link.href}
-										className="hover:text-white transition-colors"
-										data-testid={`footer-program-${link.name
-											.toLowerCase()
-											.replace(/\s+/g, '-')}`}
-									>
-										{link.name}
-									</Link>
-								</li>
-							))}
-						</ul>
 					</div>
 
 					{/* Quick Links */}

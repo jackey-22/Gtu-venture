@@ -28,12 +28,10 @@ export default function Carousel3D() {
 				const response = await fetchGet({ pathName: 'user/get-carousel-items' });
 				if (response?.success && response?.data) {
 					const items = response.data
-						// if you have order field in DB, sort by it here
 						.sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0))
 						.map((item: any, index: number) => ({
 							id: index,
 							_id: item._id,
-							// if backend returns relative path, prepend VITE_URL; if absolute, keep it
 							image:
 								item.image &&
 								(item.image.startsWith('http') || item.image.startsWith('//'))
