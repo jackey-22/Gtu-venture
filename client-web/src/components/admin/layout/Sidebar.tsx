@@ -26,15 +26,7 @@ interface SidebarProps {
 
 const navItems = [
 	{ key: 'overview', label: 'Overview', icon: Settings },
-	{ key: 'hero', label: 'Hero Section', icon: Home },
-	{ key: 'carouselItems', label: 'Carousel Items', icon: Image },
-	{ key: 'featuredGrid', label: 'Featured Grid', icon: BarChart3 },
-	{ key: 'programHighlights', label: 'Program Highlights', icon: Award },
-	{ key: 'metrics', label: 'Metrics', icon: BarChart3 },
-	{ key: 'aboutSection', label: 'About Section', icon: HelpCircle },
-	{ key: 'successStories', label: 'Success Stories', icon: Star },
-	{ key: 'testimonials', label: 'Testimonials', icon: MessageSquare },
-	{ key: 'newsletterSubscriptions', label: 'Newsletter Subscriptions', icon: Mail },
+	{ key: 'homePageSections', label: 'Home Page', icon: Home },
 	{ key: 'news', label: 'News', icon: Newspaper },
 	{ key: 'events', label: 'Events', icon: Calendar },
 	{ key: 'programs', label: 'Programs', icon: Award },
@@ -48,7 +40,7 @@ const navItems = [
 	{ key: 'partners', label: 'Partners', icon: Building },
 	{ key: 'facilities', label: 'Facilities', icon: Settings },
 	{ key: 'initiatives', label: 'Initiatives', icon: Award },
-	{ key: 'contactMessages', label: 'Contact Messages', icon: Newspaper },
+	{ key: 'contactMessages', label: 'Contacts', icon: Newspaper },
 	{ key: 'circulars', label: 'Circulars', icon: FileText },
 ];
 

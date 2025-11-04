@@ -171,7 +171,9 @@ export default function ProgramHighlightsCRUD() {
 			<div className="flex justify-between items-center">
 				<div>
 					<h2 className="text-2xl font-bold">Program Highlights Management</h2>
-					<p className="text-muted-foreground">Manage program highlights displayed on home page</p>
+					<p className="text-muted-foreground">
+						Manage program highlights displayed on home page
+					</p>
 				</div>
 
 				<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -183,7 +185,9 @@ export default function ProgramHighlightsCRUD() {
 					<DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
 						<DialogHeader>
 							<DialogTitle>
-								{editingHighlight ? 'Edit Program Highlight' : 'Add Program Highlight'}
+								{editingHighlight
+									? 'Edit Program Highlight'
+									: 'Add Program Highlight'}
 							</DialogTitle>
 						</DialogHeader>
 
@@ -193,7 +197,9 @@ export default function ProgramHighlightsCRUD() {
 								<Input
 									required
 									value={formData.title}
-									onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+									onChange={(e) =>
+										setFormData({ ...formData, title: e.target.value })
+									}
 								/>
 							</div>
 
@@ -215,7 +221,9 @@ export default function ProgramHighlightsCRUD() {
 									<Input
 										required
 										value={formData.icon}
-										onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
+										onChange={(e) =>
+											setFormData({ ...formData, icon: e.target.value })
+										}
 										placeholder="e.g., TrendingUp, Award, Rocket"
 									/>
 									<p className="text-xs text-muted-foreground">
@@ -226,7 +234,9 @@ export default function ProgramHighlightsCRUD() {
 									<Label>Color Classes</Label>
 									<Input
 										value={formData.color}
-										onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+										onChange={(e) =>
+											setFormData({ ...formData, color: e.target.value })
+										}
 										placeholder="bg-primary/10 text-primary"
 									/>
 								</div>
@@ -236,7 +246,9 @@ export default function ProgramHighlightsCRUD() {
 								<Label>Link (optional)</Label>
 								<Input
 									value={formData.link}
-									onChange={(e) => setFormData({ ...formData, link: e.target.value })}
+									onChange={(e) =>
+										setFormData({ ...formData, link: e.target.value })
+									}
 									placeholder="/programs"
 								/>
 							</div>
@@ -248,7 +260,10 @@ export default function ProgramHighlightsCRUD() {
 										type="number"
 										value={formData.order}
 										onChange={(e) =>
-											setFormData({ ...formData, order: parseInt(e.target.value) || 0 })
+											setFormData({
+												...formData,
+												order: parseInt(e.target.value) || 0,
+											})
 										}
 									/>
 								</div>
@@ -256,9 +271,9 @@ export default function ProgramHighlightsCRUD() {
 									<Label>Status</Label>
 									<Select
 										value={formData.status}
-										onValueChange={(value: 'draft' | 'published' | 'archived') =>
-											setFormData({ ...formData, status: value })
-										}
+										onValueChange={(
+											value: 'draft' | 'published' | 'archived'
+										) => setFormData({ ...formData, status: value })}
 									>
 										<SelectTrigger>
 											<SelectValue />
@@ -281,7 +296,11 @@ export default function ProgramHighlightsCRUD() {
 									Cancel
 								</Button>
 								<Button type="submit" disabled={actionLoading}>
-									{actionLoading ? 'Saving...' : editingHighlight ? 'Update' : 'Create'}{' '}
+									{actionLoading
+										? 'Saving...'
+										: editingHighlight
+										? 'Update'
+										: 'Create'}{' '}
 									Highlight
 								</Button>
 							</div>
@@ -290,69 +309,91 @@ export default function ProgramHighlightsCRUD() {
 				</Dialog>
 			</div>
 
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-				{highlights.map((highlight) => (
-					<Card key={highlight._id}>
-						<CardContent className="p-4">
-							<div className="flex justify-between items-start gap-3">
-								<div className="flex-1 min-w-0">
-									<div className="flex items-center gap-2 mb-2 flex-wrap">
-										<h3 className="font-bold text-lg line-clamp-2">{highlight.title}</h3>
-										<Badge
-											variant={highlight.status === 'published' ? 'default' : 'secondary'}
-										>
-											{highlight.status}
-										</Badge>
-									</div>
-									<p className="text-sm text-muted-foreground line-clamp-3 mb-2">
-										{highlight.description}
-									</p>
-									<div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-										<span>Icon: {highlight.icon}</span>
-										<span>•</span>
-										<span>Order: {highlight.order}</span>
-									</div>
-								</div>
-								<div className="flex gap-2 flex-shrink-0">
-									<Button
-										variant="outline"
-										size="sm"
-										onClick={() => handleEdit(highlight)}
-									>
-										<Edit className="w-4 h-4" />
-									</Button>
-									<AlertDialog>
-										<AlertDialogTrigger asChild>
-											<Button variant="destructive" size="sm">
-												<Trash2 className="w-4 h-4" />
-											</Button>
-										</AlertDialogTrigger>
-										<AlertDialogContent>
-											<AlertDialogHeader>
-												<AlertDialogTitle>Delete Highlight?</AlertDialogTitle>
-												<AlertDialogDescription>
-													This action cannot be undone.
-												</AlertDialogDescription>
-											</AlertDialogHeader>
-											<AlertDialogFooter>
-												<AlertDialogCancel>Cancel</AlertDialogCancel>
-												<AlertDialogAction onClick={() => handleDelete(highlight._id)}>
-													Delete
-												</AlertDialogAction>
-											</AlertDialogFooter>
-										</AlertDialogContent>
-									</AlertDialog>
-								</div>
-							</div>
-						</CardContent>
-					</Card>
-				))}
-				{highlights.length === 0 && (
-					<div className="text-center text-muted-foreground py-8 col-span-full">
-						No program highlights found
+			{loading ? (
+				<div className="flex justify-center items-center h-64">
+					<div className="text-center">
+						<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
+						<p className="mt-3 text-primary">Loading Program Highlights...</p>
 					</div>
-				)}
-			</div>
+				</div>
+			) : (
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+					{highlights.map((highlight) => (
+						<Card key={highlight._id}>
+							<CardContent className="p-4">
+								<div className="flex justify-between items-start gap-3">
+									<div className="flex-1 min-w-0">
+										<div className="flex items-center gap-2 mb-2 flex-wrap">
+											<h3 className="font-bold text-lg line-clamp-2">
+												{highlight.title}
+											</h3>
+											<Badge
+												variant={
+													highlight.status === 'published'
+														? 'default'
+														: 'secondary'
+												}
+											>
+												{highlight.status}
+											</Badge>
+										</div>
+										<p className="text-sm text-muted-foreground line-clamp-3 mb-2">
+											{highlight.description}
+										</p>
+										<div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+											<span>Icon: {highlight.icon}</span>
+											<span>•</span>
+											<span>Order: {highlight.order}</span>
+										</div>
+									</div>
+
+									<div className="flex gap-2 flex-shrink-0">
+										<Button
+											variant="outline"
+											size="sm"
+											onClick={() => handleEdit(highlight)}
+										>
+											<Edit className="w-4 h-4" />
+										</Button>
+
+										<AlertDialog>
+											<AlertDialogTrigger asChild>
+												<Button variant="destructive" size="sm">
+													<Trash2 className="w-4 h-4" />
+												</Button>
+											</AlertDialogTrigger>
+											<AlertDialogContent>
+												<AlertDialogHeader>
+													<AlertDialogTitle>
+														Delete Highlight?
+													</AlertDialogTitle>
+													<AlertDialogDescription>
+														This action cannot be undone.
+													</AlertDialogDescription>
+												</AlertDialogHeader>
+												<AlertDialogFooter>
+													<AlertDialogCancel>Cancel</AlertDialogCancel>
+													<AlertDialogAction
+														onClick={() => handleDelete(highlight._id)}
+													>
+														Delete
+													</AlertDialogAction>
+												</AlertDialogFooter>
+											</AlertDialogContent>
+										</AlertDialog>
+									</div>
+								</div>
+							</CardContent>
+						</Card>
+					))}
+
+					{highlights.length === 0 && (
+						<div className="text-center text-muted-foreground py-8 col-span-full">
+							No program highlights found
+						</div>
+					)}
+				</div>
+			)}
 		</div>
 	);
 }

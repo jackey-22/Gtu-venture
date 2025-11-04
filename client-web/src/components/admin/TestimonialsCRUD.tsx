@@ -184,7 +184,9 @@ export default function TestimonialsCRUD() {
 			<div className="flex justify-between items-center">
 				<div>
 					<h2 className="text-2xl font-bold">Testimonials Management</h2>
-					<p className="text-muted-foreground">Manage testimonials displayed on home page</p>
+					<p className="text-muted-foreground">
+						Manage testimonials displayed on home page
+					</p>
 				</div>
 
 				<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -207,7 +209,9 @@ export default function TestimonialsCRUD() {
 									required
 									rows={4}
 									value={formData.quote}
-									onChange={(e) => setFormData({ ...formData, quote: e.target.value })}
+									onChange={(e) =>
+										setFormData({ ...formData, quote: e.target.value })
+									}
 								/>
 							</div>
 
@@ -217,7 +221,9 @@ export default function TestimonialsCRUD() {
 									<Input
 										required
 										value={formData.author}
-										onChange={(e) => setFormData({ ...formData, author: e.target.value })}
+										onChange={(e) =>
+											setFormData({ ...formData, author: e.target.value })
+										}
 									/>
 								</div>
 								<div className="space-y-2">
@@ -225,7 +231,9 @@ export default function TestimonialsCRUD() {
 									<Input
 										required
 										value={formData.position}
-										onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+										onChange={(e) =>
+											setFormData({ ...formData, position: e.target.value })
+										}
 									/>
 								</div>
 							</div>
@@ -261,7 +269,10 @@ export default function TestimonialsCRUD() {
 										type="number"
 										value={formData.order}
 										onChange={(e) =>
-											setFormData({ ...formData, order: parseInt(e.target.value) || 0 })
+											setFormData({
+												...formData,
+												order: parseInt(e.target.value) || 0,
+											})
 										}
 									/>
 								</div>
@@ -269,9 +280,9 @@ export default function TestimonialsCRUD() {
 									<Label>Status</Label>
 									<Select
 										value={formData.status}
-										onValueChange={(value: 'draft' | 'published' | 'archived') =>
-											setFormData({ ...formData, status: value })
-										}
+										onValueChange={(
+											value: 'draft' | 'published' | 'archived'
+										) => setFormData({ ...formData, status: value })}
 									>
 										<SelectTrigger>
 											<SelectValue />
@@ -294,7 +305,11 @@ export default function TestimonialsCRUD() {
 									Cancel
 								</Button>
 								<Button type="submit" disabled={actionLoading}>
-									{actionLoading ? 'Saving...' : editingTestimonial ? 'Update' : 'Create'}{' '}
+									{actionLoading
+										? 'Saving...'
+										: editingTestimonial
+										? 'Update'
+										: 'Create'}{' '}
 									Testimonial
 								</Button>
 							</div>
@@ -303,77 +318,102 @@ export default function TestimonialsCRUD() {
 				</Dialog>
 			</div>
 
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-				{testimonials.map((testimonial) => (
-					<Card key={testimonial._id}>
-						<CardContent className="p-4">
-							<div className="flex flex-col gap-3">
-								<div className="flex items-start gap-3">
-									{testimonial.image && (
-										<img
-											src={testimonial.image}
-											alt={testimonial.author}
-											className="w-16 h-16 object-cover rounded-full flex-shrink-0"
-										/>
-									)}
-									<div className="flex-1 min-w-0">
-										<p className="text-sm text-muted-foreground line-clamp-3 mb-2">
-											"{testimonial.quote}"
-										</p>
-										<p className="font-semibold text-sm">{testimonial.author}</p>
-										<p className="text-xs text-muted-foreground">{testimonial.position}</p>
-									</div>
-								</div>
-								<div className="flex justify-between items-center pt-2 border-t">
-									<Badge
-										variant={testimonial.status === 'published' ? 'default' : 'secondary'}
-									>
-										{testimonial.status}
-									</Badge>
-									<p className="text-xs text-muted-foreground">Order: {testimonial.order}</p>
-									<div className="flex gap-2">
-										<Button
-											variant="outline"
-											size="sm"
-											onClick={() => handleEdit(testimonial)}
-										>
-											<Edit className="w-4 h-4" />
-										</Button>
-										<AlertDialog>
-											<AlertDialogTrigger asChild>
-												<Button variant="destructive" size="sm">
-													<Trash2 className="w-4 h-4" />
-												</Button>
-											</AlertDialogTrigger>
-											<AlertDialogContent>
-												<AlertDialogHeader>
-													<AlertDialogTitle>Delete Testimonial?</AlertDialogTitle>
-													<AlertDialogDescription>
-														This action cannot be undone.
-													</AlertDialogDescription>
-												</AlertDialogHeader>
-												<AlertDialogFooter>
-													<AlertDialogCancel>Cancel</AlertDialogCancel>
-													<AlertDialogAction
-														onClick={() => handleDelete(testimonial._id)}
-													>
-														Delete
-													</AlertDialogAction>
-												</AlertDialogFooter>
-											</AlertDialogContent>
-										</AlertDialog>
-									</div>
-								</div>
-							</div>
-						</CardContent>
-					</Card>
-				))}
-				{testimonials.length === 0 && (
-					<div className="text-center text-muted-foreground py-8 col-span-full">
-						No testimonials found
+			{loading ? (
+				<div className="flex justify-center items-center h-64">
+					<div className="text-center">
+						<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
+						<p className="mt-3 text-primary">Loading Testimonials...</p>
 					</div>
-				)}
-			</div>
+				</div>
+			) : (
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+					{testimonials.map((testimonial) => (
+						<Card key={testimonial._id}>
+							<CardContent className="p-4">
+								<div className="flex flex-col gap-3">
+									<div className="flex items-start gap-3">
+										{testimonial.image && (
+											<img
+												src={testimonial.image}
+												alt={testimonial.author}
+												className="w-16 h-16 object-cover rounded-full flex-shrink-0"
+											/>
+										)}
+										<div className="flex-1 min-w-0">
+											<p className="text-sm text-muted-foreground line-clamp-3 mb-2">
+												"{testimonial.quote}"
+											</p>
+											<p className="font-semibold text-sm">
+												{testimonial.author}
+											</p>
+											<p className="text-xs text-muted-foreground">
+												{testimonial.position}
+											</p>
+										</div>
+									</div>
+									<div className="flex justify-between items-center pt-2 border-t">
+										<Badge
+											variant={
+												testimonial.status === 'published'
+													? 'default'
+													: 'secondary'
+											}
+										>
+											{testimonial.status}
+										</Badge>
+										<p className="text-xs text-muted-foreground">
+											Order: {testimonial.order}
+										</p>
+										<div className="flex gap-2">
+											<Button
+												variant="outline"
+												size="sm"
+												onClick={() => handleEdit(testimonial)}
+											>
+												<Edit className="w-4 h-4" />
+											</Button>
+											<AlertDialog>
+												<AlertDialogTrigger asChild>
+													<Button variant="destructive" size="sm">
+														<Trash2 className="w-4 h-4" />
+													</Button>
+												</AlertDialogTrigger>
+												<AlertDialogContent>
+													<AlertDialogHeader>
+														<AlertDialogTitle>
+															Delete Testimonial?
+														</AlertDialogTitle>
+														<AlertDialogDescription>
+															This action cannot be undone.
+														</AlertDialogDescription>
+													</AlertDialogHeader>
+													<AlertDialogFooter>
+														<AlertDialogCancel>
+															Cancel
+														</AlertDialogCancel>
+														<AlertDialogAction
+															onClick={() =>
+																handleDelete(testimonial._id)
+															}
+														>
+															Delete
+														</AlertDialogAction>
+													</AlertDialogFooter>
+												</AlertDialogContent>
+											</AlertDialog>
+										</div>
+									</div>
+								</div>
+							</CardContent>
+						</Card>
+					))}
+					{testimonials.length === 0 && (
+						<div className="text-center text-muted-foreground py-8 col-span-full">
+							No testimonials found
+						</div>
+					)}
+				</div>
+			)}
 		</div>
 	);
 }

@@ -248,7 +248,9 @@ export default function FeaturedGridCRUD() {
 									<Input
 										required
 										value={formData.title}
-										onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+										onChange={(e) =>
+											setFormData({ ...formData, title: e.target.value })
+										}
 									/>
 								</div>
 								<div className="space-y-2">
@@ -287,7 +289,11 @@ export default function FeaturedGridCRUD() {
 								<Label>Image</Label>
 								{existingImage && (
 									<div className="mb-2">
-										<img src={existingImage} alt="Current" className="w-32 h-32 object-cover rounded" />
+										<img
+											src={existingImage}
+											alt="Current"
+											className="w-32 h-32 object-cover rounded"
+										/>
 									</div>
 								)}
 								<Input
@@ -307,7 +313,9 @@ export default function FeaturedGridCRUD() {
 									<Label>Link</Label>
 									<Input
 										value={formData.link}
-										onChange={(e) => setFormData({ ...formData, link: e.target.value })}
+										onChange={(e) =>
+											setFormData({ ...formData, link: e.target.value })
+										}
 									/>
 								</div>
 								<div className="space-y-2">
@@ -324,7 +332,12 @@ export default function FeaturedGridCRUD() {
 							<div className="space-y-2">
 								<div className="flex justify-between items-center">
 									<Label>Stats</Label>
-									<Button type="button" onClick={addStat} size="sm" variant="outline">
+									<Button
+										type="button"
+										onClick={addStat}
+										size="sm"
+										variant="outline"
+									>
 										<Plus className="w-3 h-3 mr-1" /> Add Stat
 									</Button>
 								</div>
@@ -333,17 +346,23 @@ export default function FeaturedGridCRUD() {
 										<Input
 											placeholder="Label"
 											value={stat.label || ''}
-											onChange={(e) => updateStat(index, 'label', e.target.value)}
+											onChange={(e) =>
+												updateStat(index, 'label', e.target.value)
+											}
 										/>
 										<Input
 											placeholder="Value"
 											value={stat.value || ''}
-											onChange={(e) => updateStat(index, 'value', e.target.value)}
+											onChange={(e) =>
+												updateStat(index, 'value', e.target.value)
+											}
 										/>
 										<Input
 											placeholder="Icon"
 											value={stat.icon || ''}
-											onChange={(e) => updateStat(index, 'icon', e.target.value)}
+											onChange={(e) =>
+												updateStat(index, 'icon', e.target.value)
+											}
 										/>
 										<Button
 											type="button"
@@ -364,7 +383,10 @@ export default function FeaturedGridCRUD() {
 										type="number"
 										value={formData.order}
 										onChange={(e) =>
-											setFormData({ ...formData, order: parseInt(e.target.value) || 0 })
+											setFormData({
+												...formData,
+												order: parseInt(e.target.value) || 0,
+											})
 										}
 									/>
 								</div>
@@ -372,9 +394,9 @@ export default function FeaturedGridCRUD() {
 									<Label>Status</Label>
 									<Select
 										value={formData.status}
-										onValueChange={(value: 'draft' | 'published' | 'archived') =>
-											setFormData({ ...formData, status: value })
-										}
+										onValueChange={(
+											value: 'draft' | 'published' | 'archived'
+										) => setFormData({ ...formData, status: value })}
 									>
 										<SelectTrigger>
 											<SelectValue />
@@ -397,7 +419,12 @@ export default function FeaturedGridCRUD() {
 									Cancel
 								</Button>
 								<Button type="submit" disabled={actionLoading}>
-									{actionLoading ? 'Saving...' : editingItem ? 'Update' : 'Create'} Item
+									{actionLoading
+										? 'Saving...'
+										: editingItem
+										? 'Update'
+										: 'Create'}{' '}
+									Item
 								</Button>
 							</div>
 						</form>
@@ -405,69 +432,101 @@ export default function FeaturedGridCRUD() {
 				</Dialog>
 			</div>
 
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-				{items.map((item) => (
-					<Card key={item._id}>
-						<CardContent className="p-4">
-							<div className="flex flex-col gap-3">
-								{item.image && (
-									<img
-										src={item.image}
-										alt={item.title}
-										className="w-full h-32 object-cover rounded"
-									/>
-								)}
-								<div className="flex justify-between items-start gap-3">
-									<div className="flex-1 min-w-0">
-										<div className="flex items-center gap-2 mb-2 flex-wrap">
-											<h3 className="font-bold text-lg line-clamp-2">{item.title}</h3>
-											<Badge variant={item.status === 'published' ? 'default' : 'secondary'}>
-												{item.status}
-											</Badge>
-											<Badge variant="outline">{item.type}</Badge>
+			{loading ? (
+				<div className="flex justify-center items-center h-64">
+					<div className="text-center">
+						<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
+						<p className="mt-3 text-primary">Loading Featured Grid Items...</p>
+					</div>
+				</div>
+			) : (
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+					{items.map((item) => (
+						<Card key={item._id}>
+							<CardContent className="p-4">
+								<div className="flex flex-col gap-3">
+									{item.image && (
+										<img
+											src={item.image}
+											alt={item.title}
+											className="w-full h-32 object-cover rounded"
+										/>
+									)}
+									<div className="flex justify-between items-start gap-3">
+										<div className="flex-1 min-w-0">
+											<div className="flex items-center gap-2 mb-2 flex-wrap">
+												<h3 className="font-bold text-lg line-clamp-2">
+													{item.title}
+												</h3>
+												<Badge
+													variant={
+														item.status === 'published'
+															? 'default'
+															: 'secondary'
+													}
+												>
+													{item.status}
+												</Badge>
+												<Badge variant="outline">{item.type}</Badge>
+											</div>
+
+											<p className="text-sm text-muted-foreground line-clamp-3 mb-2">
+												{item.description}
+											</p>
+
+											<p className="text-xs text-muted-foreground">
+												Order: {item.order}
+											</p>
 										</div>
-										<p className="text-sm text-muted-foreground line-clamp-3 mb-2">
-											{item.description}
-										</p>
-										<p className="text-xs text-muted-foreground">Order: {item.order}</p>
-									</div>
-									<div className="flex gap-2 flex-shrink-0">
-										<Button variant="outline" size="sm" onClick={() => handleEdit(item)}>
-											<Edit className="w-4 h-4" />
-										</Button>
-										<AlertDialog>
-											<AlertDialogTrigger asChild>
-												<Button variant="destructive" size="sm">
-													<Trash2 className="w-4 h-4" />
-												</Button>
-											</AlertDialogTrigger>
-											<AlertDialogContent>
-												<AlertDialogHeader>
-													<AlertDialogTitle>Delete Item?</AlertDialogTitle>
-													<AlertDialogDescription>
-														This action cannot be undone.
-													</AlertDialogDescription>
-												</AlertDialogHeader>
-												<AlertDialogFooter>
-													<AlertDialogCancel>Cancel</AlertDialogCancel>
-													<AlertDialogAction onClick={() => handleDelete(item._id)}>
-														Delete
-													</AlertDialogAction>
-												</AlertDialogFooter>
-											</AlertDialogContent>
-										</AlertDialog>
+
+										<div className="flex gap-2 flex-shrink-0">
+											<Button
+												variant="outline"
+												size="sm"
+												onClick={() => handleEdit(item)}
+											>
+												<Edit className="w-4 h-4" />
+											</Button>
+											<AlertDialog>
+												<AlertDialogTrigger asChild>
+													<Button variant="destructive" size="sm">
+														<Trash2 className="w-4 h-4" />
+													</Button>
+												</AlertDialogTrigger>
+												<AlertDialogContent>
+													<AlertDialogHeader>
+														<AlertDialogTitle>
+															Delete Item?
+														</AlertDialogTitle>
+														<AlertDialogDescription>
+															This action cannot be undone.
+														</AlertDialogDescription>
+													</AlertDialogHeader>
+													<AlertDialogFooter>
+														<AlertDialogCancel>
+															Cancel
+														</AlertDialogCancel>
+														<AlertDialogAction
+															onClick={() => handleDelete(item._id)}
+														>
+															Delete
+														</AlertDialogAction>
+													</AlertDialogFooter>
+												</AlertDialogContent>
+											</AlertDialog>
+										</div>
 									</div>
 								</div>
-							</div>
-						</CardContent>
-					</Card>
-				))}
-				{items.length === 0 && (
-					<div className="text-center text-muted-foreground py-8 col-span-full">
-						No featured grid items found
-					</div>
-				)}
-			</div>
+							</CardContent>
+						</Card>
+					))}
+					{items.length === 0 && (
+						<div className="text-center text-muted-foreground py-8 col-span-full">
+							No featured grid items found
+						</div>
+					)}
+				</div>
+			)}
 		</div>
 	);
 }

@@ -214,7 +214,9 @@ export default function AboutSectionCRUD() {
 								<Input
 									required
 									value={formData.title}
-									onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+									onChange={(e) =>
+										setFormData({ ...formData, title: e.target.value })
+									}
 								/>
 							</div>
 
@@ -245,7 +247,11 @@ export default function AboutSectionCRUD() {
 								<Label>Image</Label>
 								{existingImage && (
 									<div className="mb-2">
-										<img src={existingImage} alt="Current" className="w-32 h-32 object-cover rounded" />
+										<img
+											src={existingImage}
+											alt="Current"
+											className="w-32 h-32 object-cover rounded"
+										/>
 									</div>
 								)}
 								<Input
@@ -266,7 +272,10 @@ export default function AboutSectionCRUD() {
 									<Input
 										value={formData.statCardValue}
 										onChange={(e) =>
-											setFormData({ ...formData, statCardValue: e.target.value })
+											setFormData({
+												...formData,
+												statCardValue: e.target.value,
+											})
 										}
 									/>
 								</div>
@@ -275,7 +284,10 @@ export default function AboutSectionCRUD() {
 									<Input
 										value={formData.statCardLabel}
 										onChange={(e) =>
-											setFormData({ ...formData, statCardLabel: e.target.value })
+											setFormData({
+												...formData,
+												statCardLabel: e.target.value,
+											})
 										}
 									/>
 								</div>
@@ -312,7 +324,9 @@ export default function AboutSectionCRUD() {
 									}
 									className="rounded"
 								/>
-								<Label htmlFor="isActive">Active (only one can be active at a time)</Label>
+								<Label htmlFor="isActive">
+									Active (only one can be active at a time)
+								</Label>
 							</div>
 
 							<div className="flex justify-end space-x-2">
@@ -324,7 +338,12 @@ export default function AboutSectionCRUD() {
 									Cancel
 								</Button>
 								<Button type="submit" disabled={actionLoading}>
-									{actionLoading ? 'Saving...' : editingSection ? 'Update' : 'Create'} Section
+									{actionLoading
+										? 'Saving...'
+										: editingSection
+										? 'Update'
+										: 'Create'}{' '}
+									Section
 								</Button>
 							</div>
 						</form>
@@ -332,74 +351,101 @@ export default function AboutSectionCRUD() {
 				</Dialog>
 			</div>
 
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-				{sections.map((section) => (
-					<Card key={section._id}>
-						<CardContent className="p-4">
-							<div className="flex flex-col gap-3">
-								{section.image && (
-									<img
-										src={section.image}
-										alt={section.title}
-										className="w-full h-32 object-cover rounded"
-									/>
-								)}
-								<div className="flex justify-between items-start gap-3">
-									<div className="flex-1 min-w-0">
-										<div className="flex items-center gap-2 mb-2 flex-wrap">
-											<h3 className="font-bold text-lg line-clamp-2">{section.title}</h3>
-											{section.isActive && (
-												<Badge variant="default" className="flex-shrink-0">
-													Active
-												</Badge>
+			{loading ? (
+				<div className="flex justify-center items-center h-64">
+					<div className="text-center">
+						<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
+						<p className="mt-3 text-primary">Loading About Sections...</p>
+					</div>
+				</div>
+			) : (
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+					{sections.map((section) => (
+						<Card key={section._id}>
+							<CardContent className="p-4">
+								<div className="flex flex-col gap-3">
+									{section.image && (
+										<img
+											src={section.image}
+											alt={section.title}
+											className="w-full h-32 object-cover rounded"
+										/>
+									)}
+									<div className="flex justify-between items-start gap-3">
+										<div className="flex-1 min-w-0">
+											<div className="flex items-center gap-2 mb-2 flex-wrap">
+												<h3 className="font-bold text-lg line-clamp-2">
+													{section.title}
+												</h3>
+												{section.isActive && (
+													<Badge
+														variant="default"
+														className="flex-shrink-0"
+													>
+														Active
+													</Badge>
+												)}
+											</div>
+											<p className="text-sm text-muted-foreground line-clamp-3 mb-2">
+												{section.description}
+											</p>
+											{section.statCardValue && (
+												<p className="text-xs text-muted-foreground">
+													{section.statCardValue} {section.statCardLabel}
+												</p>
 											)}
 										</div>
-										<p className="text-sm text-muted-foreground line-clamp-3 mb-2">
-											{section.description}
-										</p>
-										{section.statCardValue && (
-											<p className="text-xs text-muted-foreground">
-												{section.statCardValue} {section.statCardLabel}
-											</p>
-										)}
-									</div>
-									<div className="flex gap-2 flex-shrink-0">
-										<Button variant="outline" size="sm" onClick={() => handleEdit(section)}>
-											<Edit className="w-4 h-4" />
-										</Button>
-										<AlertDialog>
-											<AlertDialogTrigger asChild>
-												<Button variant="destructive" size="sm">
-													<Trash2 className="w-4 h-4" />
-												</Button>
-											</AlertDialogTrigger>
-											<AlertDialogContent>
-												<AlertDialogHeader>
-													<AlertDialogTitle>Delete Section?</AlertDialogTitle>
-													<AlertDialogDescription>
-														This action cannot be undone.
-													</AlertDialogDescription>
-												</AlertDialogHeader>
-												<AlertDialogFooter>
-													<AlertDialogCancel>Cancel</AlertDialogCancel>
-													<AlertDialogAction onClick={() => handleDelete(section._id)}>
-														Delete
-													</AlertDialogAction>
-												</AlertDialogFooter>
-											</AlertDialogContent>
-										</AlertDialog>
+										<div className="flex gap-2 flex-shrink-0">
+											<Button
+												variant="outline"
+												size="sm"
+												onClick={() => handleEdit(section)}
+											>
+												<Edit className="w-4 h-4" />
+											</Button>
+											<AlertDialog>
+												<AlertDialogTrigger asChild>
+													<Button variant="destructive" size="sm">
+														<Trash2 className="w-4 h-4" />
+													</Button>
+												</AlertDialogTrigger>
+												<AlertDialogContent>
+													<AlertDialogHeader>
+														<AlertDialogTitle>
+															Delete Section?
+														</AlertDialogTitle>
+														<AlertDialogDescription>
+															This action cannot be undone.
+														</AlertDialogDescription>
+													</AlertDialogHeader>
+													<AlertDialogFooter>
+														<AlertDialogCancel>
+															Cancel
+														</AlertDialogCancel>
+														<AlertDialogAction
+															onClick={() =>
+																handleDelete(section._id)
+															}
+														>
+															Delete
+														</AlertDialogAction>
+													</AlertDialogFooter>
+												</AlertDialogContent>
+											</AlertDialog>
+										</div>
 									</div>
 								</div>
-							</div>
-						</CardContent>
-					</Card>
-				))}
-				{sections.length === 0 && (
-					<div className="text-center text-muted-foreground py-8 col-span-full">
-						No about sections found
-					</div>
-				)}
-			</div>
+							</CardContent>
+						</Card>
+					))}
+
+					{sections.length === 0 && (
+						<div className="text-center text-muted-foreground py-8 col-span-full">
+							No about sections found
+						</div>
+					)}
+				</div>
+			)}
 		</div>
 	);
 }

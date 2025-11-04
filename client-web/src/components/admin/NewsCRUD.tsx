@@ -204,8 +204,15 @@ export default function NewsCRUD() {
 	// 		</>
 	// 	);
 
-	if (loading) {
-		return <div className="p-6">Loading news...</div>;
+	if (loading || actionLoading) {
+		return (
+			<div className="flex justify-center items-center h-64">
+				<div className="text-center">
+					<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
+					<p className="mt-3 text-primary">Loading News...</p>
+				</div>
+			</div>
+		);
 	}
 
 	return (

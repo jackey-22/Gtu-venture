@@ -144,7 +144,9 @@ export default function SuccessStoriesCRUD() {
 			const data = await res.json();
 			if (res.ok) {
 				alert(
-					editingStory ? 'Success story updated successfully' : 'Success story created successfully'
+					editingStory
+						? 'Success story updated successfully'
+						: 'Success story created successfully'
 				);
 				setIsDialogOpen(false);
 				resetForm();
@@ -187,7 +189,9 @@ export default function SuccessStoriesCRUD() {
 			<div className="flex justify-between items-center">
 				<div>
 					<h2 className="text-2xl font-bold">Success Stories Management</h2>
-					<p className="text-muted-foreground">Manage success stories displayed on home page</p>
+					<p className="text-muted-foreground">
+						Manage success stories displayed on home page
+					</p>
 				</div>
 
 				<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -209,7 +213,9 @@ export default function SuccessStoriesCRUD() {
 								<Input
 									required
 									value={formData.title}
-									onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+									onChange={(e) =>
+										setFormData({ ...formData, title: e.target.value })
+									}
 								/>
 							</div>
 
@@ -231,7 +237,9 @@ export default function SuccessStoriesCRUD() {
 									<Input
 										required
 										value={formData.icon}
-										onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
+										onChange={(e) =>
+											setFormData({ ...formData, icon: e.target.value })
+										}
 										placeholder="e.g., TrendingUp, Award"
 									/>
 								</div>
@@ -240,7 +248,9 @@ export default function SuccessStoriesCRUD() {
 									<Input
 										required
 										value={formData.metric}
-										onChange={(e) => setFormData({ ...formData, metric: e.target.value })}
+										onChange={(e) =>
+											setFormData({ ...formData, metric: e.target.value })
+										}
 										placeholder="e.g., 500+ Startups"
 									/>
 								</div>
@@ -277,7 +287,10 @@ export default function SuccessStoriesCRUD() {
 										type="number"
 										value={formData.order}
 										onChange={(e) =>
-											setFormData({ ...formData, order: parseInt(e.target.value) || 0 })
+											setFormData({
+												...formData,
+												order: parseInt(e.target.value) || 0,
+											})
 										}
 									/>
 								</div>
@@ -285,9 +298,9 @@ export default function SuccessStoriesCRUD() {
 									<Label>Status</Label>
 									<Select
 										value={formData.status}
-										onValueChange={(value: 'draft' | 'published' | 'archived') =>
-											setFormData({ ...formData, status: value })
-										}
+										onValueChange={(
+											value: 'draft' | 'published' | 'archived'
+										) => setFormData({ ...formData, status: value })}
 									>
 										<SelectTrigger>
 											<SelectValue />
@@ -310,7 +323,12 @@ export default function SuccessStoriesCRUD() {
 									Cancel
 								</Button>
 								<Button type="submit" disabled={actionLoading}>
-									{actionLoading ? 'Saving...' : editingStory ? 'Update' : 'Create'} Story
+									{actionLoading
+										? 'Saving...'
+										: editingStory
+										? 'Update'
+										: 'Create'}{' '}
+									Story
 								</Button>
 							</div>
 						</form>
@@ -318,74 +336,101 @@ export default function SuccessStoriesCRUD() {
 				</Dialog>
 			</div>
 
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-				{stories.map((story) => (
-					<Card key={story._id}>
-						<CardContent className="p-4">
-							<div className="flex flex-col gap-3">
-								{story.image && (
-									<img
-										src={story.image}
-										alt={story.title}
-										className="w-full h-32 object-cover rounded"
-									/>
-								)}
-								<div className="flex justify-between items-start gap-3">
-									<div className="flex-1 min-w-0">
-										<div className="flex items-center gap-2 mb-2 flex-wrap">
-											<h3 className="font-bold text-lg line-clamp-2">{story.title}</h3>
-											<Badge variant={story.status === 'published' ? 'default' : 'secondary'}>
-												{story.status}
-											</Badge>
+			{loading ? (
+				<div className="flex justify-center items-center h-64">
+					<div className="text-center">
+						<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
+						<p className="mt-3 text-primary">Loading Success Stories...</p>
+					</div>
+				</div>
+			) : (
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+					{stories.map((story) => (
+						<Card key={story._id}>
+							<CardContent className="p-4">
+								<div className="flex flex-col gap-3">
+									{story.image && (
+										<img
+											src={story.image}
+											alt={story.title}
+											className="w-full h-32 object-cover rounded"
+										/>
+									)}
+									<div className="flex justify-between items-start gap-3">
+										<div className="flex-1 min-w-0">
+											<div className="flex items-center gap-2 mb-2 flex-wrap">
+												<h3 className="font-bold text-lg line-clamp-2">
+													{story.title}
+												</h3>
+												<Badge
+													variant={
+														story.status === 'published'
+															? 'default'
+															: 'secondary'
+													}
+												>
+													{story.status}
+												</Badge>
+											</div>
+											<p className="text-sm text-muted-foreground line-clamp-3 mb-2">
+												{story.description}
+											</p>
+											<div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+												<span>Metric: {story.metric}</span>
+												<span>•</span>
+												<span>Icon: {story.icon}</span>
+												<span>•</span>
+												<span>Order: {story.order}</span>
+											</div>
 										</div>
-										<p className="text-sm text-muted-foreground line-clamp-3 mb-2">
-											{story.description}
-										</p>
-										<div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-											<span>Metric: {story.metric}</span>
-											<span>•</span>
-											<span>Icon: {story.icon}</span>
-											<span>•</span>
-											<span>Order: {story.order}</span>
+										<div className="flex gap-2 flex-shrink-0">
+											<Button
+												variant="outline"
+												size="sm"
+												onClick={() => handleEdit(story)}
+											>
+												<Edit className="w-4 h-4" />
+											</Button>
+											<AlertDialog>
+												<AlertDialogTrigger asChild>
+													<Button variant="destructive" size="sm">
+														<Trash2 className="w-4 h-4" />
+													</Button>
+												</AlertDialogTrigger>
+												<AlertDialogContent>
+													<AlertDialogHeader>
+														<AlertDialogTitle>
+															Delete Story?
+														</AlertDialogTitle>
+														<AlertDialogDescription>
+															This action cannot be undone.
+														</AlertDialogDescription>
+													</AlertDialogHeader>
+													<AlertDialogFooter>
+														<AlertDialogCancel>
+															Cancel
+														</AlertDialogCancel>
+														<AlertDialogAction
+															onClick={() => handleDelete(story._id)}
+														>
+															Delete
+														</AlertDialogAction>
+													</AlertDialogFooter>
+												</AlertDialogContent>
+											</AlertDialog>
 										</div>
-									</div>
-									<div className="flex gap-2 flex-shrink-0">
-										<Button variant="outline" size="sm" onClick={() => handleEdit(story)}>
-											<Edit className="w-4 h-4" />
-										</Button>
-										<AlertDialog>
-											<AlertDialogTrigger asChild>
-												<Button variant="destructive" size="sm">
-													<Trash2 className="w-4 h-4" />
-												</Button>
-											</AlertDialogTrigger>
-											<AlertDialogContent>
-												<AlertDialogHeader>
-													<AlertDialogTitle>Delete Story?</AlertDialogTitle>
-													<AlertDialogDescription>
-														This action cannot be undone.
-													</AlertDialogDescription>
-												</AlertDialogHeader>
-												<AlertDialogFooter>
-													<AlertDialogCancel>Cancel</AlertDialogCancel>
-													<AlertDialogAction onClick={() => handleDelete(story._id)}>
-														Delete
-													</AlertDialogAction>
-												</AlertDialogFooter>
-											</AlertDialogContent>
-										</AlertDialog>
 									</div>
 								</div>
-							</div>
-						</CardContent>
-					</Card>
-				))}
-				{stories.length === 0 && (
-					<div className="text-center text-muted-foreground py-8 col-span-full">
-						No success stories found
-					</div>
-				)}
-			</div>
+							</CardContent>
+						</Card>
+					))}
+					{stories.length === 0 && (
+						<div className="text-center text-muted-foreground py-8 col-span-full">
+							No success stories found
+						</div>
+					)}
+				</div>
+			)}
 		</div>
 	);
 }

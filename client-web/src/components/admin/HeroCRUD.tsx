@@ -183,7 +183,9 @@ export default function HeroCRUD() {
 								<Input
 									required
 									value={formData.title}
-									onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+									onChange={(e) =>
+										setFormData({ ...formData, title: e.target.value })
+									}
 								/>
 							</div>
 
@@ -191,7 +193,9 @@ export default function HeroCRUD() {
 								<Label>Subtitle</Label>
 								<Input
 									value={formData.subtitle}
-									onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
+									onChange={(e) =>
+										setFormData({ ...formData, subtitle: e.target.value })
+									}
 								/>
 							</div>
 
@@ -213,7 +217,10 @@ export default function HeroCRUD() {
 									<Input
 										value={formData.primaryButtonText}
 										onChange={(e) =>
-											setFormData({ ...formData, primaryButtonText: e.target.value })
+											setFormData({
+												...formData,
+												primaryButtonText: e.target.value,
+											})
 										}
 									/>
 								</div>
@@ -222,7 +229,10 @@ export default function HeroCRUD() {
 									<Input
 										value={formData.primaryButtonLink}
 										onChange={(e) =>
-											setFormData({ ...formData, primaryButtonLink: e.target.value })
+											setFormData({
+												...formData,
+												primaryButtonLink: e.target.value,
+											})
 										}
 									/>
 								</div>
@@ -234,7 +244,10 @@ export default function HeroCRUD() {
 									<Input
 										value={formData.secondaryButtonText}
 										onChange={(e) =>
-											setFormData({ ...formData, secondaryButtonText: e.target.value })
+											setFormData({
+												...formData,
+												secondaryButtonText: e.target.value,
+											})
 										}
 									/>
 								</div>
@@ -243,7 +256,10 @@ export default function HeroCRUD() {
 									<Input
 										value={formData.secondaryButtonLink}
 										onChange={(e) =>
-											setFormData({ ...formData, secondaryButtonLink: e.target.value })
+											setFormData({
+												...formData,
+												secondaryButtonLink: e.target.value,
+											})
 										}
 									/>
 								</div>
@@ -259,7 +275,9 @@ export default function HeroCRUD() {
 									}
 									className="rounded"
 								/>
-								<Label htmlFor="isActive">Active (only one can be active at a time)</Label>
+								<Label htmlFor="isActive">
+									Active (only one can be active at a time)
+								</Label>
 							</div>
 
 							<div className="flex justify-end space-x-2">
@@ -271,7 +289,12 @@ export default function HeroCRUD() {
 									Cancel
 								</Button>
 								<Button type="submit" disabled={actionLoading}>
-									{actionLoading ? 'Saving...' : editingHero ? 'Update' : 'Create'} Hero
+									{actionLoading
+										? 'Saving...'
+										: editingHero
+										? 'Update'
+										: 'Create'}{' '}
+									Hero
 								</Button>
 							</div>
 						</form>
@@ -279,57 +302,88 @@ export default function HeroCRUD() {
 				</Dialog>
 			</div>
 
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-				{heroes.map((hero) => (
-					<Card key={hero._id}>
-						<CardContent className="p-4">
-							<div className="flex justify-between items-start gap-3">
-								<div className="flex-1 min-w-0">
-									<div className="flex items-center gap-2 mb-2 flex-wrap">
-										<h3 className="font-bold text-lg line-clamp-2">{hero.title}</h3>
-										{hero.isActive && (
-											<Badge variant="default" className="flex-shrink-0">
-												Active
-											</Badge>
-										)}
-									</div>
-									<p className="text-sm text-muted-foreground line-clamp-3 mb-2">
-										{hero.description}
-									</p>
-								</div>
-								<div className="flex gap-2 flex-shrink-0">
-									<Button variant="outline" size="sm" onClick={() => handleEdit(hero)}>
-										<Edit className="w-4 h-4" />
-									</Button>
-									<AlertDialog>
-										<AlertDialogTrigger asChild>
-											<Button variant="destructive" size="sm">
-												<Trash2 className="w-4 h-4" />
-											</Button>
-										</AlertDialogTrigger>
-										<AlertDialogContent>
-											<AlertDialogHeader>
-												<AlertDialogTitle>Delete Hero?</AlertDialogTitle>
-												<AlertDialogDescription>
-													This action cannot be undone.
-												</AlertDialogDescription>
-											</AlertDialogHeader>
-											<AlertDialogFooter>
-												<AlertDialogCancel>Cancel</AlertDialogCancel>
-												<AlertDialogAction onClick={() => handleDelete(hero._id)}>
-													Delete
-												</AlertDialogAction>
-											</AlertDialogFooter>
-										</AlertDialogContent>
-									</AlertDialog>
-								</div>
+			<div className="mt-6">
+				{loading ? (
+					<div>
+						<div className="flex justify-center items-center h-64">
+							<div className="text-center">
+								<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
+								<p className="mt-3 text-primary">Loading Hero Sections...</p>
 							</div>
-						</CardContent>
-					</Card>
-				))}
-				{heroes.length === 0 && (
-					<div className="text-center text-muted-foreground py-8 col-span-full">
-						No hero sections found
+						</div>
+					</div>
+				) : (
+					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+						{heroes.map((hero) => (
+							<Card key={hero._id}>
+								<CardContent className="p-4">
+									<div className="flex justify-between items-start gap-3">
+										<div className="flex-1 min-w-0">
+											<div className="flex items-center gap-2 mb-2 flex-wrap">
+												<h3 className="font-bold text-lg line-clamp-2">
+													{hero.title}
+												</h3>
+												{hero.isActive && (
+													<Badge
+														variant="default"
+														className="flex-shrink-0"
+													>
+														Active
+													</Badge>
+												)}
+											</div>
+											<p className="text-sm text-muted-foreground line-clamp-3 mb-2">
+												{hero.description}
+											</p>
+										</div>
+
+										<div className="flex gap-2 flex-shrink-0">
+											<Button
+												variant="outline"
+												size="sm"
+												onClick={() => handleEdit(hero)}
+											>
+												<Edit className="w-4 h-4" />
+											</Button>
+
+											<AlertDialog>
+												<AlertDialogTrigger asChild>
+													<Button variant="destructive" size="sm">
+														<Trash2 className="w-4 h-4" />
+													</Button>
+												</AlertDialogTrigger>
+												<AlertDialogContent>
+													<AlertDialogHeader>
+														<AlertDialogTitle>
+															Delete Hero?
+														</AlertDialogTitle>
+														<AlertDialogDescription>
+															This action cannot be undone.
+														</AlertDialogDescription>
+													</AlertDialogHeader>
+													<AlertDialogFooter>
+														<AlertDialogCancel>
+															Cancel
+														</AlertDialogCancel>
+														<AlertDialogAction
+															onClick={() => handleDelete(hero._id)}
+														>
+															Delete
+														</AlertDialogAction>
+													</AlertDialogFooter>
+												</AlertDialogContent>
+											</AlertDialog>
+										</div>
+									</div>
+								</CardContent>
+							</Card>
+						))}
+
+						{heroes.length === 0 && !loading && (
+							<div className="text-center text-muted-foreground py-8 col-span-full">
+								No hero sections found
+							</div>
+						)}
 					</div>
 				)}
 			</div>
