@@ -332,9 +332,9 @@
 
 	.carousel-item {
 		position: absolute;
-		width: 420px;
+		width: clamp(280px, 65vw, 420px);
 		height: 100%;
-		max-height: 320px;
+		max-height: clamp(220px, 40vw, 320px);
 		border-radius: 12px;
 		overflow: hidden;
 		box-shadow: 0 12px 30px rgba(16, 12, 30, 0.12);
@@ -344,54 +344,39 @@
 	}
 
 	.carousel-item.active {
-		transform: translateZ(220px) scale(1.06);
+		transform: translateZ(clamp(120px, 15vw, 220px)) scale(1.06);
 		opacity: 1;
 		z-index: 30;
 	}
 
 	.carousel-item.next {
-		transform: translateX(220px) rotateY(-30deg) translateZ(80px) scale(0.92);
+		transform: translateX(clamp(160px, 15vw, 220px)) rotateY(-30deg) translateZ(clamp(60px, 5vw, 80px)) scale(0.92);
 		opacity: 0.85;
 		z-index: 20;
 	}
 
 	.carousel-item.prev {
-		transform: translateX(-220px) rotateY(30deg) translateZ(80px) scale(0.92);
+		transform: translateX(clamp(-160px, -15vw, -220px)) rotateY(30deg) translateZ(clamp(60px, 5vw, 80px)) scale(0.92);
 		opacity: 0.85;
 		z-index: 20;
 	}
 
 	.carousel-item.far-next {
-		transform: translateX(420px) rotateY(-45deg) translateZ(0px) scale(0.8);
+		transform: translateX(clamp(280px, 35vw, 420px)) rotateY(-45deg) translateZ(0px) scale(0.8);
 		opacity: 0.6;
 		z-index: 10;
 	}
 
 	.carousel-item.far-prev {
-		transform: translateX(-420px) rotateY(45deg) translateZ(0px) scale(0.8);
+		transform: translateX(clamp(-280px, -35vw, -420px)) rotateY(45deg) translateZ(0px) scale(0.8);
 		opacity: 0.6;
 		z-index: 10;
 	}
 
 	.carousel-item.hidden {
-		transform: translateZ(-200px) scale(0.6);
+		transform: translateZ(clamp(-120px, -12vw, -200px)) scale(0.6);
 		opacity: 0;
 		z-index: 0;
-	}
-
-	@media (max-width: 768px) {
-		.carousel-item {
-			width: 280px;
-			max-height: 220px;
-		}
-
-		.carousel-item.next {
-			transform: translateX(160px) rotateY(-22deg) translateZ(60px) scale(0.95);
-		}
-
-		.carousel-item.prev {
-			transform: translateX(-160px) rotateY(22deg) translateZ(60px) scale(0.95);
-		}
 	}
 }
 

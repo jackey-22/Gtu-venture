@@ -42,22 +42,22 @@ export default function MetricsStrip() {
   }
 
   return (
-    <section className="py-24 bg-primary text-white" data-testid="metrics-strip">
-      <div className="max-w-7xl mx-auto px-6 lg:px-16">
+    <section className="py-[clamp(3rem,8vw,6rem)] bg-primary text-white overflow-hidden" data-testid="metrics-strip">
+      <div className="max-w-7xl mx-auto px-[clamp(1rem,4vw,4rem)]">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-[clamp(2rem,5vw,4rem)]"
         >
-          <h2 className="text-display font-bold mb-6">Impact by GTU Ventures</h2>
-          <p className="text-xl text-white/90 max-w-3xl mx-auto">
+          <h2 className="font-bold mb-[clamp(1rem,3vw,1.5rem)]" style={{ fontSize: 'clamp(1.75rem, 4vw + 0.5rem, 3rem)' }}>Impact by GTU Ventures</h2>
+          <p className="text-white/90 max-w-3xl mx-auto" style={{ fontSize: 'clamp(0.875rem, 1.5vw + 0.25rem, 1.25rem)' }}>
             Building India's startup ecosystem through innovation and entrepreneurship
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[clamp(1.5rem,4vw,2rem)]">
           {metrics.map((metric, index) => (
             <motion.div
               key={metric.label}
@@ -68,7 +68,7 @@ export default function MetricsStrip() {
               className="text-center"
               data-testid={`metric-${index}`}
             >
-              <div className="text-4xl lg:text-5xl font-bold mb-2 counter">
+              <div className="font-bold mb-2 counter" style={{ fontSize: 'clamp(1.75rem, 4vw + 0.5rem, 3rem)' }}>
                 <AnimatedCounter
                   from={0}
                   to={metric.value}
@@ -76,7 +76,7 @@ export default function MetricsStrip() {
                   suffix={metric.suffix}
                 />
               </div>
-              <div className="text-white/80 text-sm uppercase tracking-wide">
+              <div className="text-white/80 uppercase tracking-wide" style={{ fontSize: 'clamp(0.75rem, 1vw + 0.25rem, 0.875rem)' }}>
                 {metric.label}
               </div>
             </motion.div>

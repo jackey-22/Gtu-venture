@@ -40,7 +40,7 @@ export default function Home() {
 			variants={containerVariants}
 			initial="hidden"
 			animate="visible"
-			className="min-h-screen"
+			className="min-h-screen w-full overflow-x-hidden"
 		>
 			<motion.div variants={itemVariants}>
 				<Hero />

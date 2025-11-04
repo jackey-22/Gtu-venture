@@ -62,31 +62,32 @@ export default function AboutSection() {
 	}
 
 	return (
-		<section className="py-24 bg-background" id="about" data-testid="about-section">
-			<div className="max-w-7xl mx-auto px-6 lg:px-16">
-				<div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+		<section className="py-[clamp(3rem,8vw,6rem)] bg-background overflow-hidden" id="about" data-testid="about-section">
+			<div className="max-w-7xl mx-auto px-[clamp(1rem,4vw,4rem)]">
+				<div className="grid grid-cols-1 lg:grid-cols-2 gap-[clamp(2rem,5vw,4rem)] items-center">
 					<motion.div
 						initial={{ opacity: 0, x: -50 }}
 						whileInView={{ opacity: 1, x: 0 }}
 						viewport={{ once: true }}
 						transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
 					>
-						<h2 className="text-display font-bold text-foreground mb-6">
+						<h2 className="font-bold text-foreground mb-[clamp(1rem,3vw,1.5rem)]" style={{ fontSize: 'clamp(1.75rem, 4vw + 0.5rem, 3rem)' }}>
 							{aboutData.title || 'GTU Ventures'}
 						</h2>
-						<p className="text-lg text-muted-foreground leading-relaxed mb-6">
+						<p className="text-muted-foreground leading-relaxed mb-[clamp(1rem,3vw,1.5rem)]" style={{ fontSize: 'clamp(0.875rem, 1.5vw + 0.25rem, 1.125rem)' }}>
 							{aboutData.description ||
 								'Gujarat Technological University (GTU), established in 2007, has consistently been at the forefront of fostering innovation, entrepreneurship, and skills development in Gujarat.'}
 						</p>
 						{aboutData.description2 && (
-							<p className="text-lg text-muted-foreground leading-relaxed mb-8">
+							<p className="text-muted-foreground leading-relaxed mb-[clamp(1.5rem,4vw,2rem)]" style={{ fontSize: 'clamp(0.875rem, 1.5vw + 0.25rem, 1.125rem)' }}>
 								{aboutData.description2}
 							</p>
 						)}
 						{aboutData.buttonText && aboutData.buttonLink && (
 							<Button
 								asChild
-								className="btn-primary bg-primary text-primary-foreground px-8 py-4 rounded-full font-semibold"
+								className="btn-primary bg-primary text-primary-foreground px-[clamp(1.5rem,4vw,2rem)] py-[clamp(0.75rem,2vw,1rem)] rounded-full font-semibold w-full sm:w-auto"
+								style={{ fontSize: 'clamp(0.875rem, 1.2vw + 0.25rem, 1rem)' }}
 								data-testid="about-learn-more"
 							>
 								<a href={aboutData.buttonLink}>{aboutData.buttonText}</a>
@@ -105,6 +106,7 @@ export default function AboutSection() {
 							src={imageUrl}
 							alt="GTU Ventures"
 							className="rounded-3xl shadow-lg w-full h-auto"
+							style={{ aspectRatio: '16/10' }}
 						/>
 
 						{aboutData.statCardValue && aboutData.statCardLabel && (
@@ -113,13 +115,13 @@ export default function AboutSection() {
 								whileInView={{ opacity: 1, scale: 1 }}
 								viewport={{ once: true }}
 								transition={{ duration: 0.6, delay: 0.3 }}
-								className="absolute -bottom-6 -right-6 bg-accent rounded-2xl p-6 text-center shadow-lg"
+								className="absolute -bottom-[clamp(0.75rem,2vw,1.5rem)] -right-[clamp(0.75rem,2vw,1.5rem)] bg-accent rounded-2xl p-[clamp(1rem,3vw,1.5rem)] text-center shadow-lg"
 								data-testid="about-stat-card"
 							>
-								<div className="text-2xl font-bold text-accent-foreground">
+								<div className="font-bold text-accent-foreground" style={{ fontSize: 'clamp(1.25rem, 2.5vw + 0.5rem, 1.5rem)' }}>
 									{aboutData.statCardValue}
 								</div>
-								<div className="text-sm text-accent-foreground">
+								<div className="text-accent-foreground" style={{ fontSize: 'clamp(0.75rem, 1vw + 0.25rem, 0.875rem)' }}>
 									{aboutData.statCardLabel}
 								</div>
 							</motion.div>

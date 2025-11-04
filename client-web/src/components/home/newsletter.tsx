@@ -65,23 +65,23 @@ export default function Newsletter() {
   };
 
   return (
-    <section className="py-24 bg-gradient-to-br from-primary to-secondary text-white" data-testid="newsletter">
-      <div className="max-w-4xl mx-auto px-6 lg:px-16 text-center">
+    <section className="py-[clamp(3rem,8vw,6rem)] bg-gradient-to-br from-primary to-secondary text-white overflow-hidden" data-testid="newsletter">
+      <div className="max-w-4xl mx-auto px-[clamp(1rem,4vw,4rem)] text-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-display font-bold mb-6">Stay in the Loop</h2>
-          <p className="text-xl text-white/90 mb-12 max-w-2xl mx-auto">
+          <h2 className="font-bold mb-[clamp(1rem,3vw,1.5rem)]" style={{ fontSize: 'clamp(1.75rem, 4vw + 0.5rem, 3rem)' }}>Stay in the Loop</h2>
+          <p className="text-white/90 mb-[clamp(2rem,5vw,3rem)] max-w-2xl mx-auto" style={{ fontSize: 'clamp(0.875rem, 1.5vw + 0.25rem, 1.25rem)' }}>
             Get the latest updates on programs, events, and startup success
             stories delivered to your inbox.
           </p>
 
           <form
             onSubmit={handleSubmit}
-            className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto"
+            className="flex flex-col sm:flex-row gap-[clamp(0.75rem,2vw,1rem)] max-w-md mx-auto"
             data-testid="newsletter-form"
           >
             <Input
@@ -89,20 +89,22 @@ export default function Newsletter() {
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="flex-1 px-6 py-4 rounded-full text-foreground bg-white/95 placeholder-gray-500 border-0 focus:outline-none focus:ring-2 focus:ring-white/50"
+              className="flex-1 px-[clamp(1rem,3vw,1.5rem)] py-[clamp(0.75rem,2vw,1rem)] rounded-full text-foreground bg-white/95 placeholder-gray-500 border-0 focus:outline-none focus:ring-2 focus:ring-white/50"
+              style={{ fontSize: 'clamp(0.875rem, 1.2vw + 0.25rem, 1rem)' }}
               data-testid="newsletter-email-input"
             />
             <Button
               type="submit"
               disabled={isLoading}
-              className="bg-white text-primary px-8 py-4 rounded-full font-semibold hover:bg-white/90 transition-colors whitespace-nowrap disabled:opacity-50"
+              className="bg-white text-primary px-[clamp(1.5rem,4vw,2rem)] py-[clamp(0.75rem,2vw,1rem)] rounded-full font-semibold hover:bg-white/90 transition-colors whitespace-nowrap disabled:opacity-50 w-full sm:w-auto"
+              style={{ fontSize: 'clamp(0.875rem, 1.2vw + 0.25rem, 1rem)' }}
               data-testid="newsletter-submit-button"
             >
               {isLoading ? "Subscribing..." : "Subscribe"}
             </Button>
           </form>
 
-          <p className="text-sm text-white/70 mt-4">
+          <p className="text-white/70 mt-[clamp(0.75rem,2vw,1rem)]" style={{ fontSize: 'clamp(0.75rem, 1vw + 0.25rem, 0.875rem)' }}>
             We respect your privacy. Unsubscribe at any time.
           </p>
         </motion.div>

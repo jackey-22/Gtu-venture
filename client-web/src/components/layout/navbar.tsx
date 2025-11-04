@@ -79,7 +79,7 @@ export default function Navbar() {
 					<div className="flex items-center gap-3">
 						<Button
 							asChild
-							className="px-5 py-2.5 text-base rounded-xl shadow-sm font-semibold bg-primary hover:bg-primary/90"
+							className="hidden lg:inline-flex px-5 py-2.5 text-base rounded-xl shadow-sm font-semibold bg-primary hover:bg-primary/90"
 							size="xl"
 						>
 							<a href="/apply">Apply Now</a>

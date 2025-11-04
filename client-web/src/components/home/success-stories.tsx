@@ -57,19 +57,19 @@ export default function SuccessStories() {
 	}
 
 	return (
-		<section className="py-24 bg-gradient-to-br from-gtu-light to-gtu-base">
-			<div className="max-w-7xl mx-auto px-6 lg:px-16">
+		<section className="py-[clamp(3rem,8vw,6rem)] bg-gradient-to-br from-gtu-light to-gtu-base overflow-hidden">
+			<div className="max-w-7xl mx-auto px-[clamp(1rem,4vw,4rem)]">
 				<motion.div
 					initial={{ opacity: 0, y: 20 }}
 					whileInView={{ opacity: 1, y: 0 }}
 					viewport={{ once: true }}
 					transition={{ duration: 0.5 }}
-					className="text-center mb-16"
+					className="text-center mb-[clamp(2rem,5vw,4rem)]"
 				>
-					<h2 className="text-4xl lg:text-5xl font-extrabold text-foreground mb-4">
+					<h2 className="font-extrabold text-foreground mb-[clamp(0.75rem,2vw,1rem)]" style={{ fontSize: 'clamp(1.75rem, 4vw + 0.5rem, 3rem)' }}>
 						Highlights of Success Stories
 					</h2>
-					<p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+					<p className="text-muted-foreground max-w-2xl mx-auto" style={{ fontSize: 'clamp(0.875rem, 1.5vw + 0.25rem, 1.125rem)' }}>
 						Real achievements from our incubated startups, showcasing innovation,
 						growth, and impact across Gujarat and beyond.
 					</p>
@@ -80,7 +80,7 @@ export default function SuccessStories() {
 					initial="hidden"
 					whileInView="visible"
 					viewport={{ once: true }}
-					className="grid grid-cols-1 md:grid-cols-2 gap-8"
+					className="grid grid-cols-1 md:grid-cols-2 gap-[clamp(1.5rem,4vw,2rem)]"
 				>
 					{successStories.map((story) => {
 						const IconComponent = getIconComponent(story.icon);
@@ -90,7 +90,7 @@ export default function SuccessStories() {
 								variants={itemVariants}
 								className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden group"
 							>
-								<div className="relative h-48 overflow-hidden">
+								<div className="relative overflow-hidden" style={{ aspectRatio: '16/9', minHeight: 'clamp(12rem, 25vw, 12rem)' }}>
 									<img
 										src={
 											story.image?.startsWith('http')
@@ -104,23 +104,23 @@ export default function SuccessStories() {
 										alt={story.title}
 										className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
 									/>
-									<div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-full p-2">
-										<IconComponent className="w-6 h-6 text-gtu-primary" />
+									<div className="absolute top-[clamp(0.75rem,2vw,1rem)] left-[clamp(0.75rem,2vw,1rem)] bg-white/90 backdrop-blur-sm rounded-full p-[clamp(0.375rem,1vw,0.5rem)]">
+										<IconComponent className="w-[clamp(1.25rem,2vw,1.5rem)] h-[clamp(1.25rem,2vw,1.5rem)] text-gtu-primary" />
 									</div>
 								</div>
-								<div className="p-6">
-									<h3 className="text-xl font-bold text-foreground mb-2">
+								<div className="p-[clamp(1rem,3vw,1.5rem)]">
+									<h3 className="font-bold text-foreground mb-2" style={{ fontSize: 'clamp(1rem, 2vw + 0.25rem, 1.25rem)' }}>
 										{story.title}
 									</h3>
-									<p className="text-muted-foreground mb-4">
+									<p className="text-muted-foreground mb-[clamp(0.75rem,2vw,1rem)]" style={{ fontSize: 'clamp(0.875rem, 1.2vw + 0.25rem, 1rem)' }}>
 										{story.description}
 									</p>
 									<div className="flex items-center justify-between">
-										<span className="text-gtu-primary font-semibold text-lg">
+										<span className="text-gtu-primary font-semibold" style={{ fontSize: 'clamp(1rem, 2vw + 0.25rem, 1.125rem)' }}>
 											{story.metric}
 										</span>
-										<div className="w-8 h-8 bg-gtu-lavender rounded-full flex items-center justify-center">
-											<TrendingUp className="w-4 h-4 text-gtu-primary" />
+										<div className="w-[clamp(2rem,3vw,2rem)] h-[clamp(2rem,3vw,2rem)] bg-gtu-lavender rounded-full flex items-center justify-center flex-shrink-0">
+											<TrendingUp className="w-[clamp(1rem,1.5vw,1rem)] h-[clamp(1rem,1.5vw,1rem)] text-gtu-primary" />
 										</div>
 									</div>
 								</div>

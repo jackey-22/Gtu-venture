@@ -53,19 +53,20 @@ export default function Testimonials() {
 	}
 
 	return (
-		<section className="py-24 bg-muted" data-testid="testimonials">
-			<div className="max-w-4xl mx-auto px-6 lg:px-16 text-center">
+		<section className="py-[clamp(3rem,8vw,6rem)] bg-muted overflow-hidden" data-testid="testimonials">
+			<div className="max-w-4xl mx-auto px-[clamp(1rem,4vw,4rem)] text-center">
 				<motion.h2
 					initial={{ opacity: 0, y: 30 }}
 					whileInView={{ opacity: 1, y: 0 }}
 					viewport={{ once: true }}
 					transition={{ duration: 0.6 }}
-					className="text-display font-bold text-foreground mb-16"
+					className="font-bold text-foreground mb-[clamp(2rem,5vw,4rem)]"
+					style={{ fontSize: 'clamp(1.75rem, 4vw + 0.5rem, 3rem)' }}
 				>
 					What Founders Say
 				</motion.h2>
 
-				<div className="relative min-h-[300px] flex items-center justify-center">
+				<div className="relative min-h-[clamp(250px,40vw,300px)] flex items-center justify-center">
 					<AnimatePresence mode="wait">
 						<motion.div
 							key={currentIndex}
@@ -76,19 +77,20 @@ export default function Testimonials() {
 							className="text-center"
 							data-testid={`testimonial-${currentIndex}`}
 						>
-							<blockquote className="text-2xl lg:text-3xl font-medium text-foreground leading-relaxed mb-8">
+							<blockquote className="font-medium text-foreground leading-relaxed mb-[clamp(1.5rem,4vw,2rem)]" style={{ fontSize: 'clamp(1.125rem, 2.5vw + 0.5rem, 1.875rem)' }}>
 								"{testimonials[currentIndex].quote}"
 							</blockquote>
 							<img
 								src={`${baseURL}${testimonials[currentIndex].image}`}
 								alt={testimonials[currentIndex].author}
-								className="w-20 h-20 rounded-full mx-auto mb-4 object-cover"
+								className="rounded-full mx-auto mb-[clamp(0.75rem,2vw,1rem)] object-cover"
+								style={{ width: 'clamp(4rem, 8vw, 5rem)', height: 'clamp(4rem, 8vw, 5rem)' }}
 								data-testid={`testimonial-image-${currentIndex}`}
 							/>
-							<div className="font-semibold text-foreground">
+							<div className="font-semibold text-foreground" style={{ fontSize: 'clamp(0.875rem, 1.5vw + 0.25rem, 1.125rem)' }}>
 								{testimonials[currentIndex].author}
 							</div>
-							<div className="text-muted-foreground text-sm">
+							<div className="text-muted-foreground" style={{ fontSize: 'clamp(0.75rem, 1.2vw + 0.25rem, 0.875rem)' }}>
 								{testimonials[currentIndex].position}
 							</div>
 						</motion.div>
@@ -96,14 +98,15 @@ export default function Testimonials() {
 				</div>
 
 				{/* Navigation dots */}
-				<div className="flex justify-center space-x-2 mt-12">
+				<div className="flex justify-center gap-2 mt-[clamp(2rem,5vw,3rem)]">
 					{testimonials.map((_, index) => (
 						<button
 							key={index}
 							onClick={() => setCurrentIndex(index)}
-							className={`w-3 h-3 rounded-full transition-colors ${
+							className={`rounded-full transition-colors ${
 								index === currentIndex ? 'bg-primary' : 'bg-border'
 							}`}
+							style={{ width: 'clamp(0.5rem, 1vw, 0.75rem)', height: 'clamp(0.5rem, 1vw, 0.75rem)' }}
 							data-testid={`testimonial-dot-${index}`}
 						/>
 					))}

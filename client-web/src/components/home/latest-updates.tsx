@@ -109,35 +109,36 @@ export default function LatestUpdates() {
   }, [news, events, baseURL]);
 
   return (
-    <section className="py-24 bg-background" data-testid="latest-updates">
-      <div className="max-w-7xl mx-auto px-6 lg:px-16">
+    <section className="py-[clamp(3rem,8vw,6rem)] bg-background overflow-hidden" data-testid="latest-updates">
+      <div className="max-w-7xl mx-auto px-[clamp(1rem,4vw,4rem)]">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-[clamp(2rem,5vw,3rem)]"
         >
-          <h2 className="text-display font-bold text-foreground mb-6">
+          <h2 className="font-bold text-foreground mb-[clamp(1rem,3vw,1.5rem)]" style={{ fontSize: 'clamp(1.75rem, 4vw + 0.5rem, 3rem)' }}>
             Latest Updates
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-muted-foreground max-w-3xl mx-auto" style={{ fontSize: 'clamp(0.875rem, 1.5vw + 0.25rem, 1.25rem)' }}>
             Stay updated with our programs, events, and startup success stories
           </p>
         </motion.div>
 
         {/* Tabs */}
-        <div className="flex justify-center mb-12">
-          <div className="bg-muted rounded-full p-1">
+        <div className="flex justify-center mb-[clamp(2rem,5vw,3rem)] overflow-x-auto">
+          <div className="bg-muted rounded-full p-1 flex gap-1">
             {tabs.map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-6 py-3 rounded-full text-sm font-semibold transition-colors ${
+                className={`px-[clamp(1rem,3vw,1.5rem)] py-[clamp(0.5rem,1.5vw,0.75rem)] rounded-full font-semibold transition-colors whitespace-nowrap ${
                   activeTab === tab
                     ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
+                style={{ fontSize: 'clamp(0.75rem, 1vw + 0.25rem, 0.875rem)' }}
                 data-testid={`tab-${tab.toLowerCase()}`}
               >
                 {tab}
@@ -160,7 +161,7 @@ export default function LatestUpdates() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+            className="grid grid-cols-1 md:grid-cols-3 gap-[clamp(1.5rem,4vw,2rem)]"
           >
             {content[activeTab as keyof typeof content].map((item, index) => (
             <motion.article
@@ -174,19 +175,20 @@ export default function LatestUpdates() {
               <img
                 src={item.image}
                 alt={item.title}
-                className="w-full h-48 object-cover"
+                className="w-full object-cover"
+                style={{ aspectRatio: '16/9', height: 'clamp(12rem, 25vw, 12rem)' }}
               />
-              <div className="p-6">
-                <div className={`text-xs font-semibold ${item.categoryColor} uppercase tracking-wide mb-2`}>
+              <div className="p-[clamp(1rem,3vw,1.5rem)]">
+                <div className={`font-semibold ${item.categoryColor} uppercase tracking-wide mb-2`} style={{ fontSize: 'clamp(0.625rem, 1vw + 0.25rem, 0.75rem)' }}>
                   {item.category}
                 </div>
-                <h3 className="text-xl font-bold text-foreground mb-3">
+                <h3 className="font-bold text-foreground mb-[clamp(0.5rem,1.5vw,0.75rem)]" style={{ fontSize: 'clamp(1rem, 2vw + 0.25rem, 1.25rem)' }}>
                   {item.title}
                 </h3>
-                <p className="text-muted-foreground text-sm leading-relaxed mb-4">
+                <p className="text-muted-foreground leading-relaxed mb-[clamp(0.75rem,2vw,1rem)]" style={{ fontSize: 'clamp(0.75rem, 1.2vw + 0.25rem, 0.875rem)' }}>
                   {item.description}
                 </p>
-                <div className="text-xs text-muted-foreground">
+                <div className="text-muted-foreground" style={{ fontSize: 'clamp(0.625rem, 1vw + 0.25rem, 0.75rem)' }}>
                   {item.date}
                 </div>
               </div>

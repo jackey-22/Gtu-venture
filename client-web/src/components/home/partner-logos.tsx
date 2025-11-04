@@ -48,19 +48,20 @@ export default function PartnerLogos() {
   }
 
   return (
-    <section className="py-16 bg-muted" data-testid="partner-logos">
-      <div className="max-w-7xl mx-auto px-6 lg:px-16">
+    <section className="py-[clamp(2rem,5vw,4rem)] bg-muted overflow-hidden" data-testid="partner-logos">
+      <div className="max-w-7xl mx-auto px-[clamp(1rem,4vw,4rem)]">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-12"
+          className="text-center font-semibold text-muted-foreground uppercase tracking-wider mb-[clamp(2rem,5vw,3rem)]"
+          style={{ fontSize: 'clamp(0.75rem, 1.2vw + 0.25rem, 0.875rem)' }}
         >
           Grant & Funding Support
         </motion.h2>
         
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 items-center">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-[clamp(1.5rem,4vw,2rem)] items-center">
           {partners.map((partner, index) => (
             <motion.div
               key={partner.name}
@@ -74,7 +75,8 @@ export default function PartnerLogos() {
                 whileHover={{ scale: 1.05 }}
                 src={partner.logo}
                 alt={partner.name}
-                className="h-16 w-auto logo-hover"
+                className="w-auto logo-hover"
+                style={{ height: 'clamp(3rem, 6vw, 4rem)' }}
                 data-testid={`partner-logo-${partner.name.toLowerCase().replace(/\s+/g, '-')}`}
               />
             </motion.div>
