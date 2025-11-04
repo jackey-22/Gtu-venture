@@ -7,6 +7,12 @@ const reportModel = require('../models/report.model');
 const startupModel = require('../models/startup.model');
 const faqModel = require('../models/faq.model');
 const teamMemberModel = require('../models/teamMember.model');
+const careerModel = require('../models/career.model');
+const partnerModel = require('../models/partner.model');
+const facilityModel = require('../models/facility.model');
+const initiativeModel = require('../models/initiative.model');
+const circularModel = require('../models/circular.model');
+const contactMessageModel = require('../models/contactMessage.model');
 
 // EVENTS
 async function fetchEvents(req, res) {
@@ -239,6 +245,227 @@ async function fetchTeamMemberById(req, res) {
 	}
 }
 
+// CAREERS
+async function fetchCareers(req, res) {
+	try {
+		const careers = await careerModel.find({ status: 'published' }).sort({ created_at: -1 });
+
+		res.status(200).json({ success: true, count: careers.length, data: careers });
+	} catch (error) {
+		console.error('Fetch Careers Error:', error);
+		res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function fetchCareerById(req, res) {
+	try {
+		const career = await careerModel.findOne({
+			_id: req.params.id,
+			status: 'published',
+		});
+
+		if (!career) return res.status(404).json({ message: 'Career not found or not published' });
+
+		res.status(200).json({ success: true, data: career });
+	} catch (error) {
+		console.error('Fetch Career By ID Error:', error);
+		res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+// PARTNERS
+async function fetchPartners(req, res) {
+	try {
+		const partners = await partnerModel.find({ status: 'published' }).sort({ created_at: -1 });
+
+		res.status(200).json({ success: true, count: partners.length, data: partners });
+	} catch (error) {
+		console.error('Fetch Partners Error:', error);
+		res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function fetchPartnerById(req, res) {
+	try {
+		const partner = await partnerModel.findOne({
+			_id: req.params.id,
+			status: 'published',
+		});
+
+		if (!partner) return res.status(404).json({ message: 'Partner not found or not published' });
+
+		res.status(200).json({ success: true, data: partner });
+	} catch (error) {
+		console.error('Fetch Partner By ID Error:', error);
+		res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+// FACILITIES
+async function fetchFacilities(req, res) {
+	try {
+		const facilities = await facilityModel.find({ status: 'published' }).sort({ created_at: -1 });
+
+		res.status(200).json({ success: true, count: facilities.length, data: facilities });
+	} catch (error) {
+		console.error('Fetch Facilities Error:', error);
+		res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function fetchFacilityById(req, res) {
+	try {
+		const facility = await facilityModel.findOne({
+			_id: req.params.id,
+			status: 'published',
+		});
+
+		if (!facility) return res.status(404).json({ message: 'Facility not found or not published' });
+
+		res.status(200).json({ success: true, data: facility });
+	} catch (error) {
+		console.error('Fetch Facility By ID Error:', error);
+		res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+// INITIATIVES
+async function fetchInitiatives(req, res) {
+	try {
+		const initiatives = await initiativeModel.find({ status: 'published' }).sort({ created_at: -1 });
+
+		res.status(200).json({ success: true, count: initiatives.length, data: initiatives });
+	} catch (error) {
+		console.error('Fetch Initiatives Error:', error);
+		res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function fetchInitiativeById(req, res) {
+	try {
+		const initiative = await initiativeModel.findOne({
+			_id: req.params.id,
+			status: 'published',
+		});
+
+		if (!initiative) return res.status(404).json({ message: 'Initiative not found or not published' });
+
+		res.status(200).json({ success: true, data: initiative });
+	} catch (error) {
+		console.error('Fetch Initiative By ID Error:', error);
+		res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+// CIRCULARS
+async function fetchCirculars(req, res) {
+	try {
+		const circulars = await circularModel.find({ status: 'published' }).sort({ created_at: -1 });
+
+		res.status(200).json({ success: true, count: circulars.length, data: circulars });
+	} catch (error) {
+		console.error('Fetch Circulars Error:', error);
+		res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+async function fetchCircularById(req, res) {
+	try {
+		const circular = await circularModel.findOne({
+			_id: req.params.id,
+			status: 'published',
+		});
+
+		if (!circular) return res.status(404).json({ message: 'Circular not found or not published' });
+
+		res.status(200).json({ success: true, data: circular });
+	} catch (error) {
+		console.error('Fetch Circular By ID Error:', error);
+		res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+// CONTACT MESSAGE (submit only, no fetch for users)
+async function submitContactMessage(req, res) {
+	try {
+		const { name, email, phone, role, subject, message } = req.body;
+		if (!name || !email || !phone || !subject || !message) {
+			return res.status(400).json({ message: 'Missing required fields' });
+		}
+
+		const newContactMessage = new contactMessageModel({
+			name,
+			email,
+			phone,
+			role,
+			subject,
+			message,
+			status: 'new',
+		});
+
+		await newContactMessage.save();
+		return res.status(201).json({ success: true, message: 'Contact message submitted successfully' });
+	} catch (error) {
+		console.error('Submit Contact Message Error:', error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
+// APPLICATION (submit only, no fetch for users)
+async function submitApplication(req, res) {
+	try {
+		const {
+			startupName,
+			idea,
+			email,
+			cofounderEmail,
+			state,
+			city,
+			fundingRaised,
+			fundingAgency,
+			website,
+			mobile,
+			registered,
+			stage,
+			incubatedElsewhere,
+			supportNeeded,
+			teamSize,
+			pitchDeck,
+		} = req.body;
+
+		if (!startupName || !email || !mobile) {
+			return res.status(400).json({ message: 'Missing required fields' });
+		}
+
+		const applicationModel = require('../models/application.model');
+		const newApplication = new applicationModel({
+			startupName,
+			idea,
+			email,
+			cofounderEmail,
+			state,
+			city,
+			fundingRaised,
+			fundingAgency,
+			website,
+			mobile,
+			registered,
+			stage,
+			incubatedElsewhere,
+			supportNeeded: Array.isArray(supportNeeded) ? supportNeeded : [],
+			teamSize,
+			pitchDeck,
+			status: 'pending',
+		});
+
+		await newApplication.save();
+		return res.status(201).json({ success: true, message: 'Application submitted successfully' });
+	} catch (error) {
+		console.error('Submit Application Error:', error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
+}
+
 module.exports = {
 	fetchEvents,
 	fetchEventById,
@@ -256,4 +483,16 @@ module.exports = {
 	fetchFAQById,
 	fetchTeamMembers,
 	fetchTeamMemberById,
+	fetchCareers,
+	fetchCareerById,
+	fetchPartners,
+	fetchPartnerById,
+	fetchFacilities,
+	fetchFacilityById,
+	fetchInitiatives,
+	fetchInitiativeById,
+	fetchCirculars,
+	fetchCircularById,
+	submitContactMessage,
+	submitApplication,
 };

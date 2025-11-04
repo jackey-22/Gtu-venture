@@ -243,9 +243,9 @@ export default function Events() {
 											<Badge variant="secondary">{event.category}</Badge>
 										</div>
 
-										<h3 className="text-xl font-bold mb-2">{event.title}</h3>
+										<h3 className="text-xl font-bold mb-2 line-clamp-2">{event.title}</h3>
 
-										<p className="text-muted-foreground mb-4 line-clamp-1">
+										<p className="text-muted-foreground mb-4 line-clamp-2">
 											{event.description}
 										</p>
 
@@ -263,8 +263,8 @@ export default function Events() {
 											)}
 
 											<div className="flex items-center gap-2">
-												<MapPin className="h-4 w-4" />
-												{event.location}
+												<MapPin className="h-4 w-4 flex-shrink-0" />
+												<span className="truncate">{event.location}</span>
 											</div>
 
 											<div className="flex items-center gap-2">
@@ -293,7 +293,7 @@ export default function Events() {
 
 			{/* Modal */}
 			<Dialog open={!!selectedEvent} onOpenChange={() => setSelectedEvent(null)}>
-				<DialogContent className="max-w-2xl">
+				<DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
 					{modalLoading ? (
 						<div className="py-10 text-center">Loading...</div>
 					) : selectedEvent ? (
@@ -310,29 +310,29 @@ export default function Events() {
 								className="w-full h-64 object-cover rounded-lg mb-4"
 							/>
 
-							<p className="text-muted-foreground mb-4">
+							<p className="text-muted-foreground mb-4 break-words">
 								{selectedEvent.description}
 							</p>
 
 							<div className="space-y-2 text-sm">
-								<p>
+								<p className="break-words">
 									<strong>Date:</strong>{' '}
 									{formatDateTime(selectedEvent.start_date)}
 								</p>
 								{selectedEvent.end_date && (
-									<p>
+									<p className="break-words">
 										<strong>Ends:</strong>{' '}
 										{formatDateTime(selectedEvent.end_date)}
 									</p>
 								)}
-								<p>
+								<p className="break-words">
 									<strong>Location:</strong> {selectedEvent.location}
 								</p>
 								<p>
 									<strong>Category:</strong> {selectedEvent.category}
 								</p>
-								<p>
-									<strong>Experts:</strong> {selectedEvent.experts?.join(', ')}
+								<p className="break-words">
+									<strong>Experts:</strong> {selectedEvent.experts?.join(', ') || 'N/A'}
 								</p>
 								<p>
 									<strong>Seats:</strong> {selectedEvent.maxAttendees}

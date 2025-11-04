@@ -1,9 +1,29 @@
 import PageShell from "./page-shell";
-import { getAll } from "@/lib/contentStore";
 import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { fetchGet } from "@/utils/fetch.utils";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 export default function Initiatives() {
-  const items = getAll<any>("initiatives");
+  const [items, setItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedInitiative, setSelectedInitiative] = useState<any | null>(null);
+
+  useEffect(() => {
+    const fetchInitiatives = async () => {
+      try {
+        const data = await fetchGet({ pathName: 'user/get-initiatives' });
+        const initiatives = data?.data || [];
+        setItems(initiatives);
+      } catch (error) {
+        console.error('Error fetching initiatives:', error);
+        setItems([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchInitiatives();
+  }, []);
 
   const demo = [
     { 
@@ -53,29 +73,65 @@ export default function Initiatives() {
   <PageShell title="Our Initiatives" subtitle="Programs and projects led by GTU Ventures, including IPR, Design Innovation Centre (DIC), and community outreach.">
       <motion.div variants={containerVariants} initial="hidden" animate="visible" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {list.map((it: any, i: number) => (
-          <motion.article variants={itemVariants} key={i} className="overflow-hidden rounded-2xl shadow-lg bg-card border border-transparent hover:shadow-2xl transform hover:-translate-y-1 transition">
+          <motion.article variants={itemVariants} key={i} className="overflow-hidden rounded-2xl shadow-lg bg-card border border-transparent hover:shadow-2xl transform hover:-translate-y-1 transition cursor-pointer" onClick={() => setSelectedInitiative(it)}>
             <div className="h-2 bg-accent/90" />
             <div className="p-6">
-              <div className="font-semibold text-lg mb-2">{it.title}</div>
-              <div className="text-muted-foreground mb-4">{it.body}</div>
+              <div className="font-semibold text-lg mb-2 line-clamp-2">{it.title}</div>
+              <div className="text-muted-foreground mb-4 line-clamp-2">{it.body}</div>
               
               {it.outcomes && (
                 <div className="mb-4">
                   <h4 className="font-medium text-sm text-foreground mb-1">Key Outcomes:</h4>
-                  <p className="text-sm text-muted-foreground">{it.outcomes}</p>
+                  <p className="text-sm text-muted-foreground line-clamp-2">{it.outcomes}</p>
                 </div>
               )}
               
               {it.caseStudy && (
                 <div>
                   <h4 className="font-medium text-sm text-foreground mb-1">Case Study:</h4>
-                  <p className="text-sm text-muted-foreground italic">{it.caseStudy}</p>
+                  <p className="text-sm text-muted-foreground italic line-clamp-2">{it.caseStudy}</p>
                 </div>
               )}
             </div>
           </motion.article>
         ))}
       </motion.div>
+
+      {/* Initiative Detail Modal */}
+      <Dialog open={!!selectedInitiative} onOpenChange={() => setSelectedInitiative(null)}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          {selectedInitiative && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-2xl font-bold text-foreground mb-2">
+                  {selectedInitiative.title}
+                </DialogTitle>
+                {selectedInitiative.body && (
+                  <DialogDescription className="text-base">
+                    {selectedInitiative.body}
+                  </DialogDescription>
+                )}
+              </DialogHeader>
+
+              <div className="space-y-4">
+                {selectedInitiative.outcomes && (
+                  <div>
+                    <h4 className="font-semibold text-foreground mb-2">Key Outcomes</h4>
+                    <p className="text-muted-foreground leading-relaxed">{selectedInitiative.outcomes}</p>
+                  </div>
+                )}
+
+                {selectedInitiative.caseStudy && (
+                  <div>
+                    <h4 className="font-semibold text-foreground mb-2">Case Study</h4>
+                    <p className="text-muted-foreground leading-relaxed italic">{selectedInitiative.caseStudy}</p>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </PageShell>
   );
 }

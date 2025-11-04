@@ -266,7 +266,7 @@ export default function Startups() {
 								<Card className="h-full hover-lift cursor-pointer">
 									<CardContent className="p-6">
 										<div className="flex-1 min-w-0">
-											<h3 className="text-xl font-bold text-foreground mb-1 truncate">
+											<h3 className="text-xl font-bold text-foreground mb-1 line-clamp-2">
 												{startup.name}
 											</h3>
 										</div>
@@ -286,7 +286,7 @@ export default function Startups() {
 												/>
 											)}
 										</div>
-										<p className="text-muted-foreground mb-4 leading-relaxed line-clamp-3">
+										<p className="text-muted-foreground mb-4 leading-relaxed line-clamp-3 break-words">
 											{startup.description}
 										</p>
 										<div className="flex flex-wrap gap-2 mb-4">
@@ -295,8 +295,8 @@ export default function Startups() {
 										</div>
 										<div className="space-y-2 mb-4 text-sm">
 											<div className="flex items-center gap-2">
-												<span className="font-medium">Founders:</span>
-												<span className="text-muted-foreground">
+												<span className="font-medium flex-shrink-0">Founders:</span>
+												<span className="text-muted-foreground truncate">
 													{Array.isArray(startup.founders)
 														? startup.founders.join(', ')
 														: 'N/A'}
@@ -352,10 +352,10 @@ export default function Startups() {
 					</div>
 
 					<div className="space-y-3 text-sm mt-2">
-						<p>
+						<p className="break-words">
 							<strong>Description:</strong> {selectedStartup?.description}
 						</p>
-						<p>
+						<p className="break-words">
 							<strong>Founders:</strong>{' '}
 							{Array.isArray(selectedStartup?.founders)
 								? selectedStartup?.founders.join(', ')
@@ -370,12 +370,13 @@ export default function Startups() {
 						<p>
 							<strong>Location:</strong> {selectedStartup?.location ?? 'N/A'}
 						</p>
-						<p>
-							<strong>Website:</strong>
+						<p className="break-words">
+							<strong>Website:</strong>{' '}
 							<a
 								href={selectedStartup?.website}
 								target="_blank"
-								className="text-primary underline ml-1"
+								rel="noopener noreferrer"
+								className="text-primary underline ml-1 break-all"
 							>
 								{selectedStartup?.website}
 							</a>

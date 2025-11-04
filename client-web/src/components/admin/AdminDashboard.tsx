@@ -11,6 +11,7 @@ import {
 	FileText,
 	HelpCircle,
 	Users,
+	Settings,
 	Users as TeamIcon,
 } from 'lucide-react';
 import { Skeleton } from 'primereact/skeleton';
@@ -24,6 +25,13 @@ import GalleryCRUD from './GalleryCRUD';
 import ReportsCRUD from './ReportsCRUD';
 import FAQsCRUD from './FAQsCRUD';
 import TeamCRUD from './TeamCRUD';
+import CareersCRUD from './CareersCRUD';
+import ApplicationsCRUD from './ApplicationsCRUD';
+import PartnersCRUD from './PartnersCRUD';
+import FacilitiesCRUD from './FacilitiesCRUD';
+import InitiativesCRUD from './InitiativesCRUD';
+import ContactMessagesCRUD from './ContactMessagesCRUD';
+import CircularsCRUD from './CircularsCRUD';
 import { setGlobalCursorStyle } from 'node_modules/react-resizable-panels/dist/declarations/src/utils/cursor';
 
 const contentSections = [
@@ -35,6 +43,18 @@ const contentSections = [
 	{ key: 'reports', label: 'Reports', component: ReportsCRUD, icon: FileText },
 	{ key: 'faqs', label: 'FAQs', component: FAQsCRUD, icon: HelpCircle },
 	{ key: 'team', label: 'Team', component: TeamCRUD, icon: TeamIcon },
+	{ key: 'applications', label: 'Applications', component: ApplicationsCRUD, icon: FileText },
+	{ key: 'careers', label: 'Careers', component: CareersCRUD, icon: Users },
+	{ key: 'partners', label: 'Partners', component: PartnersCRUD, icon: Building },
+	{ key: 'facilities', label: 'Facilities', component: FacilitiesCRUD, icon: Settings },
+	{ key: 'initiatives', label: 'Initiatives', component: InitiativesCRUD, icon: Award },
+	{
+		key: 'contactMessages',
+		label: 'Contact Messages',
+		component: ContactMessagesCRUD,
+		icon: Newspaper,
+	},
+	{ key: 'circulars', label: 'Circulars', component: CircularsCRUD, icon: FileText },
 ];
 
 export default function AdminDashboard() {

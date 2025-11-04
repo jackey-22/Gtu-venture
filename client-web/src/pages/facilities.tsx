@@ -1,10 +1,31 @@
 import PageShell from "./page-shell";
-import { getAll } from "@/lib/contentStore";
 import { motion } from "framer-motion";
 import { Wrench, Box, Zap, Users, Scale, Calculator, Shield, Download, FileText } from "lucide-react";
+import { useState, useEffect } from "react";
+import { fetchGet } from "@/utils/fetch.utils";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 export default function Facilities() {
-  const items = getAll<any>("facilities");
+  const [items, setItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedFacility, setSelectedFacility] = useState<any | null>(null);
+
+  useEffect(() => {
+    const fetchFacilities = async () => {
+      try {
+        const data = await fetchGet({ pathName: 'user/get-facilities' });
+        const facilities = data?.data || [];
+        setItems(facilities);
+      } catch (error) {
+        console.error('Error fetching facilities:', error);
+        setItems([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchFacilities();
+  }, []);
 
   const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.06 } } };
   const itemVariants = { hidden: { y: 10, opacity: 0 }, visible: { y: 0, opacity: 1, transition: { duration: 0.45 } } };
@@ -28,7 +49,12 @@ export default function Facilities() {
     { title: 'Legal Agreement Forms', description: 'Standard templates for NDAs, term sheets, and partnership agreements.', download: '/downloads/legal-forms.zip', icon: FileText }
   ];
 
-  const list = items.length ? items : demo;
+  const list = items.length ? items.map((it: any) => ({
+    title: it.title,
+    body: it.body,
+    icon: it.icon ? eval(it.icon) : Box,
+    action: it.action,
+  })) : demo;
 
   return (
     <PageShell title="Facilities & Resources" subtitle="Infrastructure, labs, and services available to startups at GTU Ventures.">
@@ -42,15 +68,15 @@ export default function Facilities() {
           {list.map((it: any, i: number) => {
             const Icon = it.icon ?? Box;
             return (
-              <motion.article variants={itemVariants} key={i} className="group overflow-hidden rounded-2xl bg-card border border-border shadow-sm hover:shadow-xl hover:border-primary/20 transform hover:-translate-y-2 transition-all duration-300">
+              <motion.article variants={itemVariants} key={i} className="group overflow-hidden rounded-2xl bg-card border border-border shadow-sm hover:shadow-xl hover:border-primary/20 transform hover:-translate-y-2 transition-all duration-300 cursor-pointer" onClick={() => setSelectedFacility(it)}>
                 <div className="p-8 flex flex-col h-full">
                   <div className="flex items-start gap-6">
-                    <div className="p-4 bg-primary/10 rounded-xl text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                    <div className="p-4 bg-primary/10 rounded-xl text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors flex-shrink-0">
                       <Icon className="w-8 h-8" />
                     </div>
-                    <div className="flex-1">
-                      <div className="font-bold text-xl text-foreground mb-3">{it.title}</div>
-                      <div className="text-muted-foreground leading-relaxed">{it.body}</div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-bold text-xl text-foreground mb-3 line-clamp-2">{it.title}</div>
+                      <div className="text-muted-foreground leading-relaxed line-clamp-3">{it.body}</div>
                     </div>
                   </div>
                 </div>
@@ -116,6 +142,47 @@ export default function Facilities() {
           ))}
         </div>
       </motion.div>
+
+      {/* Facility Detail Modal */}
+      <Dialog open={!!selectedFacility} onOpenChange={() => setSelectedFacility(null)}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          {selectedFacility && (
+            <>
+              <DialogHeader>
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="p-4 bg-primary/10 rounded-xl text-primary flex-shrink-0">
+                    {(() => {
+                      const Icon = selectedFacility.icon ? eval(selectedFacility.icon) : Box;
+                      return <Icon className="w-8 h-8" />;
+                    })()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <DialogTitle className="text-2xl font-bold text-foreground mb-2">
+                      {selectedFacility.title}
+                    </DialogTitle>
+                  </div>
+                </div>
+              </DialogHeader>
+
+              <div className="space-y-4">
+                {selectedFacility.body && (
+                  <DialogDescription className="text-base leading-relaxed">
+                    {selectedFacility.body}
+                  </DialogDescription>
+                )}
+
+                {selectedFacility.action && (
+                  <div className="pt-4">
+                    <Button className="w-full">
+                      {selectedFacility.action}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </PageShell>
   );
 }

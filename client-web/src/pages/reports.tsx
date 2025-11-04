@@ -1,6 +1,9 @@
 import PageShell from "./page-shell";
 import { motion } from "framer-motion";
 import { useMemo, useState, useEffect } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Download } from "lucide-react";
 
 export default function Reports() {
   const baseURL = import.meta.env.VITE_URL;
@@ -8,6 +11,7 @@ export default function Reports() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<string>('All');
+  const [selectedReport, setSelectedReport] = useState<any | null>(null);
 
   useEffect(() => {
     const fetchReports = async () => {
@@ -113,6 +117,7 @@ export default function Reports() {
               variants={itemVariants}
               key={it._id ?? i}
               className="bg-card rounded-3xl overflow-hidden border shadow-sm hover-lift cursor-pointer"
+              onClick={() => setSelectedReport(it)}
             >
               <div className="w-full h-48 bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center">
                 <svg className="w-16 h-16 text-primary/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -121,15 +126,15 @@ export default function Reports() {
               </div>
 
               <div className="p-6">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="font-semibold text-lg">{it.title}</div>
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <div className="font-semibold text-lg line-clamp-2 flex-1 min-w-0">{it.title}</div>
                   {it.category && (
-                    <div className="text-xs px-2 py-1 bg-accent/10 text-accent rounded">{it.category}</div>
+                    <div className="text-xs px-2 py-1 bg-accent/10 text-accent rounded flex-shrink-0">{it.category}</div>
                   )}
                 </div>
 
                 {it.description && (
-                  <div className="text-muted-foreground text-sm leading-relaxed mb-4">{it.description}</div>
+                  <div className="text-muted-foreground text-sm leading-relaxed mb-4 line-clamp-3">{it.description}</div>
                 )}
 
                 <div className="mt-2">
@@ -137,7 +142,8 @@ export default function Reports() {
                     href={it.fileUrl ? `${baseURL}${it.fileUrl.replace(/\\/g, '/')}` : '#'} 
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-primary font-medium hover:underline"
+                    className="text-primary font-medium hover:underline text-sm"
+                    onClick={(e) => e.stopPropagation()}
                   >
                     Download PDF
                   </a>
@@ -147,6 +153,66 @@ export default function Reports() {
           ))}
         </motion.div>
       )}
+
+      {/* Report Detail Modal */}
+      <Dialog open={!!selectedReport} onOpenChange={() => setSelectedReport(null)}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          {selectedReport && (
+            <>
+              <DialogHeader>
+                <div className="flex items-center justify-between gap-4 mb-4">
+                  <DialogTitle className="text-2xl font-bold text-foreground flex-1 min-w-0">
+                    {selectedReport.title}
+                  </DialogTitle>
+                  {selectedReport.category && (
+                    <div className="text-xs px-2 py-1 bg-accent/10 text-accent rounded flex-shrink-0">
+                      {selectedReport.category}
+                    </div>
+                  )}
+                </div>
+                {selectedReport.description && (
+                  <DialogDescription className="text-base">
+                    {selectedReport.description}
+                  </DialogDescription>
+                )}
+              </DialogHeader>
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-center p-8 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-lg">
+                  <svg className="w-20 h-20 text-primary/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                  </svg>
+                </div>
+
+                {selectedReport.date && (
+                  <div className="text-sm text-muted-foreground">
+                    <strong>Date:</strong> {new Date(selectedReport.date).toLocaleDateString()}
+                  </div>
+                )}
+
+                {selectedReport.created_at && (
+                  <div className="text-sm text-muted-foreground">
+                    <strong>Published:</strong> {new Date(selectedReport.created_at).toLocaleDateString()}
+                  </div>
+                )}
+
+                <div className="pt-4">
+                  <Button asChild className="w-full">
+                    <a 
+                      href={selectedReport.fileUrl ? `${baseURL}${selectedReport.fileUrl.replace(/\\/g, '/')}` : '#'} 
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Download PDF
+                    </a>
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </PageShell>
   );
 }

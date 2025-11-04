@@ -1,6 +1,7 @@
 import { useMemo, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import PageShell from './page-shell';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
 export default function News() {
 	const baseURL = import.meta.env.VITE_URL;
@@ -120,15 +121,15 @@ export default function News() {
 							/>
 						)}
 						<div className="p-5">
-							<div className="flex items-center justify-between mb-2">
-								<span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+							<div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
+								<span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide whitespace-nowrap">
 									{article.category || 'Uncategorized'}
 								</span>
-								<span className="text-xs text-muted-foreground">
+								<span className="text-xs text-muted-foreground whitespace-nowrap">
 									{article.date ? new Date(article.date).toLocaleDateString() : article.created_at ? new Date(article.created_at).toLocaleDateString() : ''}
 								</span>
 							</div>
-							<h3 className="text-lg font-bold text-foreground mb-2">
+							<h3 className="text-lg font-bold text-foreground mb-2 line-clamp-2">
 								{article.title}
 							</h3>
 							<p className="text-sm text-muted-foreground line-clamp-3">
@@ -140,42 +141,42 @@ export default function News() {
 			</motion.div>
 
 			{/* News Detail Modal */}
-			{selected && (
-				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-					<div className="bg-background rounded-3xl shadow-2xl max-w-lg w-full mx-4 relative animate-in fade-in zoom-in-95">
-						<button
-							className="absolute top-4 right-4 text-xl text-muted-foreground hover:text-foreground"
-							onClick={() => setSelected(null)}
-							aria-label="Close"
-						>
-							×
-						</button>
-						{selected.images && selected.images.length > 0 && (
-							<img
-								src={`${baseURL}${selected.images[0].replace(/\\/g, '/')}`}
-								alt={selected.title}
-								className="w-full h-56 object-cover rounded-t-3xl"
-							/>
-						)}
-						<div className="p-8">
-							<div className="flex items-center justify-between mb-2">
-								<span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-									{selected.category || 'Uncategorized'}
-								</span>
-								<span className="text-xs text-muted-foreground">
-									{selected.date ? new Date(selected.date).toLocaleDateString() : selected.created_at ? new Date(selected.created_at).toLocaleDateString() : ''}
-								</span>
-							</div>
-							<h2 className="text-2xl font-bold text-foreground mb-4">
-								{selected.title}
-							</h2>
-							<div className="text-muted-foreground text-base leading-relaxed whitespace-pre-line mb-4">
-								{selected.content || selected.body || ''}
-							</div>
-						</div>
-					</div>
-				</div>
-			)}
+			<Dialog open={!!selected} onOpenChange={() => setSelected(null)}>
+				<DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+					{selected && (
+						<>
+							<DialogHeader>
+								<div className="flex items-center justify-between gap-2 mb-4 flex-wrap">
+									<span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide whitespace-nowrap">
+										{selected.category || 'Uncategorized'}
+									</span>
+									<span className="text-xs text-muted-foreground whitespace-nowrap">
+										{selected.date ? new Date(selected.date).toLocaleDateString() : selected.created_at ? new Date(selected.created_at).toLocaleDateString() : ''}
+									</span>
+								</div>
+								<DialogTitle className="text-2xl font-bold text-foreground mb-2">
+									{selected.title}
+								</DialogTitle>
+							</DialogHeader>
+
+							{selected.images && selected.images.length > 0 && (
+								<img
+									src={`${baseURL}${selected.images[0].replace(/\\/g, '/')}`}
+									alt={selected.title}
+									className="w-full h-64 object-cover rounded-lg mb-4"
+									onError={(e) => {
+										e.currentTarget.style.display = 'none';
+									}}
+								/>
+							)}
+
+							<DialogDescription className="text-base leading-relaxed whitespace-pre-line">
+								{selected.content || selected.body || selected.description || ''}
+							</DialogDescription>
+						</>
+					)}
+				</DialogContent>
+			</Dialog>
 		</PageShell>
 	);
 }

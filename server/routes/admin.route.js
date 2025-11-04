@@ -99,6 +99,54 @@ router.post(
 );
 router.post('/delete-team-member/:id', asyncRouteHandler(adminController.deleteTeamMember));
 
+// Application
+router.post('/add-application', asyncRouteHandler(adminController.addApplication));
+router.get('/get-applications', asyncRouteHandler(adminController.getAllApplications));
+router.get('/get-application/:id', asyncRouteHandler(adminController.getApplicationById));
+router.post('/update-application/:id', asyncRouteHandler(adminController.updateApplication));
+router.delete('/delete-application/:id', asyncRouteHandler(adminController.deleteApplication));
+
+// Career
+router.post('/add-career', asyncRouteHandler(adminController.addCareer));
+router.get('/get-careers', asyncRouteHandler(adminController.getAllCareers));
+router.get('/get-career/:id', asyncRouteHandler(adminController.getCareerById));
+router.post('/update-career/:id', asyncRouteHandler(adminController.updateCareer));
+router.delete('/delete-career/:id', asyncRouteHandler(adminController.deleteCareer));
+
+// Partner
+router.post('/add-partner', upload.single('logo'), asyncRouteHandler(adminController.addPartner));
+router.get('/get-partners', asyncRouteHandler(adminController.getAllPartners));
+router.get('/get-partner/:id', asyncRouteHandler(adminController.getPartnerById));
+router.post('/update-partner/:id', upload.single('logo'), asyncRouteHandler(adminController.updatePartner));
+router.delete('/delete-partner/:id', asyncRouteHandler(adminController.deletePartner));
+
+// Facility
+router.post('/add-facility', asyncRouteHandler(adminController.addFacility));
+router.get('/get-facilities', asyncRouteHandler(adminController.getAllFacilities));
+router.get('/get-facility/:id', asyncRouteHandler(adminController.getFacilityById));
+router.post('/update-facility/:id', asyncRouteHandler(adminController.updateFacility));
+router.delete('/delete-facility/:id', asyncRouteHandler(adminController.deleteFacility));
+
+// Initiative
+router.post('/add-initiative', asyncRouteHandler(adminController.addInitiative));
+router.get('/get-initiatives', asyncRouteHandler(adminController.getAllInitiatives));
+router.get('/get-initiative/:id', asyncRouteHandler(adminController.getInitiativeById));
+router.post('/update-initiative/:id', asyncRouteHandler(adminController.updateInitiative));
+router.delete('/delete-initiative/:id', asyncRouteHandler(adminController.deleteInitiative));
+
+// Contact Message
+router.get('/get-contact-messages', asyncRouteHandler(adminController.getAllContactMessages));
+router.get('/get-contact-message/:id', asyncRouteHandler(adminController.getContactMessageById));
+router.post('/update-contact-message/:id', asyncRouteHandler(adminController.updateContactMessage));
+router.delete('/delete-contact-message/:id', asyncRouteHandler(adminController.deleteContactMessage));
+
+// Circular
+router.post('/add-circular', upload.single('file'), asyncRouteHandler(adminController.addCircular));
+router.get('/get-circulars', asyncRouteHandler(adminController.getAllCirculars));
+router.get('/get-circular/:id', asyncRouteHandler(adminController.getCircularById));
+router.post('/update-circular/:id', upload.single('file'), asyncRouteHandler(adminController.updateCircular));
+router.delete('/delete-circular/:id', asyncRouteHandler(adminController.deleteCircular));
+
 // Dashbaord cnts
 router.get('/get-counts', asyncRouteHandler(adminController.getDashboardCounts));
 

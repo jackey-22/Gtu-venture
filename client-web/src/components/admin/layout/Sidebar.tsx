@@ -29,6 +29,13 @@ const navItems = [
 	{ key: 'reports', label: 'Reports', icon: FileText },
 	{ key: 'faqs', label: 'FAQs', icon: HelpCircle },
 	{ key: 'team', label: 'Team', icon: Users },
+	{ key: 'applications', label: 'Applications', icon: FileText },
+	{ key: 'careers', label: 'Careers', icon: Users },
+	{ key: 'partners', label: 'Partners', icon: Building },
+	{ key: 'facilities', label: 'Facilities', icon: Settings },
+	{ key: 'initiatives', label: 'Initiatives', icon: Award },
+	{ key: 'contactMessages', label: 'Contact Messages', icon: Newspaper },
+	{ key: 'circulars', label: 'Circulars', icon: FileText },
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpen, onClose }) => {

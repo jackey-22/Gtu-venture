@@ -71,16 +71,27 @@ export default function Contact() {
     setIsSubmitting(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      toast({
-        title: "Message sent successfully!",
-        description: "We'll get back to you within 24 hours.",
+      const { fetchPost } = await import('@/utils/fetch.utils');
+      const result = await fetchPost({
+        pathName: 'user/submit-contact-message',
+        body: JSON.stringify(data),
       });
-      
-      form.reset();
+
+      if (result?.success || result?.message?.toLowerCase().includes('success')) {
+        toast({
+          title: "Message sent successfully!",
+          description: "We'll get back to you within 24 hours.",
+        });
+        form.reset();
+      } else {
+        toast({
+          title: "Error sending message",
+          description: result?.message || "Please try again or contact us directly.",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
+      console.error('Error submitting contact form:', error);
       toast({
         title: "Error sending message",
         description: "Please try again or contact us directly.",

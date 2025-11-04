@@ -2,7 +2,12 @@ import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ExternalLink, Building, Handshake, Globe } from "lucide-react";
+import { useState, useEffect } from "react";
+import { fetchGet } from "@/utils/fetch.utils";
+
+const baseURL = import.meta.env.VITE_URL;
 
 const partnerData = {
   funding: [
@@ -152,6 +157,44 @@ const partnerCategories = [
 ];
 
 export default function Partners() {
+  const [partners, setPartners] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedPartner, setSelectedPartner] = useState<any | null>(null);
+
+  useEffect(() => {
+    const fetchPartners = async () => {
+      try {
+        const data = await fetchGet({ pathName: 'user/get-partners' });
+        const fetchedPartners = data?.data || [];
+        setPartners(fetchedPartners);
+      } catch (error) {
+        console.error('Error fetching partners:', error);
+        setPartners([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPartners();
+  }, []);
+
+  // Group partners by category
+  const groupedPartners = {
+    funding: partners.filter(p => p.category === 'funding'),
+    strategic: partners.filter(p => p.category === 'strategic'),
+    corporate: partners.filter(p => p.category === 'corporate'),
+    academic: partners.filter(p => p.category === 'academic'),
+    csr: partners.filter(p => p.category === 'csr'),
+  };
+
+  // Use real data if available, otherwise fallback to static data
+  const displayPartners = {
+    funding: groupedPartners.funding.length > 0 ? groupedPartners.funding : partnerData.funding,
+    strategic: groupedPartners.strategic.length > 0 ? groupedPartners.strategic : partnerData.strategic,
+    corporate: groupedPartners.corporate.length > 0 ? groupedPartners.corporate : partnerData.corporate,
+    academic: groupedPartners.academic.length > 0 ? groupedPartners.academic : partnerData.academic,
+    csr: groupedPartners.csr.length > 0 ? groupedPartners.csr : partnerData.csr,
+  };
+
   return (
     <div className="min-h-screen pt-20">
       {/* Hero Section */}
@@ -213,34 +256,34 @@ export default function Partners() {
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {partnerData.funding.map((partner, index) => (
+                  {displayPartners.funding.map((partner: any, index: number) => (
                     <motion.div
-                      key={partner.id}
+                      key={partner._id || partner.id || index}
                       initial={{ opacity: 0, y: 30 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.6, delay: index * 0.1 }}
                       data-testid={`partner-card-${partner.id}`}
                     >
-                      <Card className="h-full hover-lift">
+                      <Card className="h-full hover-lift cursor-pointer" onClick={() => setSelectedPartner(partner)}>
                         <CardContent className="p-8">
                           <div className="flex items-start gap-6 mb-6">
                             <img
-                              src={partner.logo}
+                              src={partner.logo ? `${baseURL}${partner.logo.replace(/\\/g, '/')}` : partner.logo || "/gtuv.png"}
                               alt={`${partner.name} logo`}
-                              className="w-16 h-16 object-contain logo-hover"
+                              className="w-16 h-16 object-contain logo-hover flex-shrink-0"
                             />
                             <div className="flex-1 min-w-0">
-                              <h3 className="text-xl font-bold text-foreground mb-2">
+                              <h3 className="text-xl font-bold text-foreground mb-2 line-clamp-2">
                                 {partner.name}
                               </h3>
                               <div className="flex flex-wrap gap-2 mb-3">
-                                <Badge variant="secondary">{partner.type}</Badge>
-                                <Badge variant="outline">{partner.focus}</Badge>
+                                <Badge variant="secondary" className="whitespace-nowrap">{partner.type}</Badge>
+                                <Badge variant="outline" className="whitespace-nowrap">{partner.focus}</Badge>
                               </div>
                             </div>
                           </div>
                           
-                          <p className="text-muted-foreground leading-relaxed mb-6">
+                          <p className="text-muted-foreground leading-relaxed mb-6 line-clamp-3">
                             {partner.description}
                           </p>
 
@@ -251,6 +294,7 @@ export default function Partners() {
                               rel="noopener noreferrer"
                               className="inline-flex items-center gap-2 text-primary hover:underline font-medium"
                               data-testid={`partner-website-${partner.id}`}
+                              onClick={(e) => e.stopPropagation()}
                             >
                               <ExternalLink className="w-4 h-4" />
                               Visit Website
@@ -282,34 +326,34 @@ export default function Partners() {
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {partnerData.strategic.map((partner, index) => (
+                  {displayPartners.strategic.map((partner: any, index: number) => (
                     <motion.div
-                      key={partner.id}
+                      key={partner._id || partner.id || index}
                       initial={{ opacity: 0, y: 30 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.6, delay: index * 0.1 }}
                       data-testid={`partner-card-${partner.id}`}
                     >
-                      <Card className="h-full hover-lift">
+                      <Card className="h-full hover-lift cursor-pointer" onClick={() => setSelectedPartner(partner)}>
                         <CardContent className="p-8">
                           <div className="flex items-start gap-6 mb-6">
                             <img
-                              src={partner.logo}
+                              src={partner.logo ? `${baseURL}${partner.logo.replace(/\\/g, '/')}` : partner.logo || "/gtuv.png"}
                               alt={`${partner.name} logo`}
-                              className="w-16 h-16 object-contain logo-hover"
+                              className="w-16 h-16 object-contain logo-hover flex-shrink-0"
                             />
                             <div className="flex-1 min-w-0">
-                              <h3 className="text-xl font-bold text-foreground mb-2">
+                              <h3 className="text-xl font-bold text-foreground mb-2 line-clamp-2">
                                 {partner.name}
                               </h3>
                               <div className="flex flex-wrap gap-2 mb-3">
-                                <Badge variant="secondary">{partner.type}</Badge>
-                                <Badge variant="outline">{partner.focus}</Badge>
+                                <Badge variant="secondary" className="whitespace-nowrap">{partner.type}</Badge>
+                                <Badge variant="outline" className="whitespace-nowrap">{partner.focus}</Badge>
                               </div>
                             </div>
                           </div>
                           
-                          <p className="text-muted-foreground leading-relaxed mb-6">
+                          <p className="text-muted-foreground leading-relaxed mb-6 line-clamp-3">
                             {partner.description}
                           </p>
 
@@ -320,6 +364,7 @@ export default function Partners() {
                               rel="noopener noreferrer"
                               className="inline-flex items-center gap-2 text-primary hover:underline font-medium"
                               data-testid={`partner-website-${partner.id}`}
+                              onClick={(e) => e.stopPropagation()}
                             >
                               <ExternalLink className="w-4 h-4" />
                               Visit Website
@@ -351,34 +396,34 @@ export default function Partners() {
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {partnerData.corporate.map((partner, index) => (
+                  {displayPartners.corporate.map((partner: any, index: number) => (
                     <motion.div
-                      key={partner.id}
+                      key={partner._id || partner.id || index}
                       initial={{ opacity: 0, y: 30 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.6, delay: index * 0.1 }}
                       data-testid={`partner-card-${partner.id}`}
                     >
-                      <Card className="h-full hover-lift">
+                      <Card className="h-full hover-lift cursor-pointer" onClick={() => setSelectedPartner(partner)}>
                         <CardContent className="p-8">
                           <div className="flex items-start gap-6 mb-6">
                             <img
-                              src={partner.logo}
+                              src={partner.logo ? `${baseURL}${partner.logo.replace(/\\/g, '/')}` : partner.logo || "/gtuv.png"}
                               alt={`${partner.name} logo`}
-                              className="w-16 h-16 object-contain logo-hover"
+                              className="w-16 h-16 object-contain logo-hover flex-shrink-0"
                             />
                             <div className="flex-1 min-w-0">
-                              <h3 className="text-xl font-bold text-foreground mb-2">
+                              <h3 className="text-xl font-bold text-foreground mb-2 line-clamp-2">
                                 {partner.name}
                               </h3>
                               <div className="flex flex-wrap gap-2 mb-3">
-                                <Badge variant="secondary">{partner.type}</Badge>
-                                <Badge variant="outline">{partner.focus}</Badge>
+                                <Badge variant="secondary" className="whitespace-nowrap">{partner.type}</Badge>
+                                <Badge variant="outline" className="whitespace-nowrap">{partner.focus}</Badge>
                               </div>
                             </div>
                           </div>
                           
-                          <p className="text-muted-foreground leading-relaxed mb-6">
+                          <p className="text-muted-foreground leading-relaxed mb-6 line-clamp-3">
                             {partner.description}
                           </p>
 
@@ -389,6 +434,7 @@ export default function Partners() {
                               rel="noopener noreferrer"
                               className="inline-flex items-center gap-2 text-primary hover:underline font-medium"
                               data-testid={`partner-website-${partner.id}`}
+                              onClick={(e) => e.stopPropagation()}
                             >
                               <ExternalLink className="w-4 h-4" />
                               Visit Website
@@ -420,34 +466,34 @@ export default function Partners() {
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {partnerData.academic.map((partner, index) => (
+                  {displayPartners.academic.map((partner: any, index: number) => (
                     <motion.div
-                      key={partner.id}
+                      key={partner._id || partner.id || index}
                       initial={{ opacity: 0, y: 30 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.6, delay: index * 0.1 }}
                       data-testid={`partner-card-${partner.id}`}
                     >
-                      <Card className="h-full hover-lift">
+                      <Card className="h-full hover-lift cursor-pointer" onClick={() => setSelectedPartner(partner)}>
                         <CardContent className="p-8">
                           <div className="flex items-start gap-6 mb-6">
                             <img
-                              src={partner.logo}
+                              src={partner.logo ? `${baseURL}${partner.logo.replace(/\\/g, '/')}` : partner.logo || "/gtuv.png"}
                               alt={`${partner.name} logo`}
-                              className="w-16 h-16 object-contain logo-hover"
+                              className="w-16 h-16 object-contain logo-hover flex-shrink-0"
                             />
                             <div className="flex-1 min-w-0">
-                              <h3 className="text-xl font-bold text-foreground mb-2">
+                              <h3 className="text-xl font-bold text-foreground mb-2 line-clamp-2">
                                 {partner.name}
                               </h3>
                               <div className="flex flex-wrap gap-2 mb-3">
-                                <Badge variant="secondary">{partner.type}</Badge>
-                                <Badge variant="outline">{partner.focus}</Badge>
+                                <Badge variant="secondary" className="whitespace-nowrap">{partner.type}</Badge>
+                                <Badge variant="outline" className="whitespace-nowrap">{partner.focus}</Badge>
                               </div>
                             </div>
                           </div>
                           
-                          <p className="text-muted-foreground leading-relaxed mb-6">
+                          <p className="text-muted-foreground leading-relaxed mb-6 line-clamp-3">
                             {partner.description}
                           </p>
 
@@ -458,6 +504,7 @@ export default function Partners() {
                               rel="noopener noreferrer"
                               className="inline-flex items-center gap-2 text-primary hover:underline font-medium"
                               data-testid={`partner-website-${partner.id}`}
+                              onClick={(e) => e.stopPropagation()}
                             >
                               <ExternalLink className="w-4 h-4" />
                               Visit Website
@@ -489,34 +536,34 @@ export default function Partners() {
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {partnerData.csr.map((partner, index) => (
+                  {displayPartners.csr.map((partner: any, index: number) => (
                     <motion.div
-                      key={partner.id}
+                      key={partner._id || partner.id || index}
                       initial={{ opacity: 0, y: 30 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.6, delay: index * 0.1 }}
                       data-testid={`partner-card-${partner.id}`}
                     >
-                      <Card className="h-full hover-lift">
+                      <Card className="h-full hover-lift cursor-pointer" onClick={() => setSelectedPartner(partner)}>
                         <CardContent className="p-8">
                           <div className="flex items-start gap-6 mb-6">
                             <img
-                              src={partner.logo}
+                              src={partner.logo ? `${baseURL}${partner.logo.replace(/\\/g, '/')}` : partner.logo || "/gtuv.png"}
                               alt={`${partner.name} logo`}
-                              className="w-16 h-16 object-contain logo-hover"
+                              className="w-16 h-16 object-contain logo-hover flex-shrink-0"
                             />
                             <div className="flex-1 min-w-0">
-                              <h3 className="text-xl font-bold text-foreground mb-2">
+                              <h3 className="text-xl font-bold text-foreground mb-2 line-clamp-2">
                                 {partner.name}
                               </h3>
                               <div className="flex flex-wrap gap-2 mb-3">
-                                <Badge variant="secondary">{partner.type}</Badge>
-                                <Badge variant="outline">{partner.focus}</Badge>
+                                <Badge variant="secondary" className="whitespace-nowrap">{partner.type}</Badge>
+                                <Badge variant="outline" className="whitespace-nowrap">{partner.focus}</Badge>
                               </div>
                             </div>
                           </div>
                           
-                          <p className="text-muted-foreground leading-relaxed mb-6">
+                          <p className="text-muted-foreground leading-relaxed mb-6 line-clamp-3">
                             {partner.description}
                           </p>
 
@@ -527,6 +574,7 @@ export default function Partners() {
                               rel="noopener noreferrer"
                               className="inline-flex items-center gap-2 text-primary hover:underline font-medium"
                               data-testid={`partner-website-${partner.id}`}
+                              onClick={(e) => e.stopPropagation()}
                             >
                               <ExternalLink className="w-4 h-4" />
                               Visit Website
@@ -630,6 +678,56 @@ export default function Partners() {
           </motion.div>
         </div>
       </section>
+
+      {/* Partner Detail Modal */}
+      <Dialog open={!!selectedPartner} onOpenChange={() => setSelectedPartner(null)}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          {selectedPartner && (
+            <>
+              <DialogHeader>
+                <div className="flex items-start gap-4 mb-4">
+                  <img
+                    src={selectedPartner.logo ? `${baseURL}${selectedPartner.logo.replace(/\\/g, '/')}` : selectedPartner.logo || "/gtuv.png"}
+                    alt={`${selectedPartner.name} logo`}
+                    className="w-20 h-20 object-contain flex-shrink-0"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <DialogTitle className="text-2xl font-bold text-foreground mb-2">
+                      {selectedPartner.name}
+                    </DialogTitle>
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      <Badge variant="secondary">{selectedPartner.type}</Badge>
+                      <Badge variant="outline">{selectedPartner.focus}</Badge>
+                    </div>
+                  </div>
+                </div>
+              </DialogHeader>
+
+              <div className="space-y-4">
+                {selectedPartner.description && (
+                  <DialogDescription className="text-base leading-relaxed">
+                    {selectedPartner.description}
+                  </DialogDescription>
+                )}
+
+                {selectedPartner.website && selectedPartner.website !== "#" && (
+                  <div className="pt-4">
+                    <a
+                      href={selectedPartner.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-primary hover:underline font-medium"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                      Visit Website
+                    </a>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

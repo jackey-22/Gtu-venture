@@ -34,4 +34,30 @@ router.get('/get-faq/:id', userController.fetchFAQById);
 router.get('/get-team-members', userController.fetchTeamMembers);
 router.get('/get-team-member/:id', userController.fetchTeamMemberById);
 
+// CAREERS
+router.get('/get-careers', userController.fetchCareers);
+router.get('/get-career/:id', userController.fetchCareerById);
+
+// PARTNERS
+router.get('/get-partners', userController.fetchPartners);
+router.get('/get-partner/:id', userController.fetchPartnerById);
+
+// FACILITIES
+router.get('/get-facilities', userController.fetchFacilities);
+router.get('/get-facility/:id', userController.fetchFacilityById);
+
+// INITIATIVES
+router.get('/get-initiatives', userController.fetchInitiatives);
+router.get('/get-initiative/:id', userController.fetchInitiativeById);
+
+// CIRCULARS
+router.get('/get-circulars', userController.fetchCirculars);
+router.get('/get-circular/:id', userController.fetchCircularById);
+
+// CONTACT MESSAGE
+router.post('/submit-contact-message', userController.submitContactMessage);
+
+// APPLICATION (submit only)
+router.post('/submit-application', userController.submitApplication);
+
 module.exports = router;

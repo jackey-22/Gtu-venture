@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Lightbulb, Zap, Target, Clock } from 'lucide-react';
 
 const programIcons = {
@@ -18,6 +19,7 @@ export default function Programs() {
 	const [selectedStage, setSelectedStage] = useState<string>('all');
 	const [programs, setPrograms] = useState<any[]>([]);
 	const [loading, setLoading] = useState<boolean>(true);
+	const [selectedProgram, setSelectedProgram] = useState<any | null>(null);
 
 	useEffect(() => {
 		const fetchPrograms = async () => {
@@ -118,15 +120,15 @@ export default function Programs() {
 										animate={{ opacity: 1, y: 0 }}
 										transition={{ duration: 0.6, delay: index * 0.1 }}
 									>
-										<Card className="h-full hover-lift">
+										<Card className="h-full hover-lift cursor-pointer" onClick={() => setSelectedProgram(program)}>
 											<CardContent className="p-8">
 												<div className="bg-primary/10 rounded-2xl p-4 w-fit mb-6">
 													<Icon className="w-8 h-8 text-primary" />
 												</div>
-												<h3 className="text-2xl font-bold text-foreground mb-4">
+												<h3 className="text-2xl font-bold text-foreground mb-4 line-clamp-2">
 													{program.title}
 												</h3>
-												<p className="text-muted-foreground mb-6 leading-relaxed">
+												<p className="text-muted-foreground mb-6 leading-relaxed line-clamp-3">
 													{program.description}
 												</p>
 												<div className="flex items-center gap-4 mb-6 text-sm text-muted-foreground">
@@ -204,6 +206,81 @@ export default function Programs() {
 					)}
 				</div>
 			</section>
+
+			{/* Program Detail Modal */}
+			<Dialog open={!!selectedProgram} onOpenChange={() => setSelectedProgram(null)}>
+				<DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+					{selectedProgram && (
+						<>
+							<DialogHeader>
+								<div className="flex items-center gap-4 mb-4">
+									<div className="bg-primary/10 rounded-2xl p-4">
+										{(() => {
+											const Icon = programIcons[selectedProgram.stage as keyof typeof programIcons] || Lightbulb;
+											return <Icon className="w-8 h-8 text-primary" />;
+										})()}
+									</div>
+									<div className="flex-1 min-w-0">
+										<DialogTitle className="text-2xl font-bold text-foreground mb-2">
+											{selectedProgram.title}
+										</DialogTitle>
+										<DialogDescription className="text-base">
+											{selectedProgram.description}
+										</DialogDescription>
+									</div>
+								</div>
+							</DialogHeader>
+
+							<div className="space-y-6">
+								<div className="flex items-center gap-4 text-sm text-muted-foreground">
+									<div className="flex items-center gap-2">
+										<Clock className="w-4 h-4" />
+										<span>{selectedProgram.duration}</span>
+									</div>
+									<Badge variant="secondary" className="capitalize">
+										{selectedProgram.category}
+									</Badge>
+								</div>
+
+								<Tabs defaultValue="benefits" className="w-full">
+									<TabsList className="grid w-full grid-cols-2">
+										<TabsTrigger value="benefits">Benefits</TabsTrigger>
+										<TabsTrigger value="eligibility">Eligibility</TabsTrigger>
+									</TabsList>
+
+									<TabsContent value="benefits" className="mt-4">
+										<ul className="space-y-3 text-sm">
+											{selectedProgram.benefits?.map((benefit: string, i: number) => (
+												<li key={i} className="flex items-start gap-3">
+													<div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+													<span className="text-muted-foreground">{benefit}</span>
+												</li>
+											))}
+										</ul>
+									</TabsContent>
+
+									<TabsContent value="eligibility" className="mt-4">
+										<ul className="space-y-3 text-sm">
+											{selectedProgram.eligibility?.map((criterion: string, i: number) => (
+												<li key={i} className="flex items-start gap-3">
+													<div className="w-1.5 h-1.5 bg-success rounded-full mt-2 flex-shrink-0"></div>
+													<span className="text-muted-foreground">{criterion}</span>
+												</li>
+											))}
+										</ul>
+									</TabsContent>
+								</Tabs>
+
+								<div className="pt-4">
+									<Button asChild className="w-full bg-primary text-primary-foreground">
+										<a href="/apply">Apply for {selectedProgram.title}</a>
+									</Button>
+								</div>
+							</div>
+						</>
+					)}
+				</DialogContent>
+			</Dialog>
 		</div>
 	);
 }
