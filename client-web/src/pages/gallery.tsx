@@ -3,10 +3,12 @@ import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import Lightbox from '@/components/ui/lightbox';
+import { Input } from '@/components/ui/input';
 
 export default function Gallery() {
 	const [galleries, setGalleries] = useState<any[]>([]);
 	const [loading, setLoading] = useState(true);
+	const [search, setSearch] = useState('');
 	const baseURL = import.meta.env.VITE_URL;
 
 	// Fetch galleries from backend
@@ -43,6 +45,11 @@ export default function Gallery() {
 		},
 	];
 
+	const filteredGalleries = galleries.filter((g) => {
+		const txt = `${g.title} ${g.description}`.toLowerCase();
+		return txt.includes(search.toLowerCase());
+	});
+
 	const containerVariants = {
 		hidden: { opacity: 0 },
 		visible: { opacity: 1, transition: { staggerChildren: 0.06 } },
@@ -77,10 +84,23 @@ export default function Gallery() {
 			subtitle="Photos and videos from our events, campus, startups, and community."
 		>
 			<Tabs defaultValue="photos" value={tab} onValueChange={setTab} className="w-full">
-				<TabsList className="flex gap-2 mb-8 justify-center">
-					<TabsTrigger value="photos">Photos</TabsTrigger>
-					<TabsTrigger value="videos">Videos</TabsTrigger>
-				</TabsList>
+				<div className="space-y-7 mb-20">
+					<div className="flex justify-center items-center">
+						<TabsList className="flex gap-2 justify-center md:justify-end">
+							<TabsTrigger value="photos">Photos</TabsTrigger>
+							<TabsTrigger value="videos">Videos</TabsTrigger>
+						</TabsList>
+					</div>
+					<div className="flex justify-center items-center">
+						<Input
+							type="text"
+							value={search}
+							onChange={(e) => setSearch(e.target.value)}
+							placeholder="Search photos..."
+							className="w-full md:w-1/3 px-4 py-2 border text-sm"
+						/>
+					</div>
+				</div>
 
 				{/* Photos Tab */}
 				<TabsContent value="photos">

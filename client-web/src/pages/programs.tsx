@@ -26,14 +26,19 @@ export default function Programs() {
 	const [programs, setPrograms] = useState<any[]>([]);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [selectedProgram, setSelectedProgram] = useState<any | null>(null);
+	const [categories, setCategories] = useState<string[]>(['all']);
 
 	useEffect(() => {
 		const fetchPrograms = async () => {
 			try {
 				const res = await fetch(`${baseApi}user/get-programs`);
 				const data = await res.json();
-				// console.log(data);
-				setPrograms(data.data || []);
+
+				const programsData = data.data || [];
+				setPrograms(programsData);
+
+				const uniqueCats = ['all', ...new Set(programsData.map((p) => p.category))];
+				setCategories(uniqueCats);
 			} catch (err) {
 				console.error('Failed to fetch programs:', err);
 			} finally {
@@ -45,9 +50,7 @@ export default function Programs() {
 	}, []);
 
 	const filteredPrograms =
-		selectedStage === 'all'
-			? programs
-			: programs.filter((program) => program.category === selectedStage);
+		selectedStage === 'all' ? programs : programs.filter((p) => p.category === selectedStage);
 
 	return (
 		<div className="min-h-screen pt-20">
@@ -75,30 +78,16 @@ export default function Programs() {
 			<section className="py-12 bg-background border-b">
 				<div className="max-w-7xl mx-auto px-6 lg:px-16">
 					<div className="flex flex-wrap justify-center gap-4">
-						<Button
-							variant={selectedStage === 'all' ? 'default' : 'outline'}
-							onClick={() => setSelectedStage('all')}
-						>
-							All Programs
-						</Button>
-						<Button
-							variant={selectedStage === 'pre-incubation' ? 'default' : 'outline'}
-							onClick={() => setSelectedStage('pre-incubation')}
-						>
-							Early Stage
-						</Button>
-						<Button
-							variant={selectedStage === 'incubation' ? 'default' : 'outline'}
-							onClick={() => setSelectedStage('incubation')}
-						>
-							Growth Stage
-						</Button>
-						<Button
-							variant={selectedStage === 'acceleration' ? 'default' : 'outline'}
-							onClick={() => setSelectedStage('acceleration')}
-						>
-							Scale Stage
-						</Button>
+						{categories.map((cat) => (
+							<Button
+								key={cat}
+								variant={selectedStage === cat ? 'default' : 'outline'}
+								onClick={() => setSelectedStage(cat)}
+								className="capitalize"
+							>
+								{cat === 'all' ? 'All Programs' : cat.replace('-', ' ')}
+							</Button>
+						))}
 					</div>
 				</div>
 			</section>

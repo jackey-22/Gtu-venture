@@ -8,8 +8,6 @@ import { Badge } from '@/components/ui/badge';
 import { Search, ExternalLink } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
-const stages = ['All', 'Idea', 'MVP', 'Early', 'Growth', 'scale', 'Mature'];
-
 export default function Startups() {
 	const baseURL = import.meta.env.VITE_URL;
 	const [startups, setStartups] = useState<any[]>([]);
@@ -20,6 +18,7 @@ export default function Startups() {
 	const [selectedStage, setSelectedStage] = useState('All');
 	const [industries, setIndustries] = useState<string[]>(['All']);
 	const [selectedStartup, setSelectedStartup] = useState<any | null>(null);
+	const [stages, setStages] = useState<string[]>(['All']);
 
 	useEffect(() => {
 		const fetchStartups = async () => {
@@ -54,6 +53,12 @@ export default function Startups() {
 					...new Set(formatted.map((s) => s.industry).filter(Boolean)),
 				];
 				setIndustries(uniqueIndustries);
+
+				const sortedStages = [
+					'All',
+					...[...new Set(formatted.map((s) => s.stage))].filter(Boolean).sort(),
+				];
+				setStages(sortedStages);
 			} catch (err: any) {
 				setError(err.message || 'Error fetching startups');
 			} finally {
@@ -219,7 +224,6 @@ export default function Startups() {
 										variant={selectedStage === stage ? 'default' : 'outline'}
 										size="sm"
 										onClick={() => setSelectedStage(stage)}
-										data-testid={`filter-stage-${stage.toLowerCase()}`}
 									>
 										{stage}
 									</Button>
@@ -295,7 +299,9 @@ export default function Startups() {
 										</div>
 										<div className="space-y-2 mb-4 text-sm">
 											<div className="flex items-center gap-2">
-												<span className="font-medium flex-shrink-0">Founders:</span>
+												<span className="font-medium flex-shrink-0">
+													Founders:
+												</span>
 												<span className="text-muted-foreground truncate">
 													{Array.isArray(startup.founders)
 														? startup.founders.join(', ')

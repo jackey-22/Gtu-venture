@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 
 const baseURL = import.meta.env.VITE_URL;
 
@@ -78,7 +79,7 @@ export default function Circulars() {
 	const [items, setItems] = useState<any[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [selectedCircular, setSelectedCircular] = useState<Circular | null>(null);
-	const [initiatives, setInitiatives] = useState<any[]>([]);
+	const [typeFilter, setTypeFilter] = useState<'all' | 'circular' | 'tender'>('all');
 
 	useEffect(() => {
 		const fetchCirculars = async () => {
@@ -96,20 +97,6 @@ export default function Circulars() {
 		fetchCirculars();
 	}, []);
 
-	useEffect(() => {
-		const fetchInitiatives = async () => {
-			try {
-				const data = await fetchGet({ pathName: 'user/get-initiatives' });
-				const initiatives = data?.data || [];
-				setInitiatives(initiatives);
-			} catch (error) {
-				console.error('Error fetching initiatives:', error);
-				setInitiatives([]);
-			}
-		};
-		fetchInitiatives();
-	}, []);
-
 	const circulars: Circular[] = useMemo(() => {
 		if (items.length) {
 			return items.map((it: any, i: number) => ({
@@ -117,6 +104,7 @@ export default function Circulars() {
 				title: it.title || it.name,
 				summary: it.summary || it.body,
 				tags: it.tags || [],
+				type: it.type || (it.id?.startsWith('t') ? 'tender' : 'circular'),
 				url: it.fileUrl ? `${baseURL}${it.fileUrl.replace(/\\/g, '/')}` : it.url || '#',
 				date: it.date
 					? new Date(it.date).toISOString().split('T')[0]
@@ -138,87 +126,52 @@ export default function Circulars() {
 
 	const filtered = useMemo(() => {
 		const q = query.trim().toLowerCase();
+
 		return circulars.filter((c) => {
+			const matchesType = typeFilter === 'all' || c.type === typeFilter;
 			const matchesQ =
 				!q ||
 				c.title.toLowerCase().includes(q) ||
 				(c.summary || '').toLowerCase().includes(q);
 			const matchesTag = !tag || (c.tags || []).includes(tag);
-			return matchesQ && matchesTag;
+
+			return matchesType && matchesQ && matchesTag;
 		});
-	}, [circulars, query, tag]);
+	}, [circulars, query, tag, typeFilter]);
 
 	return (
 		<PageShell
 			title="Circulars"
 			subtitle="Official notices, policies, and program circulars from GTU Ventures."
 		>
-			<div className="mb-8 flex items-center gap-4">
-				<input
-					value={query}
-					onChange={(e) => setQuery(e.target.value)}
-					placeholder="Search circulars..."
-					className="flex-1 rounded-lg border px-4 py-2 bg-card"
-				/>
-				<div className="flex gap-2">
-					<button
-						onClick={() => setTag(null)}
-						className={`px-3 py-2 rounded ${
-							tag === null
-								? 'bg-[#7247bd] text-white'
-								: 'bg-card text-muted-foreground'
-						}`}
-					>
-						All
-					</button>
-					{tags.map((t) => (
+			<div className="space-y-7 mb-10">
+				<div className="flex justify-center gap-3 items-center">
+					{[
+						{ key: 'all', label: 'All' },
+						{ key: 'circular', label: 'Circulars' },
+						{ key: 'tender', label: 'Tenders' },
+					].map(({ key, label }) => (
 						<button
-							key={t}
-							onClick={() => setTag(t)}
-							className={`px-3 py-2 rounded ${
-								tag === t
-									? 'bg-[#7247bd] text-white'
-									: 'bg-card text-muted-foreground'
+							key={key}
+							onClick={() => setTypeFilter(key as any)}
+							className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+								typeFilter === key
+									? 'bg-primary text-white shadow-md'
+									: 'bg-muted text-muted-foreground hover:bg-muted/70'
 							}`}
 						>
-							{t}
+							{label}
 						</button>
 					))}
 				</div>
-			</div>
-
-			{/* Initiatives Section */}
-			<div className="mb-12">
-				<h2 className="text-2xl font-bold mb-6">Initiatives & Programs</h2>
-
-				{loading ? (
-					<p className="text-muted-foreground">Loading initiatives...</p>
-				) : (
-					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-						{initiatives.length ? (
-							<>
-								{initiatives.map((it, i) => (
-									<a
-										key={i}
-										href={`/initiatives#${it._id || i}`}
-										className="block p-6 rounded-2xl bg-card border border-border hover:border-primary/20 hover:shadow-lg transition-all"
-									>
-										<h3 className="font-semibold text-lg mb-2">
-											{it.title || it.name}
-										</h3>
-										<p className="text-sm text-muted-foreground">
-											{it.body?.slice(0, 120) ||
-												it.description?.slice(0, 120) ||
-												'Click to learn more...'}
-										</p>
-									</a>
-								))}
-							</>
-						) : (
-							<p className="text-muted-foreground">No initiatives found.</p>
-						)}
-					</div>
-				)}
+				<div className="flex justify-center items-center">
+					<Input
+						value={query}
+						onChange={(e) => setQuery(e.target.value)}
+						placeholder="Search circulars..."
+						className="w-full md:w-1/3 px-4 py-2 border text-sm"
+					/>
+				</div>
 			</div>
 
 			<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
