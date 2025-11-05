@@ -11,7 +11,16 @@ import {
 	DialogTitle,
 	DialogDescription,
 } from '@/components/ui/dialog';
-import { Lightbulb, Zap, Target, Clock } from 'lucide-react';
+import { Lightbulb, Zap, Target, Clock, ChevronDown, Check } from 'lucide-react';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+import {
+	Command,
+	CommandInput,
+	CommandList,
+	CommandEmpty,
+	CommandGroup,
+	CommandItem,
+} from '@/components/ui/command';
 
 const programIcons = {
 	'pre-incubation': Lightbulb,
@@ -27,6 +36,7 @@ export default function Programs() {
 	const [loading, setLoading] = useState<boolean>(true);
 	const [selectedProgram, setSelectedProgram] = useState<any | null>(null);
 	const [categories, setCategories] = useState<string[]>(['all']);
+	const [stageOpen, setStageOpen] = useState(false);
 
 	useEffect(() => {
 		const fetchPrograms = async () => {
@@ -52,21 +62,70 @@ export default function Programs() {
 	const filteredPrograms =
 		selectedStage === 'all' ? programs : programs.filter((p) => p.category === selectedStage);
 
+	if (loading) {
+		return (
+			<section className="py-20 bg-background">
+				<div className="max-w-7xl px-6 lg:px-16">
+					<div className="space-y-4 mb-10">
+						<div className="h-8 w-56 bg-white/40 rounded animate-pulse"></div>
+						<div className="h-4 w-96 bg-white/30 rounded animate-pulse"></div>
+					</div>
+
+					<div className="max-w-5xl mb-10">
+						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+							<div className="flex flex-col items-start w-full">
+								<div className="h-4 w-32 bg-gray-300 rounded mb-2 animate-pulse"></div>
+								<div className="h-10 w-full max-w-xs bg-gray-200 rounded-full animate-pulse"></div>
+							</div>
+						</div>
+					</div>
+
+					<div className="pl-[10%]">
+						<div className="grid grid-cols-1 lg:grid-cols-3 justify-center items-center mx-auto gap-8">
+							{Array.from({ length: 3 }).map((_, i) => (
+								<div
+									key={i}
+									className="p-8 border rounded-2xl shadow-sm animate-pulse h-[400px] flex flex-col"
+								>
+									<div className="h-6 w-44 bg-gray-300 rounded mb-4"></div>
+									<div className="h-4 w-full bg-gray-200 rounded mb-2"></div>
+									<div className="h-4 w-3/4 bg-gray-200 rounded mb-6"></div>
+
+									<div className="flex items-center gap-4 mb-6">
+										<div className="h-4 w-20 bg-gray-200 rounded"></div>
+										<div className="h-4 w-16 bg-gray-200 rounded"></div>
+									</div>
+
+									<div className="space-y-2 flex-1">
+										<div className="h-3 w-full bg-gray-200 rounded"></div>
+										<div className="h-3 w-4/5 bg-gray-200 rounded"></div>
+										<div className="h-3 w-2/3 bg-gray-200 rounded"></div>
+									</div>
+
+									<div className="h-10 w-full bg-gray-300 rounded-xl mt-6"></div>
+								</div>
+							))}
+						</div>
+					</div>
+				</div>
+			</section>
+		);
+	}
+
 	return (
-		<div className="min-h-screen pt-20">
-			{/* Hero Section */}
-			<section className="py-24 bg-gradient-to-br from-gtu-base to-gtu-light">
-				<div className="max-w-7xl mx-auto px-6 lg:px-16">
+		<div className="min-h-screen pt-7">
+			<section className="pt-20 pb-5">
+				<div className="max-w-7xl px-6 lg:px-16 text-start">
 					<motion.div
 						initial={{ opacity: 0, y: 30 }}
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.6 }}
-						className="text-center"
+						className="text-start"
 					>
-						<h1 className="text-hero font-extrabold text-foreground mb-6">
+						<h1 className="text-3xl md:text-5xl font-extrabold text-foreground mb-2">
 							Our Programs
 						</h1>
-						<p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+						<p className="text-lg md:text-xl text-muted-foreground max-w-3xl">
 							Comprehensive support at every stage of your entrepreneurial journey,
 							from idea validation to scaling your business.
 						</p>
@@ -74,26 +133,66 @@ export default function Programs() {
 				</div>
 			</section>
 
-			{/* Program Filters */}
-			<section className="py-12 bg-background border-b">
-				<div className="max-w-7xl mx-auto px-6 lg:px-16">
-					<div className="flex flex-wrap justify-center gap-4">
-						{categories.map((cat) => (
-							<Button
-								key={cat}
-								variant={selectedStage === cat ? 'default' : 'outline'}
-								onClick={() => setSelectedStage(cat)}
-								className="capitalize"
+			<section className="py-5">
+				<div className="max-w-5xl px-6 md:px-16">
+					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 items-start justify-normal">
+						<div className="w-full flex flex-col items-start">
+							<motion.div
+								initial={{ opacity: 0, y: 30 }}
+								animate={{ opacity: 1, y: 0 }}
+								transition={{ duration: 0.6 }}
+								className="text-start"
 							>
-								{cat === 'all' ? 'All Programs' : cat.replace('-', ' ')}
-							</Button>
-						))}
+								<h5 className="text-center mb-2 text-base font-medium">
+									PROGRAM CATEGORY
+								</h5>
+								<Popover open={stageOpen} onOpenChange={setStageOpen}>
+									<PopoverTrigger asChild>
+										<Button
+											variant="outline"
+											className="w-full max-w-xs justify-between rounded-full capitalize"
+										>
+											{selectedStage === 'all'
+												? 'All Programs'
+												: selectedStage.replace('-', ' ')}
+											<ChevronDown className="ml-2 h-4 w-4 opacity-50" />
+										</Button>
+									</PopoverTrigger>
+									<PopoverContent className="w-[250px] p-0">
+										<Command>
+											<CommandInput placeholder="Search category…" />
+											<CommandList className="max-h-60 overflow-y-auto">
+												<CommandEmpty>No category found.</CommandEmpty>
+												<CommandGroup>
+													{categories.map((cat) => (
+														<CommandItem
+															key={cat}
+															onSelect={() => {
+																setSelectedStage(cat);
+																setStageOpen(false);
+															}}
+															className="cursor-pointer capitalize"
+														>
+															{cat === 'all'
+																? 'All Programs'
+																: cat.replace('-', ' ')}
+															{selectedStage === cat && (
+																<Check className="ml-auto h-4 w-4" />
+															)}
+														</CommandItem>
+													))}
+												</CommandGroup>
+											</CommandList>
+										</Command>
+									</PopoverContent>
+								</Popover>
+							</motion.div>
+						</div>
 					</div>
 				</div>
 			</section>
 
-			{/* Program Cards */}
-			<section className="py-24 bg-background">
+			<section className="py-10 bg-background">
 				<div className="max-w-7xl mx-auto px-6 lg:px-16">
 					{loading ? (
 						<p className="text-center text-muted-foreground">Loading programs...</p>
@@ -104,10 +203,6 @@ export default function Programs() {
 					) : (
 						<div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 							{filteredPrograms.map((program, index) => {
-								const Icon =
-									programIcons[program.stage as keyof typeof programIcons] ||
-									Lightbulb;
-
 								return (
 									<motion.div
 										key={program.id}
@@ -125,9 +220,6 @@ export default function Programs() {
 											}}
 										>
 											<CardContent className="p-8 flex flex-col h-full">
-												<div className="rounded-2xl p-4 w-fit mb-6 bg-primary/10 group-hover:bg-primary transition-colors">
-													<Icon className="w-8 h-8 text-primary group-hover:text-primary-foreground transition-colors" />
-												</div>
 												<h3 className="text-2xl font-bold text-foreground mb-4 line-clamp-2">
 													{program.title}
 												</h3>
@@ -214,7 +306,6 @@ export default function Programs() {
 				</div>
 			</section>
 
-			{/* Program Detail Modal */}
 			<Dialog open={!!selectedProgram} onOpenChange={() => setSelectedProgram(null)}>
 				<DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
 					{selectedProgram && (

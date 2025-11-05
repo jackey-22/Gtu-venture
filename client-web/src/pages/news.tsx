@@ -1,6 +1,5 @@
 import { useMemo, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import PageShell from './page-shell';
 import {
 	Dialog,
 	DialogContent,
@@ -59,11 +58,41 @@ export default function News() {
 
 	if (loading) {
 		return (
-			<div className="flex justify-center items-center h-64">
-				<div className="text-center">
-					<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
-					<p className="mt-3 text-primary">Loading News...</p>
-				</div>
+			<div className="min-h-screen pt-7">
+				<section className="pt-20 pb-5">
+					<div className="max-w-7xl px-6 lg:px-16 text-start">
+						<div className="mx-auto flex flex-col items-start gap-4">
+							<div className="h-10 w-64 bg-white/40 rounded animate-pulse"></div>
+							<div className="h-4 w-96 bg-white/30 rounded animate-pulse"></div>
+						</div>
+					</div>
+				</section>
+
+				<section className="py-5">
+					<div className="max-w-5xl px-6 md:px-16">
+						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 items-start justify-normal">
+							<div className="w-full flex flex-col items-start">
+								<div className="h-4 w-16 bg-gray-300 rounded mb-2 animate-pulse"></div>
+								<div className="h-10 w-full max-w-sm bg-gray-200 rounded-full animate-pulse"></div>
+							</div>
+						</div>
+					</div>
+				</section>
+
+				<section className="py-14">
+					<div className="max-w-7xl mx-auto px-6 lg:px-16">
+						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+							{Array.from({ length: 6 }).map((_, i) => (
+								<div key={i} className="p-6 border rounded-xl animate-pulse">
+									<div className="h-48 bg-gray-300 rounded mb-4"></div>
+									<div className="h-3 bg-gray-200 rounded mb-2 w-full"></div>
+									<div className="h-3 bg-gray-200 rounded mb-2 w-5/6"></div>
+									<div className="h-3 bg-gray-200 rounded mb-4 w-4/6"></div>
+								</div>
+							))}
+						</div>
+					</div>
+				</section>
 			</div>
 		);
 	}
@@ -79,30 +108,64 @@ export default function News() {
 	}
 
 	return (
-		<PageShell
-			title="News, Media & Insights"
-			subtitle="Stay updated with the latest announcements, media coverage, thought leadership articles, and startup ecosystem insights from GTU Ventures."
-		>
-			<div className="max-w-md mx-auto mb-10 relative">
-				<Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
-				<Input
-					placeholder="Search news..."
-					value={search}
-					onChange={(e) => setSearch(e.target.value)}
-					className="pl-10"
-				/>
-			</div>
-			{/* Results Count */}
-			<p className="text-center text-muted-foreground mb-6 text-sm">
-				Showing {filteredArticles.length} of {articles.length} results
-			</p>
-			{/* Articles Grid */}
-			<motion.div
-				variants={containerVariants}
-				initial="hidden"
-				animate="visible"
-				className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
-			>
+		<div className="min-h-screen pt-7">
+			<section className="pt-20 pb-5">
+				<div className="max-w-7xl px-6 lg:px-16 text-start">
+					<motion.div
+						initial={{ opacity: 0, y: 30 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.6 }}
+						className="text-start"
+					>
+						<h1 className="text-3xl md:text-5xl font-extrabold text-foreground mb-2">
+							News, Media & Insights
+						</h1>
+						<p className="text-lg md:text-xl text-muted-foreground max-w-3xl">
+							Stay updated with the latest announcements, media coverage, thought leadership articles, and startup ecosystem insights from GTU Ventures.
+						</p>
+					</motion.div>
+				</div>
+			</section>
+
+			<section className="py-5">
+				<div className="max-w-5xl px-6 md:px-16">
+					<motion.div
+						initial={{ opacity: 0, y: 30 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.6 }}
+						className="text-start"
+					>
+						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 items-start justify-normal">
+							<div className="w-full flex flex-col items-start">
+								<h5 className="text-center mb-2 text-base font-medium">SEARCH</h5>
+								<div className="relative w-full max-w-sm">
+									<Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
+									<Input
+										placeholder="Search news..."
+										value={search}
+										onChange={(e) => setSearch(e.target.value)}
+										className="pl-10 rounded-full"
+									/>
+								</div>
+							</div>
+						</div>
+					</motion.div>
+				</div>
+			</section>
+
+			<section className="py-14">
+				<div className="max-w-7xl mx-auto px-6 lg:px-16">
+					{/* Results Count */}
+					<p className="text-center text-muted-foreground mb-6 text-sm">
+						Showing {filteredArticles.length} of {articles.length} results
+					</p>
+					{/* Articles Grid */}
+					<motion.div
+						variants={containerVariants}
+						initial="hidden"
+						animate="visible"
+						className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
+					>
 				{filteredArticles.map((article, idx) => (
 					<motion.div
 						key={article._id ?? idx}
@@ -139,8 +202,11 @@ export default function News() {
 							</p>
 						</div>
 					</motion.div>
-				))}
-			</motion.div>
+					))}
+					</motion.div>
+				</div>
+			</section>
+
 			{/* Modal */}
 			<Dialog open={!!selected} onOpenChange={() => setSelected(null)}>
 				<DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
@@ -179,6 +245,6 @@ export default function News() {
 					)}
 				</DialogContent>
 			</Dialog>
-		</PageShell>
+		</div>
 	);
 }

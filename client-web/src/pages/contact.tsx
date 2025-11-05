@@ -103,20 +103,19 @@ export default function Contact() {
   };
 
   return (
-    <div className="min-h-screen pt-20">
-      {/* Hero Section */}
-      <section className="py-24 bg-gradient-to-br from-gtu-base to-gtu-light">
-        <div className="max-w-7xl mx-auto px-6 lg:px-16">
+    <div className="min-h-screen pt-7">
+      <section className="pt-20 pb-5">
+        <div className="max-w-7xl px-6 lg:px-16 text-start">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-center"
+            className="text-start"
           >
-            <h1 className="text-hero font-extrabold text-foreground mb-6">
+            <h1 className="text-3xl md:text-5xl font-extrabold text-foreground mb-2">
               Contact Us
             </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl">
               Have questions about our programs or want to learn more about the GTU Ventures ecosystem? 
               We're here to help you on your entrepreneurial journey.
             </p>
@@ -125,7 +124,7 @@ export default function Contact() {
       </section>
 
       {/* Contact Form and Info */}
-      <section className="py-24 bg-background">
+      <section className="py-14">
         <div className="max-w-7xl mx-auto px-6 lg:px-16">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
             {/* Contact Form */}

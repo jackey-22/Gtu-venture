@@ -1,4 +1,3 @@
-import PageShell from "./page-shell";
 import { getAll } from "@/lib/contentStore";
 import { motion } from "framer-motion";
 import { useMemo } from "react";
@@ -23,10 +22,27 @@ export default function CoI() {
   ], []);
 
   return (
-    <PageShell
-      title="Centres of Excellence (CoE)"
-      subtitle="Dedicated spaces for applied research, innovation, and industry collaboration in emerging domains."
-    >
+    <div className="min-h-screen pt-7">
+      <section className="pt-20 pb-5">
+        <div className="max-w-7xl px-6 lg:px-16 text-start">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-start"
+          >
+            <h1 className="text-3xl md:text-5xl font-extrabold text-foreground mb-2">
+              Centres of Excellence (CoE)
+            </h1>
+            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl">
+              Dedicated spaces for applied research, innovation, and industry collaboration in emerging domains.
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      <section className="py-14">
+        <div className="max-w-7xl mx-auto px-6 lg:px-16">
       {/* Brief Introduction */}
       <div className="mb-10 max-w-3xl mx-auto text-center">
         <h2 className="text-2xl font-bold mb-3 text-foreground">About GTU Ventures CoEs</h2>
@@ -82,6 +98,8 @@ export default function CoI() {
           </motion.article>
         ))}
       </motion.div>
-    </PageShell>
+        </div>
+      </section>
+    </div>
   );
 }

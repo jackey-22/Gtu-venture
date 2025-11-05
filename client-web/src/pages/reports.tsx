@@ -1,4 +1,3 @@
-import PageShell from './page-shell';
 import { motion } from 'framer-motion';
 import { useMemo, useState, useEffect } from 'react';
 import {
@@ -9,7 +8,8 @@ import {
 	DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Download } from 'lucide-react';
+import { Download, Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 
 export default function Reports() {
 	const baseURL = import.meta.env.VITE_URL;
@@ -56,59 +56,104 @@ export default function Reports() {
 
 	if (loading) {
 		return (
-			<PageShell
-				title="Annual & Impact Reports"
-				subtitle="Download our annual and impact reports to review GTU Ventures' performance and outcomes."
-			>
-				<div className="flex justify-center items-center h-64">
-					<div className="text-center">
-						<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
-						<p className="mt-3 text-primary">Loading Reports...</p>
+			<div className="min-h-screen pt-7">
+				<section className="pt-20 pb-5">
+					<div className="max-w-7xl px-6 lg:px-16 text-start">
+						<div className="mx-auto flex flex-col items-start gap-4">
+							<div className="h-10 w-64 bg-white/40 rounded animate-pulse"></div>
+							<div className="h-4 w-96 bg-white/30 rounded animate-pulse"></div>
+						</div>
 					</div>
-				</div>
-			</PageShell>
+				</section>
+
+				<section className="py-5">
+					<div className="max-w-5xl px-6 md:px-16">
+						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 items-start justify-normal">
+							<div className="w-full flex flex-col items-start">
+								<div className="h-4 w-16 bg-gray-300 rounded mb-2 animate-pulse"></div>
+								<div className="h-10 w-full max-w-sm bg-gray-200 rounded-full animate-pulse"></div>
+							</div>
+						</div>
+					</div>
+				</section>
+
+				<section className="py-14">
+					<div className="max-w-7xl mx-auto px-6 lg:px-16">
+						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+							{Array.from({ length: 6 }).map((_, i) => (
+								<div key={i} className="p-6 border rounded-xl animate-pulse">
+									<div className="h-48 bg-gray-300 rounded mb-4"></div>
+									<div className="h-5 w-3/4 bg-gray-300 rounded mb-2"></div>
+									<div className="h-4 w-full bg-gray-200 rounded"></div>
+								</div>
+							))}
+						</div>
+					</div>
+				</section>
+			</div>
 		);
 	}
 
 	if (error) {
 		return (
-			<PageShell
-				title="Annual & Impact Reports"
-				subtitle="Download our annual and impact reports to review GTU Ventures' performance and outcomes."
-			>
-				<div className="flex justify-center items-center h-64">
-					<p className="text-red-500">{error}</p>
-				</div>
-			</PageShell>
+			<div className="flex justify-center items-center h-64">
+				<p className="text-red-500">{error}</p>
+			</div>
 		);
 	}
 
 	return (
-		<PageShell
-			title="Annual & Impact Reports"
-			subtitle="Download our annual and impact reports to review GTU Ventures' performance and outcomes."
-			heroActions={
-				<a
-					href="/reports"
-					className="inline-flex items-center gap-2 bg-primary text-white px-4 py-2 rounded"
-				>
-					Download Latest
-				</a>
-			}
-		>
-			{/* Category Filter Bar */}
-			<div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-				<input
-					type="text"
-					placeholder="Search reports..."
-					value={search}
-					onChange={(e) => setSearch(e.target.value)}
-					className="w-full md:w-1/2 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none"
-				/>
-				<div className="text-sm text-muted-foreground text-center md:text-right">
-					{visible.length} reports
+		<div className="min-h-screen pt-7">
+			<section className="pt-20 pb-5">
+				<div className="max-w-7xl px-6 lg:px-16 text-start">
+					<motion.div
+						initial={{ opacity: 0, y: 30 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.6 }}
+						className="text-start"
+					>
+						<h1 className="text-3xl md:text-5xl font-extrabold text-foreground mb-2">
+							Annual & Impact Reports
+						</h1>
+						<p className="text-lg md:text-xl text-muted-foreground max-w-3xl">
+							Download our annual and impact reports to review GTU Ventures' performance and outcomes.
+						</p>
+					</motion.div>
 				</div>
-			</div>
+			</section>
+
+			<section className="py-5">
+				<div className="max-w-5xl px-6 md:px-16">
+					<motion.div
+						initial={{ opacity: 0, y: 30 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.6 }}
+						className="text-start"
+					>
+						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 items-start justify-normal">
+							<div className="w-full flex flex-col items-start">
+								<h5 className="text-center mb-2 text-base font-medium">SEARCH</h5>
+								<div className="relative w-full max-w-sm">
+									<Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
+									<Input
+										type="text"
+										placeholder="Search reports..."
+										value={search}
+										onChange={(e) => setSearch(e.target.value)}
+										className="pl-10 rounded-full"
+									/>
+								</div>
+							</div>
+						</div>
+					</motion.div>
+				</div>
+			</section>
+
+			<section className="py-14">
+				<div className="max-w-7xl mx-auto px-6 lg:px-16">
+					<div className="mb-8 text-sm text-muted-foreground text-center">
+						{visible.length} reports
+					</div>
 
 			{visible.length === 0 ? (
 				<div className="text-center text-muted-foreground py-10">No reports found.</div>
@@ -259,6 +304,8 @@ export default function Reports() {
 					)}
 				</DialogContent>
 			</Dialog>
-		</PageShell>
+				</div>
+			</section>
+		</div>
 	);
 }

@@ -1,7 +1,6 @@
-import PageShell from './page-shell';
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { Briefcase, Users, GraduationCap, Heart, DollarSign, Code, Filter } from 'lucide-react';
+import { Briefcase, Users, GraduationCap, Heart, DollarSign, Code, Search, ChevronDown, Check } from 'lucide-react';
 import { fetchGet } from '@/utils/fetch.utils';
 import {
 	Dialog,
@@ -13,6 +12,15 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+import {
+	Command,
+	CommandInput,
+	CommandList,
+	CommandEmpty,
+	CommandGroup,
+	CommandItem,
+} from '@/components/ui/command';
 
 export default function Careers() {
 	const [openings, setOpenings] = useState<any[]>([]);
@@ -142,6 +150,7 @@ export default function Careers() {
 	];
 
 	const [selectedCategory, setSelectedCategory] = useState('All');
+	const [categoryOpen, setCategoryOpen] = useState(false);
 
 	const filteredOpenings = displayOpenings.filter((o) => {
 		const matchesCategory = selectedCategory === 'All' || o.category === selectedCategory;
@@ -164,58 +173,143 @@ export default function Careers() {
 
 	if (loading) {
 		return (
-			<PageShell
-				title="Careers"
-				subtitle="Join GTU Ventures — current openings, internships, and fellowship opportunities across various startup categories."
-			>
-				<div className="flex justify-center items-center h-64">
-					<div className="text-center">
-						<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
-						<p className="mt-3 text-primary">Loading Careers...</p>
+			<div className="min-h-screen pt-7">
+				<section className="pt-20 pb-5">
+					<div className="max-w-7xl px-6 lg:px-16 text-start">
+						<div className="mx-auto flex flex-col items-start gap-4">
+							<div className="h-10 w-64 bg-white/40 rounded animate-pulse"></div>
+							<div className="h-4 w-96 bg-white/30 rounded animate-pulse"></div>
+						</div>
 					</div>
-				</div>
-			</PageShell>
+				</section>
+
+				<section className="py-5">
+					<div className="max-w-5xl px-6 md:px-16">
+						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 items-start justify-normal">
+							<div className="w-full flex flex-col items-start">
+								<div className="h-4 w-20 bg-gray-300 rounded mb-2 animate-pulse"></div>
+								<div className="h-10 w-full max-w-xs bg-gray-200 rounded-full animate-pulse"></div>
+							</div>
+							<div className="w-full flex flex-col items-start">
+								<div className="h-4 w-16 bg-gray-300 rounded mb-2 animate-pulse"></div>
+								<div className="h-10 w-full max-w-sm bg-gray-200 rounded-full animate-pulse"></div>
+							</div>
+						</div>
+					</div>
+				</section>
+
+				<section className="py-14">
+					<div className="max-w-7xl mx-auto px-6 lg:px-16">
+						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+							{Array.from({ length: 6 }).map((_, i) => (
+								<div key={i} className="p-8 border rounded-xl animate-pulse">
+									<div className="h-6 w-3/4 bg-gray-300 rounded mb-4"></div>
+									<div className="h-4 w-full bg-gray-200 rounded mb-2"></div>
+									<div className="h-4 w-5/6 bg-gray-200 rounded"></div>
+								</div>
+							))}
+						</div>
+					</div>
+				</section>
+			</div>
 		);
 	}
 
 	return (
-		<PageShell
-			title="Careers"
-			subtitle="Join GTU Ventures — current openings, internships, and fellowship opportunities across various startup categories."
-		>
-			<div className="space-y-7 mb-20">
-				<div className="flex justify-center items-center">
-					{categories.map((category, i) => (
-						<button
-							key={i}
-							onClick={() => setSelectedCategory(category)}
-							className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-								selectedCategory === category
-									? 'bg-primary text-primary-foreground shadow-md'
-									: 'bg-muted hover:bg-muted/70 text-muted-foreground'
-							}`}
-						>
-							{category}
-						</button>
-					))}
+		<div className="min-h-screen pt-7">
+			<section className="pt-20 pb-5">
+				<div className="max-w-7xl px-6 lg:px-16 text-start">
+					<motion.div
+						initial={{ opacity: 0, y: 30 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.6 }}
+						className="text-start"
+					>
+						<h1 className="text-3xl md:text-5xl font-extrabold text-foreground mb-2">
+							Careers
+						</h1>
+						<p className="text-lg md:text-xl text-muted-foreground max-w-3xl">
+							Join GTU Ventures — current openings, internships, and fellowship opportunities across various startup categories.
+						</p>
+					</motion.div>
 				</div>
-				<div className="flex justify-center items-center">
-					<Input
-						type="text"
-						placeholder="Search role, startup, skills..."
-						value={search}
-						onChange={(e) => setSearch(e.target.value)}
-						className="w-full md:w-1/3 px-4 py-2"
-					/>
-				</div>
-			</div>
+			</section>
 
-			<motion.div
-				variants={containerVariants}
-				initial="hidden"
-				animate="visible"
-				className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-			>
+			<section className="py-5">
+				<div className="max-w-5xl px-6 md:px-16">
+					<motion.div
+						initial={{ opacity: 0, y: 30 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.6 }}
+						className="text-start"
+					>
+						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 items-start justify-normal">
+							<div className="w-full flex flex-col items-start">
+								<h5 className="text-center mb-2 text-base font-medium">CATEGORY</h5>
+								<Popover open={categoryOpen} onOpenChange={setCategoryOpen}>
+									<PopoverTrigger asChild>
+										<Button
+											variant="outline"
+											className="w-full max-w-xs justify-between rounded-full"
+										>
+											{selectedCategory}
+											<ChevronDown className="ml-2 h-4 w-4 opacity-50" />
+										</Button>
+									</PopoverTrigger>
+									<PopoverContent className="w-[250px] p-0">
+										<Command>
+											<CommandInput placeholder="Search category…" />
+											<CommandList className="max-h-60 overflow-y-auto">
+												<CommandEmpty>No category found.</CommandEmpty>
+												<CommandGroup>
+													{categories.map((cat) => (
+														<CommandItem
+															key={cat}
+															onSelect={() => {
+																setSelectedCategory(cat);
+																setCategoryOpen(false);
+															}}
+															className="cursor-pointer"
+														>
+															{cat}
+															{selectedCategory === cat && (
+																<Check className="ml-auto h-4 w-4" />
+															)}
+														</CommandItem>
+													))}
+												</CommandGroup>
+											</CommandList>
+										</Command>
+									</PopoverContent>
+								</Popover>
+							</div>
+
+							<div className="w-full flex flex-col items-start">
+								<h5 className="text-center mb-2 text-base font-medium">SEARCH</h5>
+								<div className="relative w-full max-w-sm">
+									<Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
+									<Input
+										type="text"
+										placeholder="Search role, startup, skills..."
+										value={search}
+										onChange={(e) => setSearch(e.target.value)}
+										className="pl-10 rounded-full"
+									/>
+								</div>
+							</div>
+						</div>
+					</motion.div>
+				</div>
+			</section>
+
+			<section className="py-14">
+				<div className="max-w-7xl mx-auto px-6 lg:px-16">
+					<motion.div
+						variants={containerVariants}
+						initial="hidden"
+						animate="visible"
+						className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+					>
 				{filteredOpenings.map((o: any, i: number) => {
 					return (
 						<motion.article
@@ -316,6 +410,8 @@ export default function Careers() {
 					</a>
 				</div>
 			</motion.div>
+				</div>
+			</section>
 
 			{/* Career Detail Modal */}
 			<Dialog open={!!selectedOpening} onOpenChange={() => setSelectedOpening(null)}>
@@ -424,6 +520,6 @@ export default function Careers() {
 					)}
 				</DialogContent>
 			</Dialog>
-		</PageShell>
+		</div>
 	);
 }

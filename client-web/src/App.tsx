@@ -58,7 +58,7 @@ function Router() {
 						<Route path="/programs" component={Programs} />
 						<Route path="/apply" component={Apply} />
 						<Route path="/programs/apply" component={Apply} />
-						<Route path="/startups" component={Startups} />
+						<Route path="/portfolios" component={Startups} />
 						<Route path="/events" component={Events} />
 						<Route path="/partners" component={Partners} />
 						<Route path="/news" component={News} />

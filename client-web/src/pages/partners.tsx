@@ -1,11 +1,20 @@
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { ExternalLink, Building, Handshake, Globe } from "lucide-react";
+import { ExternalLink, Building, Handshake, Globe, ChevronDown, Check } from "lucide-react";
 import { useState, useEffect } from "react";
 import { fetchGet } from "@/utils/fetch.utils";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import {
+  Command,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+} from "@/components/ui/command";
 
 const baseURL = import.meta.env.VITE_URL;
 
@@ -195,21 +204,63 @@ export default function Partners() {
     csr: groupedPartners.csr.length > 0 ? groupedPartners.csr : partnerData.csr,
   };
 
+  const [selectedCategory, setSelectedCategory] = useState('funding');
+  const [categoryOpen, setCategoryOpen] = useState(false);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen pt-7">
+        <section className="pt-20 pb-5">
+          <div className="max-w-7xl px-6 lg:px-16 text-start">
+            <div className="mx-auto flex flex-col items-start gap-4">
+              <div className="h-10 w-64 bg-white/40 rounded animate-pulse"></div>
+              <div className="h-4 w-96 bg-white/30 rounded animate-pulse"></div>
+            </div>
+          </div>
+        </section>
+
+        <section className="py-5">
+          <div className="max-w-5xl px-6 md:px-16">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 items-start justify-normal">
+              <div className="w-full flex flex-col items-start">
+                <div className="h-4 w-20 bg-gray-300 rounded mb-2 animate-pulse"></div>
+                <div className="h-10 w-full max-w-xs bg-gray-200 rounded-full animate-pulse"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="py-14">
+          <div className="max-w-7xl mx-auto px-6 lg:px-16">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="p-8 border rounded-xl animate-pulse">
+                  <div className="h-16 w-16 bg-gray-300 rounded mb-4"></div>
+                  <div className="h-5 w-3/4 bg-gray-300 rounded mb-2"></div>
+                  <div className="h-4 w-full bg-gray-200 rounded"></div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen pt-20">
-      {/* Hero Section */}
-      <section className="py-24 bg-gradient-to-br from-gtu-base to-gtu-light">
-        <div className="max-w-7xl mx-auto px-6 lg:px-16">
+    <div className="min-h-screen pt-7">
+      <section className="pt-20 pb-5">
+        <div className="max-w-7xl px-6 lg:px-16 text-start">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-center"
+            className="text-start"
           >
-            <h1 className="text-hero font-extrabold text-foreground mb-6">
+            <h1 className="text-3xl md:text-5xl font-extrabold text-foreground mb-2">
               Our Partners
             </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl">
               We collaborate with leading organizations, government bodies, and industry leaders 
               to provide comprehensive support to our startup ecosystem.
             </p>
@@ -217,29 +268,67 @@ export default function Partners() {
         </div>
       </section>
 
-      {/* Partner Categories */}
-      <section className="py-24 bg-background">
-        <div className="max-w-7xl mx-auto px-6 lg:px-16">
-          <Tabs defaultValue="funding" className="w-full">
-            <TabsList className="grid w-full max-w-4xl mx-auto grid-cols-5 mb-16">
-              {partnerCategories.map((category) => {
-                const Icon = category.icon;
-                return (
-                  <TabsTrigger 
-                    key={category.id}
-                    value={category.id}
-                    className="flex items-center gap-2"
-                    data-testid={`tab-${category.id}`}
-                  >
-                    <Icon className="w-4 h-4" />
-                    <span className="hidden sm:inline">{category.label}</span>
-                  </TabsTrigger>
-                );
-              })}
-            </TabsList>
+      <section className="py-5">
+        <div className="max-w-5xl px-6 md:px-16">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-start"
+          >
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 items-start justify-normal">
+              <div className="w-full flex flex-col items-start">
+                <h5 className="text-center mb-2 text-base font-medium">PARTNER CATEGORY</h5>
+                <Popover open={categoryOpen} onOpenChange={setCategoryOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full max-w-xs justify-between rounded-full capitalize"
+                    >
+                      {partnerCategories.find((c) => c.id === selectedCategory)?.label || 'Funding Partners'}
+                      <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[250px] p-0">
+                    <Command>
+                      <CommandInput placeholder="Search category…" />
+                      <CommandList className="max-h-60 overflow-y-auto">
+                        <CommandEmpty>No category found.</CommandEmpty>
+                        <CommandGroup>
+                          {partnerCategories.map((cat) => {
+                            const Icon = cat.icon;
+                            return (
+                              <CommandItem
+                                key={cat.id}
+                                onSelect={() => {
+                                  setSelectedCategory(cat.id);
+                                  setCategoryOpen(false);
+                                }}
+                                className="cursor-pointer"
+                              >
+                                <Icon className="w-4 h-4 mr-2" />
+                                {cat.label}
+                                {selectedCategory === cat.id && (
+                                  <Check className="ml-auto h-4 w-4" />
+                                )}
+                              </CommandItem>
+                            );
+                          })}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
 
-            {/* Funding Partners */}
-            <TabsContent value="funding">
+      {/* Partner Categories */}
+      <section className="py-14">
+        <div className="max-w-7xl mx-auto px-6 lg:px-16">
+          {selectedCategory === 'funding' && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -306,10 +395,9 @@ export default function Partners() {
                   ))}
                 </div>
               </motion.div>
-            </TabsContent>
+          )}
 
-            {/* Strategic Partners */}
-            <TabsContent value="strategic">
+          {selectedCategory === 'strategic' && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -376,10 +464,9 @@ export default function Partners() {
                   ))}
                 </div>
               </motion.div>
-            </TabsContent>
+          )}
 
-            {/* Corporate Partners */}
-            <TabsContent value="corporate">
+          {selectedCategory === 'corporate' && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -446,10 +533,9 @@ export default function Partners() {
                   ))}
                 </div>
               </motion.div>
-            </TabsContent>
+          )}
 
-            {/* Academic Partners */}
-            <TabsContent value="academic">
+          {selectedCategory === 'academic' && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -516,10 +602,9 @@ export default function Partners() {
                   ))}
                 </div>
               </motion.div>
-            </TabsContent>
+          )}
 
-            {/* CSR Partners */}
-            <TabsContent value="csr">
+          {selectedCategory === 'csr' && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -586,8 +671,7 @@ export default function Partners() {
                   ))}
                 </div>
               </motion.div>
-            </TabsContent>
-          </Tabs>
+          )}
         </div>
       </section>
 

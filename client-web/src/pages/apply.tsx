@@ -1,4 +1,3 @@
-import PageShell from './page-shell';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Mail, Phone } from 'lucide-react';
@@ -105,17 +104,17 @@ export default function Apply() {
 	}
 
 	return (
-		<PageShell fullWidth>
-			{/* Hero */}
-			<section className="py-24 bg-gradient-to-br from-gtu-base to-gtu-light">
-				<div className="max-w-screen-2xl mx-auto px-6 lg:px-16 text-center">
+		<div className="min-h-screen pt-7">
+			<section className="pt-20 pb-5">
+				<div className="max-w-screen-2xl px-6 lg:px-16 text-start">
 					<motion.div
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.6 }}
+						className="text-start"
 					>
-						<h1 className="text-hero font-extrabold text-foreground mb-4">Apply Now</h1>
-						<p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+						<h1 className="text-3xl md:text-5xl font-extrabold text-foreground mb-2">Apply Now</h1>
+						<p className="text-lg md:text-xl text-muted-foreground max-w-3xl">
 							Apply for startup support at GTU Ventures — complete the form to apply
 							for incubation support.
 						</p>
@@ -124,7 +123,7 @@ export default function Apply() {
 			</section>
 
 			{/* Main two-column section (form + eligibility/info) */}
-			<section className="py-24 bg-background">
+			<section className="py-14">
 				<div className="max-w-screen-2xl mx-auto px-6 lg:px-20">
 					<div className="grid grid-cols-1 lg:[grid-template-columns:60%_40%] gap-12">
 						{/* Form - left (~60%) */}
@@ -511,6 +510,6 @@ export default function Apply() {
 					</div>
 				</div>
 			</section>
-		</PageShell>
+		</div>
 	);
 }

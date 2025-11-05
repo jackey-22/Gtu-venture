@@ -4,9 +4,18 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar, MapPin, Clock, Users, ExternalLink, Search } from 'lucide-react';
+import { Calendar, MapPin, Clock, Users, ExternalLink, Search, ChevronDown, Check } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+import {
+	Command,
+	CommandInput,
+	CommandList,
+	CommandEmpty,
+	CommandGroup,
+	CommandItem,
+} from '@/components/ui/command';
+import { cn } from '@/lib/utils';
 
 const baseURL = import.meta.env.VITE_URL;
 
@@ -20,6 +29,9 @@ export default function Events() {
 	const [searchQuery, setSearchQuery] = useState('');
 	const [categories, setCategories] = useState<string[]>(['All']);
 	const [selectedCategory, setSelectedCategory] = useState('All');
+	const [categoryOpen, setCategoryOpen] = useState(false);
+	const [tabOpen, setTabOpen] = useState(false);
+	const tabs = ['all', 'upcoming', 'past'];
 
 	useEffect(() => {
 		const fetchEvents = async () => {
@@ -101,29 +113,36 @@ export default function Events() {
 
 	if (loading) {
 		return (
-			<div className="min-h-screen pt-20">
-				<section className="py-24 bg-gradient-to-br from-gtu-base to-gtu-light">
-					<div className="max-w-7xl mx-auto px-6 lg:px-16">
-						<div className="text-center">
-							<div className="h-10 w-56 bg-gray-300/50 mx-auto rounded-lg animate-pulse"></div>
-							<div className="h-5 w-80 bg-gray-200/50 mx-auto rounded-lg mt-4 animate-pulse"></div>
+			<div className="min-h-screen pt-7">
+				<section className="pt-20 pb-5">
+					<div className="max-w-7xl px-6 lg:px-16 text-start">
+						<div className="mx-auto flex flex-col items-start gap-4">
+							<div className="h-10 w-64 bg-white/40 rounded animate-pulse"></div>
+							<div className="h-4 w-96 bg-white/30 rounded animate-pulse"></div>
 						</div>
 					</div>
 				</section>
 
-				<section className="py-6 bg-background border-b">
-					<div className="max-w-7xl mx-auto px-6 lg:px-16">
-						<div className="flex flex-col gap-3 md:gap-40 md:flex-row md:items-center md:justify-between">
-							<div className="flex-1"></div>
-							<div className="flex justify-center w-full md:w-auto order-1 md:order-none mx-auto">
-								<div className="h-10 w-64 bg-gray-200 rounded-lg animate-pulse"></div>
+				<section className="py-5">
+					<div className="max-w-5xl px-6 md:px-16">
+						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 items-start justify-normal">
+							<div className="w-full flex flex-col items-start">
+								<div className="h-4 w-24 bg-gray-300 rounded mb-2 animate-pulse"></div>
+								<div className="h-10 w-full max-w-xs bg-gray-200 rounded-full animate-pulse"></div>
 							</div>
-							<div className="h-10 w-full md:w-72 lg:w-80 bg-gray-200 rounded-lg animate-pulse"></div>
+							<div className="w-full flex flex-col items-start">
+								<div className="h-4 w-20 bg-gray-300 rounded mb-2 animate-pulse"></div>
+								<div className="h-10 w-full max-w-xs bg-gray-200 rounded-full animate-pulse"></div>
+							</div>
+							<div className="w-full flex flex-col items-start">
+								<div className="h-4 w-16 bg-gray-300 rounded mb-2 animate-pulse"></div>
+								<div className="h-10 w-full max-w-sm bg-gray-200 rounded-full animate-pulse"></div>
+							</div>
 						</div>
 					</div>
 				</section>
 
-				<section className="py-16 bg-background">
+				<section className="py-14">
 					<div className="max-w-7xl mx-auto px-6 lg:px-16">
 						<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 							{[1, 2, 3, 4].map((i) => (
@@ -158,17 +177,19 @@ export default function Events() {
 	}
 
 	return (
-		<div className="min-h-screen pt-20">
-			<section className="py-24 bg-gradient-to-br from-gtu-base to-gtu-light">
-				<div className="max-w-7xl mx-auto px-6 lg:px-16">
+		<div className="min-h-screen pt-7">
+			<section className="pt-20 pb-5">
+				<div className="max-w-7xl px-6 lg:px-16 text-start">
 					<motion.div
 						initial={{ opacity: 0, y: 30 }}
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.6 }}
-						className="text-center"
+						className="text-start"
 					>
-						<h1 className="text-hero font-extrabold text-foreground mb-6">Events</h1>
-						<p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+						<h1 className="text-3xl md:text-5xl font-extrabold text-foreground mb-2">
+							Events
+						</h1>
+						<p className="text-lg md:text-xl text-muted-foreground max-w-3xl">
 							Join our community events, workshops, and conferences designed to
 							accelerate your entrepreneurial journey and connect with like-minded
 							innovators.
@@ -177,53 +198,115 @@ export default function Events() {
 				</div>
 			</section>
 
-			<section className="py-6 bg-background border-b">
-				<div className="max-w-7xl mx-auto px-6 lg:px-16">
-					<div className="space-y-10">
-						<div className="flex justify-center w-full md:w-auto order-1 md:order-none mx-auto">
-							<Tabs value={activeTab} onValueChange={setActiveTab}>
-								<TabsList className="grid grid-cols-3 w-auto">
-									<TabsTrigger value="all">All</TabsTrigger>
-									<TabsTrigger value="upcoming">Upcoming</TabsTrigger>
-									<TabsTrigger value="past">Past</TabsTrigger>
-								</TabsList>
-							</Tabs>
-						</div>
+			<section className="py-5">
+				<div className="max-w-5xl px-6 md:px-16">
+					<motion.div
+						initial={{ opacity: 0, y: 30 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.6 }}
+						className="text-start"
+					>
+						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 items-start justify-normal">
+							<div className="w-full flex flex-col items-start">
+								<h5 className="text-center mb-2 text-base font-medium">TIME FILTER</h5>
+								<Popover open={tabOpen} onOpenChange={setTabOpen}>
+									<PopoverTrigger asChild>
+										<Button
+											variant="outline"
+											className="w-full max-w-xs justify-between rounded-full capitalize"
+										>
+											{activeTab === 'all' ? 'All Events' : activeTab}
+											<ChevronDown className="ml-2 h-4 w-4 opacity-50" />
+										</Button>
+									</PopoverTrigger>
+									<PopoverContent className="w-[250px] p-0">
+										<Command>
+											<CommandInput placeholder="Search time filter…" />
+											<CommandList className="max-h-60 overflow-y-auto">
+												<CommandEmpty>No filter found.</CommandEmpty>
+												<CommandGroup>
+													{tabs.map((tab) => (
+														<CommandItem
+															key={tab}
+															onSelect={() => {
+																setActiveTab(tab);
+																setTabOpen(false);
+															}}
+															className="cursor-pointer capitalize"
+														>
+															{tab === 'all' ? 'All Events' : tab}
+															{activeTab === tab && (
+																<Check className="ml-auto h-4 w-4" />
+															)}
+														</CommandItem>
+													))}
+												</CommandGroup>
+											</CommandList>
+										</Command>
+									</PopoverContent>
+								</Popover>
+							</div>
 
-						<div className="text-center">
-							<h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wide">
-								Category
-							</h3>
-							<div className="flex justify-center w-full md:w-auto order-1 md:order-none mx-auto">
-								<Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
-									<TabsList className="flex flex-wrap gap-2 px-2">
-										{categories.map((cat) => (
-											<TabsTrigger key={cat} value={cat}>
-												{cat}
-											</TabsTrigger>
-										))}
-									</TabsList>
-								</Tabs>
+							<div className="w-full flex flex-col items-start">
+								<h5 className="text-center mb-2 text-base font-medium">CATEGORY</h5>
+								<Popover open={categoryOpen} onOpenChange={setCategoryOpen}>
+									<PopoverTrigger asChild>
+										<Button
+											variant="outline"
+											className="w-full max-w-xs justify-between rounded-full"
+										>
+											{selectedCategory}
+											<ChevronDown className="ml-2 h-4 w-4 opacity-50" />
+										</Button>
+									</PopoverTrigger>
+									<PopoverContent className="w-[250px] p-0">
+										<Command>
+											<CommandInput placeholder="Search category…" />
+											<CommandList className="max-h-60 overflow-y-auto">
+												<CommandEmpty>No category found.</CommandEmpty>
+												<CommandGroup>
+													{categories.map((cat) => (
+														<CommandItem
+															key={cat}
+															onSelect={() => {
+																setSelectedCategory(cat);
+																setCategoryOpen(false);
+															}}
+															className="cursor-pointer"
+														>
+															{cat}
+															{selectedCategory === cat && (
+																<Check className="ml-auto h-4 w-4" />
+															)}
+														</CommandItem>
+													))}
+												</CommandGroup>
+											</CommandList>
+										</Command>
+									</PopoverContent>
+								</Popover>
+							</div>
+
+							<div className="w-full flex flex-col items-start">
+								<h5 className="text-center mb-2 text-base font-medium">SEARCH</h5>
+								<div className="relative w-full max-w-sm">
+									<Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
+									<Input
+										placeholder="Search events..."
+										value={searchQuery}
+										onChange={(e) => setSearchQuery(e.target.value)}
+										className="pl-10 rounded-full"
+										data-testid="search-input"
+									/>
+								</div>
 							</div>
 						</div>
-
-						<div className="max-w-md mx-auto relative">
-							<Search className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
-							<Input
-								type="text"
-								placeholder="Search events..."
-								value={searchQuery}
-								onChange={(e) => setSearchQuery(e.target.value)}
-								className="pl-10"
-								data-testid="search-input"
-							/>
-						</div>
-					</div>
+					</motion.div>
 				</div>
 			</section>
 
 			{/* Events List */}
-			<section className="py-16 bg-background">
+			<section className="py-14">
 				<div className="max-w-7xl mx-auto px-6 lg:px-16">
 					<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 						{filteredEvents.map((event, idx) => (
