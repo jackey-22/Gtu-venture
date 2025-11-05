@@ -104,10 +104,15 @@ export default function TeamManagement() {
 				}
 
 				const pathName = editingItem
-					? `${BASE_URL}admin/update-team-member/${editingItem._id}`
-					: `${BASE_URL}admin/add-team-member`;
+					? `admin/update-team-member/${editingItem._id}`
+					: 'admin/add-team-member';
 
-				response = await fetch(pathName, { method: 'POST', body: payload });
+				const token = localStorage.getItem('token');
+				response = await fetch(BASE_URL + pathName, {
+					method: 'POST',
+					body: payload,
+					headers: { Authorization: `Bearer ${token}` },
+				});
 				data = await response.json();
 			}
 
@@ -143,15 +148,16 @@ export default function TeamManagement() {
 					throw new Error('Failed to delete label');
 				}
 			} else {
-				const endpoint = `${BASE_URL}admin/delete-team-member/${id}`;
-				const res = await fetch(endpoint, { method: 'POST', body: JSON.stringify({}) });
-				const data = await res.json();
+				const data = await fetchPost({
+					pathName: `admin/delete-team-member/${id}`,
+					body: JSON.stringify({}),
+				});
 
-				if (res.ok && data.message) {
+				if (data?.message) {
 					alert(data.message);
 					fetchData();
 				} else {
-					throw new Error(data.message || 'Failed to delete member');
+					throw new Error('Failed to delete member');
 				}
 			}
 		} catch (error) {
@@ -289,7 +295,9 @@ export default function TeamManagement() {
 														</AlertDialogTitle>
 														<AlertDialogDescription>
 															Are you sure you want to delete "
-															{label.title}"?
+															{label.title}"? <br /> It will also
+															delete all members associated with{' '}
+															{label.title}.
 														</AlertDialogDescription>
 													</AlertDialogHeader>
 													<AlertDialogFooter>

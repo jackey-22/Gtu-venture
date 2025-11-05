@@ -920,7 +920,7 @@ async function deleteTeamLabel(req, res) {
 		const deletedLabel = await teamLabelModel.findByIdAndDelete(id);
 		if (!deletedLabel) return res.status(404).json({ message: 'Team label not found' });
 
-		await teamMemberModel.updateMany({ label: id }, { $unset: { label: '' } });
+		await teamMemberModel.deleteMany({ label: id });
 
 		return res.status(200).json({ message: 'Team label deleted' });
 	} catch (error) {
