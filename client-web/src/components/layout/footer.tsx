@@ -24,12 +24,13 @@ const aboutLinks = [
 	{ name: 'Partners', href: '/partners' },
 	{ name: 'Facilities', href: '/facilities' },
 	{ name: 'Initiatives', href: '/initiatives' },
-	{ name: 'Contact', href: '/contact' },
+	{ name: 'Contact Us', href: '/contact' },
 ];
 
 const additionalLinks = [
 	{ name: 'CoE', href: '/coi' },
 	{ name: 'Circulars', href: '/circulars' },
+	{ name: 'Tender', href: '/tenders' },
 ];
 
 const socialLinks = [
@@ -44,11 +45,15 @@ export default function Footer() {
 			{/* Gradient bar */}
 			<div className="h-1 bg-gradient-to-r from-primary via-secondary to-accent"></div>
 
-			<div className="max-w-10xl mx-auto px-6 lg:px-16 py-16">
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-10 md:gap-48 lg:gap-64 mb-12">
+			<div className="max-w-10xl mx-auto px-6 lg:px-16 py-10">
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 md:gap-14 lg:gap-20 mb-12 justify-start items-start">
 					{/* Brand */}
 					<div className="md:col-span-2">
-						<img src="/gtuv.png" alt="GTU Ventures" className="h-12 w-auto mb-6" />
+						<img
+							src="/ventureLogo.png"
+							alt="GTU Ventures"
+							className="h-32 w-auto mb-6 bg-white p-2"
+						/>
 						<p className="text-white/80 leading-relaxed max-w-md mb-6">
 							Empowering Gujarat's next generation of entrepreneurs through
 							innovation, mentorship, and community support.

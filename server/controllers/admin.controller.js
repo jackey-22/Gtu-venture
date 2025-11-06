@@ -1194,9 +1194,23 @@ async function addCareer(req, res) {
 			location,
 			status,
 			publishedAt,
+			deadline,
+			publishedOn,
 		} = req.body;
 		if (!title) {
 			return res.status(400).json({ message: 'Missing required fields' });
+		}
+
+		// Validation: deadline should be on or after publishedOn
+		if (deadline && publishedOn) {
+			const deadlineDate = new Date(deadline);
+			const publishedOnDate = new Date(publishedOn);
+			// Set time to midnight for accurate date comparison
+			deadlineDate.setHours(0, 0, 0, 0);
+			publishedOnDate.setHours(0, 0, 0, 0);
+			if (deadlineDate < publishedOnDate) {
+				return res.status(400).json({ message: 'Deadline cannot be before published date' });
+			}
 		}
 
 		const newCareer = new careerModel({
@@ -1211,6 +1225,8 @@ async function addCareer(req, res) {
 			location,
 			status: status || 'draft',
 			publishedAt,
+			deadline: deadline ? new Date(deadline) : null,
+			publishedOn: publishedOn ? new Date(publishedOn) : null,
 		});
 
 		await newCareer.save();
@@ -1259,7 +1275,21 @@ async function updateCareer(req, res) {
 			location,
 			status,
 			publishedAt,
+			deadline,
+			publishedOn,
 		} = req.body;
+
+		// Validation: deadline should be on or after publishedOn
+		if (deadline && publishedOn) {
+			const deadlineDate = new Date(deadline);
+			const publishedOnDate = new Date(publishedOn);
+			// Set time to midnight for accurate date comparison
+			deadlineDate.setHours(0, 0, 0, 0);
+			publishedOnDate.setHours(0, 0, 0, 0);
+			if (deadlineDate < publishedOnDate) {
+				return res.status(400).json({ message: 'Deadline cannot be before published date' });
+			}
+		}
 
 		const updatedData = {
 			title,
@@ -1273,6 +1303,8 @@ async function updateCareer(req, res) {
 			location,
 			status,
 			publishedAt,
+			deadline: deadline ? new Date(deadline) : null,
+			publishedOn: publishedOn ? new Date(publishedOn) : null,
 		};
 
 		const updatedCareer = await careerModel.findByIdAndUpdate(id, updatedData, {

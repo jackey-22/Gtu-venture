@@ -13,6 +13,8 @@ const careerSchema = new mongoose.Schema(
 		location: { type: String },
 		status: { type: String, enum: ['draft', 'published', 'archived'], default: 'draft' },
 		publishedAt: { type: Date },
+		deadline: { type: Date },
+		publishedOn: { type: Date },
 	},
 	{ timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } }
 );

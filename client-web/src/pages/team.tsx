@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import BoardSection from '@/components/team/board';
 import { boardDirectors, boardAdvisors } from '@/lib/boardData';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/tabs';
+import { Linkedin, LinkedinIcon } from 'lucide-react';
 
 export default function Team() {
 	const baseURL = import.meta.env.VITE_URL;
@@ -42,6 +43,38 @@ export default function Team() {
 	const itemVariants = {
 		hidden: { y: 10, opacity: 0 },
 		visible: { y: 0, opacity: 1, transition: { duration: 0.45 } },
+	};
+
+	const renderBioWithLinks = (text: string) => {
+		const urlRegex = /(https?:\/\/[^\s]+)/g;
+		return text.split(urlRegex).map((part, i) => {
+			if (urlRegex.test(part)) {
+				return (
+					<a
+						key={i}
+						href={part}
+						target="_blank"
+						rel="noopener noreferrer"
+						className="text-blue-600 hover:underline font-medium break-all"
+					>
+						{part}
+					</a>
+				);
+			}
+			return part;
+		});
+	};
+
+	const extractLinkedIn = (bio: string) => {
+		if (!bio) return { bioText: bio, linkedin: null };
+
+		const urlRegex = /(https?:\/\/[^\s]+)/g;
+		const urls = bio.match(urlRegex) || [];
+		const linkedin = urls.find((u) => u.includes('linkedin.com')) || null;
+
+		const bioText = linkedin ? bio.replace(linkedin, '').trim() : bio;
+
+		return { bioText, linkedin };
 	};
 
 	const labelsWithPriority = Array.from(
@@ -156,10 +189,11 @@ export default function Team() {
 														<motion.article
 															variants={itemVariants}
 															key={p._id || i}
-															className="overflow-hidden rounded-2xl shadow-lg bg-card border border-transparent text-center p-6"
+															className="relative overflow-hidden rounded-2xl shadow-lg bg-card border border-transparent text-center p-6"
 														>
+															{/* LinkedIn Icon */}
 															<div className="h-2 bg-secondary/80 rounded-t" />
-															<div className="p-4">
+															<div className="pt-4 px-4">
 																{p.photo ? (
 																	<img
 																		src={`${baseURL}${p.photo.replace(
@@ -171,15 +205,10 @@ export default function Team() {
 																		onError={(e) => {
 																			e.currentTarget.style.display =
 																				'none';
-																			const fallback = e
-																				.currentTarget
-																				.nextElementSibling as HTMLElement;
-																			if (fallback)
-																				fallback.style.display =
-																					'flex';
 																		}}
 																	/>
 																) : null}
+
 																<div
 																	className={`h-24 w-24 bg-gray-100 rounded-full mx-auto mb-4 overflow-hidden ${
 																		p.photo ? 'hidden' : 'flex'
@@ -187,23 +216,38 @@ export default function Team() {
 																>
 																	{(p.name || 'U').charAt(0)}
 																</div>
+
 																<div className="font-semibold">
 																	{p.name}
 																</div>
 																<div className="text-sm text-muted-foreground">
 																	{p.role}
 																</div>
-																{p.bio && (
+
+																{extractLinkedIn(p.bio).bioText && (
 																	<div className="mt-3 text-sm text-muted-foreground">
-																		{p.bio}
-																	</div>
-																)}
-																{p.label?.title && (
-																	<div className="mt-2 text-xs text-primary">
-																		{p.label.title}
+																		{renderBioWithLinks(
+																			extractLinkedIn(p.bio)
+																				.bioText
+																		)}
 																	</div>
 																)}
 															</div>
+															{extractLinkedIn(p.bio).linkedin && (
+																<div className="mt-4 flex justify-center">
+																	<a
+																		href={
+																			extractLinkedIn(p.bio)
+																				.linkedin
+																		}
+																		target="_blank"
+																		rel="noopener noreferrer"
+																		className="flex items-center text-center gap-2 p-2 text-sky-700 hover:text-sky-800 hover:bg-sky-200 rounded-full transition"
+																	>
+																		<LinkedinIcon className="w-6 h-6 text-center" />
+																	</a>
+																</div>
+															)}
 														</motion.article>
 													))}
 											</motion.div>

@@ -1,6 +1,16 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { Briefcase, Users, GraduationCap, Heart, DollarSign, Code, Search, ChevronDown, Check } from 'lucide-react';
+import {
+	Briefcase,
+	Users,
+	GraduationCap,
+	Heart,
+	DollarSign,
+	Code,
+	Search,
+	ChevronDown,
+	Check,
+} from 'lucide-react';
 import { fetchGet } from '@/utils/fetch.utils';
 import {
 	Dialog,
@@ -12,6 +22,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Calendar } from 'lucide-react';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import {
 	Command,
@@ -45,6 +56,8 @@ export default function Careers() {
 					requirements: c.requirements || [],
 					benefits: c.benefits || [],
 					location: c.location || '',
+					deadline: c.deadline,
+					publishedOn: c.publishedOn,
 				}));
 				setOpenings(mappedCareers);
 			} catch (error) {
@@ -229,7 +242,8 @@ export default function Careers() {
 							Careers
 						</h1>
 						<p className="text-lg md:text-xl text-muted-foreground max-w-3xl">
-							Join GTU Ventures — current openings, internships, and fellowship opportunities across various startup categories.
+							Join GTU Ventures — current openings, internships, and fellowship
+							opportunities across various startup categories.
 						</p>
 					</motion.div>
 				</div>
@@ -302,120 +316,156 @@ export default function Careers() {
 				</div>
 			</section>
 
-			<section className="py-14">
-				<div className="max-w-7xl mx-auto px-6 lg:px-16">
+			<section className="py-10">
+				<div className="mx-auto px-6 lg:px-16">
 					<motion.div
 						variants={containerVariants}
 						initial="hidden"
 						animate="visible"
 						className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
 					>
-				{filteredOpenings.map((o: any, i: number) => {
-					return (
-						<motion.article
-							variants={itemVariants}
-							key={i}
-							className="group overflow-hidden rounded-2xl bg-card border border-border shadow-sm hover:shadow-2xl hover:border-primary/20 transform hover:-translate-y-2 transition-all duration-300 cursor-pointer"
-							onClick={() => setSelectedOpening(o)}
-						>
-							<div className="p-8 flex flex-col h-full">
-								<div className="flex items-start gap-4 mb-6">
-									<div className="flex-1 min-w-0">
-										<div className="font-bold text-xl text-foreground mb-1 line-clamp-2">
-											{o.title}
+						{filteredOpenings.map((o: any, i: number) => {
+							return (
+								<motion.article
+									variants={itemVariants}
+									key={i}
+									className="group overflow-hidden rounded-2xl bg-card border border-border shadow-sm hover:shadow-2xl hover:border-primary/20 transform hover:-translate-y-2 transition-all duration-300 cursor-pointer"
+									onClick={() => setSelectedOpening(o)}
+								>
+									<div className="pt-5 pb-5 px-5 flex flex-col h-full">
+										<div className="flex items-start gap-4 mb-2">
+											<div className="flex-1 min-w-0">
+												<div className="font-bold text-xl text-foreground mb-1 line-clamp-2">
+													{o.title}
+												</div>
+												<div className="text-primary font-medium mb-2 truncate">
+													{o.startup}
+												</div>
+												<div className="text-muted-foreground leading-relaxed mb-4 line-clamp-2">
+													{o.details}
+												</div>
+												<div className="flex items-center gap-3 flex-wrap mb-5">
+													<span className="text-xs font-medium rounded-full px-2 py-1 bg-gray-200">
+														{o.type}
+													</span>
+													<span className="text-xs font-medium rounded-full px-2 py-1 bg-gray-200">
+														{o.category || 'General'}
+													</span>
+													<span className="text-xs font-medium rounded-full px-2 py-1 bg-gray-200">
+														{o.location}
+													</span>
+												</div>
+												{(o.publishedOn || o.deadline) && (
+													<div className="flex items-center gap-5 flex-wrap mb-4 text-sm text-muted-foreground font-medium">
+														{o.publishedOn && (
+															<span className="flex items-center gap-2">
+																<Calendar size={18} />
+																Published:{' '}
+																{new Date(
+																	o.publishedOn
+																).toLocaleDateString('en-GB')}
+															</span>
+														)}
+														{o.deadline && (
+															<span className="flex items-center gap-2">
+																<Calendar size={18} />
+																Deadline:{' '}
+																{new Date(
+																	o.deadline
+																).toLocaleDateString('en-GB')}
+															</span>
+														)}
+													</div>
+												)}
+											</div>
 										</div>
-										<div className="text-primary font-medium mb-2 truncate">
-											{o.startup}
+
+										<div className="space-y-4 mb-6">
+											<div>
+												<h4 className="font-semibold text-sm text-foreground mb-2">
+													Requirements
+												</h4>
+												<ul className="text-sm text-muted-foreground space-y-1">
+													{o.requirements
+														.slice(0, 2)
+														.map((req: string, idx: number) => (
+															<li
+																key={idx}
+																className="flex items-center gap-2"
+															>
+																<div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+																<span className="block truncate max-w-[283px]">
+																	{req}
+																</span>
+															</li>
+														))}
+												</ul>
+											</div>
+
+											{/* <div>
+												<h4 className="font-semibold text-sm text-foreground mb-2">
+													Benefits
+												</h4>
+												<ul className="text-sm text-muted-foreground space-y-1">
+													{o.benefits
+														.slice(0, 2)
+														.map((benefit: string, idx: number) => (
+															<li
+																key={idx}
+																className="flex items-center gap-2"
+															>
+																<div className="w-1.5 h-1.5 bg-secondary rounded-full"></div>
+																<span className="block truncate max-w-[283px]">
+																	{benefit}
+																</span>
+															</li>
+														))}
+												</ul>
+											</div> */}
 										</div>
-										<div className="text-muted-foreground leading-relaxed mb-4 line-clamp-2">
-											{o.details}
-										</div>
-										<div className="flex items-center gap-3 flex-wrap mb-4">
-											<span className="text-xs px-3 py-1 bg-primary/10 text-primary rounded-full font-medium whitespace-nowrap">
-												{o.type}
-											</span>
-											<span className="text-xs px-3 py-1 bg-secondary/10 text-secondary rounded-full font-medium whitespace-nowrap">
-												{o.category || 'General'}
-											</span>
-											<span className="text-xs px-3 py-1 bg-accent/10 text-accent-foreground rounded-full font-medium truncate max-w-[120px]">
-												{o.location}
-											</span>
+
+										<div className="mt-auto">
+											<a
+												href="#"
+												className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-colors font-medium w-full justify-center"
+												onClick={(e) => e.stopPropagation()}
+											>
+												Apply Now
+											</a>
 										</div>
 									</div>
-								</div>
+								</motion.article>
+							);
+						})}
+					</motion.div>
 
-								<div className="space-y-4 mb-6">
-									<div>
-										<h4 className="font-semibold text-sm text-foreground mb-2">
-											Requirements
-										</h4>
-										<ul className="text-sm text-muted-foreground space-y-1">
-											{o.requirements.map((req: string, idx: number) => (
-												<li key={idx} className="flex items-center gap-2">
-													<div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-													{req}
-												</li>
-											))}
-										</ul>
-									</div>
-
-									<div>
-										<h4 className="font-semibold text-sm text-foreground mb-2">
-											Benefits
-										</h4>
-										<ul className="text-sm text-muted-foreground space-y-1">
-											{o.benefits.map((benefit: string, idx: number) => (
-												<li key={idx} className="flex items-center gap-2">
-													<div className="w-1.5 h-1.5 bg-secondary rounded-full"></div>
-													{benefit}
-												</li>
-											))}
-										</ul>
-									</div>
-								</div>
-
-								<div className="mt-auto">
-									<a
-										href="#"
-										className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-colors font-medium w-full justify-center"
-										onClick={(e) => e.stopPropagation()}
-									>
-										Apply Now
-									</a>
-								</div>
-							</div>
-						</motion.article>
-					);
-				})}
-			</motion.div>
-
-			{/* Call to Action */}
-			<motion.div
-				variants={containerVariants}
-				initial="hidden"
-				animate="visible"
-				className="mt-16 text-center"
-			>
-				<div className="bg-gradient-to-r from-primary/5 to-secondary/5 rounded-3xl p-12">
-					<h3 className="text-2xl font-bold mb-4">Don't see the perfect role?</h3>
-					<p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-						We're always looking for talented individuals to join our mission. Send us
-						your resume and let's discuss opportunities.
-					</p>
-					<a
-						href="#"
-						className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-colors font-medium"
+					{/* Call to Action */}
+					<motion.div
+						variants={containerVariants}
+						initial="hidden"
+						animate="visible"
+						className="mt-16 text-center"
 					>
-						Send Resume
-					</a>
-				</div>
-			</motion.div>
+						<div className="bg-gradient-to-r from-primary/5 to-secondary/5 rounded-3xl p-12">
+							<h3 className="text-2xl font-bold mb-4">Don't see the perfect role?</h3>
+							<p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+								We're always looking for talented individuals to join our mission.
+								Send us your resume and let's discuss opportunities.
+							</p>
+							<a
+								href="#"
+								className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-colors font-medium"
+							>
+								Send Resume
+							</a>
+						</div>
+					</motion.div>
 				</div>
 			</section>
 
 			{/* Career Detail Modal */}
 			<Dialog open={!!selectedOpening} onOpenChange={() => setSelectedOpening(null)}>
-				<DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+				<DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
 					{selectedOpening && (
 						<>
 							<DialogHeader>
@@ -437,18 +487,47 @@ export default function Careers() {
 											<Badge variant="secondary">
 												{selectedOpening.type}
 											</Badge>
-											<Badge variant="outline">
+											<Badge variant="secondary">
 												{selectedOpening.category || 'General'}
 											</Badge>
-											<Badge variant="outline">
+											<Badge variant="secondary">
 												{selectedOpening.location}
 											</Badge>
 										</div>
+										{(selectedOpening.publishedOn ||
+											selectedOpening.deadline) && (
+											<div className="flex items-center gap-4 flex-wrap mt-3 text-sm text-muted-foreground">
+												{selectedOpening.publishedOn && (
+													<span>
+														<strong>Published:</strong>{' '}
+														{new Date(
+															selectedOpening.publishedOn
+														).toLocaleDateString('en-US', {
+															year: 'numeric',
+															month: 'long',
+															day: 'numeric',
+														})}
+													</span>
+												)}
+												{selectedOpening.deadline && (
+													<span>
+														<strong>Deadline:</strong>{' '}
+														{new Date(
+															selectedOpening.deadline
+														).toLocaleDateString('en-US', {
+															year: 'numeric',
+															month: 'long',
+															day: 'numeric',
+														})}
+													</span>
+												)}
+											</div>
+										)}
 									</div>
 								</div>
 							</DialogHeader>
 
-							<div className="space-y-6">
+							<div className="space-y-6 px-10">
 								{selectedOpening.details && (
 									<div>
 										<h4 className="font-semibold text-foreground mb-2">

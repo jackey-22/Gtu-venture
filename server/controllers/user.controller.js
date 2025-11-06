@@ -257,7 +257,18 @@ async function fetchTeamMemberById(req, res) {
 // CAREERS
 async function fetchCareers(req, res) {
 	try {
-		const careers = await careerModel.find({ status: 'published' }).sort({ created_at: -1 });
+		const now = new Date();
+		// Only show careers where publishedOn <= today (or null/undefined publishedOn for backward compatibility)
+		const careers = await careerModel
+			.find({
+				status: 'published',
+				$or: [
+					{ publishedOn: { $lte: now } },
+					{ publishedOn: null },
+					{ publishedOn: { $exists: false } },
+				],
+			})
+			.sort({ created_at: -1 });
 
 		res.status(200).json({ success: true, count: careers.length, data: careers });
 	} catch (error) {

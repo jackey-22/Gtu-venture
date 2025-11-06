@@ -12,7 +12,7 @@ const navigation = [
 	{ name: 'Partners', href: '/partners' },
 	{ name: 'About', href: '/about' },
 	{ name: 'Team', href: '/team' },
-	{ name: 'Contact', href: '/contact' },
+	{ name: 'Contact Us', href: '/contact' },
 ];
 
 export default function Navbar() {

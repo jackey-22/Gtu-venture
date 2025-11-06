@@ -519,7 +519,7 @@ export default function TeamManagement() {
 									</div>
 								</div>
 								<div className="space-y-2">
-									<Label>Bio</Label>
+									<Label>Bio (with LinkedIn Link)</Label>
 									<Textarea
 										rows={3}
 										value={formData.bio || ''}

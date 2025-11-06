@@ -45,6 +45,8 @@ interface CareerType {
 	benefits?: string[];
 	location?: string;
 	status: 'draft' | 'published' | 'archived';
+	deadline?: string;
+	publishedOn?: string;
 }
 
 export default function CareersCRUD() {
@@ -64,7 +66,10 @@ export default function CareersCRUD() {
 		benefits: '',
 		location: '',
 		status: 'draft' as 'draft' | 'published' | 'archived',
+		deadline: '',
+		publishedOn: '',
 	});
+	const [validationError, setValidationError] = useState<string>('');
 
 	useEffect(() => {
 		fetchCareers();
@@ -85,6 +90,22 @@ export default function CareersCRUD() {
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
+		
+		// Client-side validation
+		// Deadline should be on or after published date
+		if (formData.deadline && formData.publishedOn) {
+			const deadlineDate = new Date(formData.deadline);
+			const publishedOnDate = new Date(formData.publishedOn);
+			// Set time to midnight for accurate date comparison
+			deadlineDate.setHours(0, 0, 0, 0);
+			publishedOnDate.setHours(0, 0, 0, 0);
+			if (deadlineDate < publishedOnDate) {
+				setValidationError('Deadline cannot be before published date');
+				return;
+			}
+		}
+		
+		setValidationError('');
 		setActionLoading(true);
 		try {
 			const payload = {
@@ -116,6 +137,13 @@ export default function CareersCRUD() {
 
 	const handleEdit = (career: CareerType) => {
 		setEditingCareer(career);
+		// Format dates for date input (YYYY-MM-DD)
+		const formatDateForInput = (date: string | Date | undefined) => {
+			if (!date) return '';
+			const d = new Date(date);
+			if (isNaN(d.getTime())) return '';
+			return d.toISOString().split('T')[0];
+		};
 		setFormData({
 			title: career.title || '',
 			body: career.body || '',
@@ -127,7 +155,10 @@ export default function CareersCRUD() {
 			benefits: career.benefits?.join('\n') || '',
 			location: career.location || '',
 			status: career.status,
+			deadline: formatDateForInput(career.deadline),
+			publishedOn: formatDateForInput(career.publishedOn),
 		});
+		setValidationError('');
 		setIsDialogOpen(true);
 	};
 
@@ -165,7 +196,10 @@ export default function CareersCRUD() {
 			benefits: '',
 			location: '',
 			status: 'draft',
+			deadline: '',
+			publishedOn: '',
 		});
+		setValidationError('');
 	};
 
 	if (loading || actionLoading) {
@@ -285,6 +319,35 @@ export default function CareersCRUD() {
 									}
 								/>
 							</div>
+							<div className="grid grid-cols-2 gap-4">
+								<div>
+									<Label>Deadline</Label>
+									<Input
+										type="date"
+										value={formData.deadline}
+										onChange={(e) => {
+											setFormData({ ...formData, deadline: e.target.value });
+											setValidationError('');
+										}}
+									/>
+								</div>
+								<div>
+									<Label>Published On</Label>
+									<Input
+										type="date"
+										value={formData.publishedOn}
+										onChange={(e) => {
+											setFormData({ ...formData, publishedOn: e.target.value });
+											setValidationError('');
+										}}
+									/>
+								</div>
+							</div>
+							{validationError && (
+								<div className="text-sm text-red-500 bg-red-50 p-2 rounded">
+									{validationError}
+								</div>
+							)}
 							<div>
 								<Label>Status</Label>
 								<Select
