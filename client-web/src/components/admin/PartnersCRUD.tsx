@@ -194,9 +194,12 @@ export default function PartnersCRUD() {
 	}
 
 	return (
-		<div className="p-6 space-y-6">
+		<div className="space-y-6">
 			<div className="flex justify-between items-center">
-				<h2 className="text-2xl font-bold">Partners Management</h2>
+				<div>
+					<h2 className="text-2xl font-bold">Partners Management</h2>
+					<p className="text-muted-foreground">Manage All Partners</p>
+				</div>
 				<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
 					<DialogTrigger asChild>
 						<Button onClick={resetForm}>
@@ -380,12 +383,19 @@ export default function PartnersCRUD() {
 
 										<div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
 											{partner.type && (
-												<span className="whitespace-nowrap">Type: {partner.type}</span>
+												<span className="whitespace-nowrap">
+													Type: {partner.type}
+												</span>
 											)}
 											{partner.focus && (
-												<span className="whitespace-nowrap">Focus: {partner.focus}</span>
+												<span className="whitespace-nowrap">
+													Focus: {partner.focus}
+												</span>
 											)}
-											<Badge variant="outline" className="text-xs flex-shrink-0">
+											<Badge
+												variant="outline"
+												className="text-xs flex-shrink-0"
+											>
 												{partner.category}
 											</Badge>
 										</div>

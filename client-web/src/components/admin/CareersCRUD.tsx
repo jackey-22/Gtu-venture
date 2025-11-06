@@ -180,9 +180,12 @@ export default function CareersCRUD() {
 	}
 
 	return (
-		<div className="p-6 space-y-6">
+		<div className="space-y-6">
 			<div className="flex justify-between items-center">
-				<h2 className="text-2xl font-bold">Careers Management</h2>
+				<div>
+					<h2 className="text-2xl font-bold">Careers Management</h2>
+					<p className="text-muted-foreground">Manage All Careers</p>
+				</div>
 				<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
 					<DialogTrigger asChild>
 						<Button onClick={resetForm}>
@@ -334,13 +337,19 @@ export default function CareersCRUD() {
 									</p>
 									<div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
 										{career.type && (
-											<span className="whitespace-nowrap">Type: {career.type}</span>
+											<span className="whitespace-nowrap">
+												Type: {career.type}
+											</span>
 										)}
 										{career.category && (
-											<span className="whitespace-nowrap">Category: {career.category}</span>
+											<span className="whitespace-nowrap">
+												Category: {career.category}
+											</span>
 										)}
 										{career.location && (
-											<span className="whitespace-nowrap">Location: {career.location}</span>
+											<span className="whitespace-nowrap">
+												Location: {career.location}
+											</span>
 										)}
 									</div>
 								</div>

@@ -229,9 +229,12 @@ export default function ApplicationsCRUD() {
 	}
 
 	return (
-		<div className="p-6 space-y-6">
+		<div className="space-y-6">
 			<div className="flex justify-between items-center">
-				<h2 className="text-2xl font-bold">Applications Management</h2>
+				<div>
+					<h2 className="text-2xl font-bold">Application Management</h2>
+					<p className="text-muted-foreground">Manage All Applications</p>
+				</div>
 			</div>
 
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -269,7 +272,9 @@ export default function ApplicationsCRUD() {
 										{application.stage && (
 											<div className="min-w-0">
 												<strong>Stage:</strong>{' '}
-												<span className="truncate">{application.stage}</span>
+												<span className="truncate">
+													{application.stage}
+												</span>
 											</div>
 										)}
 									</div>

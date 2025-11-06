@@ -204,9 +204,12 @@ export default function CircularsCRUD() {
 	}
 
 	return (
-		<div className="p-6 space-y-6">
+		<div className="space-y-6">
 			<div className="flex justify-between items-center">
-				<h2 className="text-2xl font-bold">Circulars Management</h2>
+				<div>
+					<h2 className="text-2xl font-bold">Circulars Management</h2>
+					<p className="text-muted-foreground">Manage All Circulars and Tenders</p>
+				</div>
 				<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
 					<DialogTrigger asChild>
 						<Button onClick={resetForm}>

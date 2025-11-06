@@ -157,9 +157,12 @@ export default function FacilitiesCRUD() {
 	}
 
 	return (
-		<div className="p-6 space-y-6">
+		<div className="space-y-6">
 			<div className="flex justify-between items-center">
-				<h2 className="text-2xl font-bold">Facilities Management</h2>
+				<div>
+					<h2 className="text-2xl font-bold">Facilities Management</h2>
+					<p className="text-muted-foreground">Manage All Facilities and Services</p>
+				</div>
 				<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
 					<DialogTrigger asChild>
 						<Button onClick={resetForm}>
@@ -275,14 +278,19 @@ export default function FacilitiesCRUD() {
 									</p>
 									<div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
 										{facility.category && (
-											<Badge variant="outline" className="capitalize flex-shrink-0">
+											<Badge
+												variant="outline"
+												className="capitalize flex-shrink-0"
+											>
 												{facility.category === 'tools'
 													? 'Tools & Downloads'
 													: facility.category}
 											</Badge>
 										)}
 										{facility.action && (
-											<span className="whitespace-nowrap">Action: {facility.action}</span>
+											<span className="whitespace-nowrap">
+												Action: {facility.action}
+											</span>
 										)}
 									</div>
 								</div>
