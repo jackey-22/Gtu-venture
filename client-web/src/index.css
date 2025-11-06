@@ -145,6 +145,16 @@
 		display: none;
 	}
 
+	/* Hide scrollbar for timeline */
+	.scrollbar-hide {
+		scrollbar-width: none;
+		-ms-overflow-style: none;
+	}
+
+	.scrollbar-hide::-webkit-scrollbar {
+		display: none;
+	}
+
 	.hero-image {
 		position: absolute;
 		top: 50%;
@@ -350,13 +360,15 @@
 	}
 
 	.carousel-item.next {
-		transform: translateX(clamp(160px, 15vw, 220px)) rotateY(-30deg) translateZ(clamp(60px, 5vw, 80px)) scale(0.92);
+		transform: translateX(clamp(160px, 15vw, 220px)) rotateY(-30deg)
+			translateZ(clamp(60px, 5vw, 80px)) scale(0.92);
 		opacity: 0.85;
 		z-index: 20;
 	}
 
 	.carousel-item.prev {
-		transform: translateX(clamp(-160px, -15vw, -220px)) rotateY(30deg) translateZ(clamp(60px, 5vw, 80px)) scale(0.92);
+		transform: translateX(clamp(-160px, -15vw, -220px)) rotateY(30deg)
+			translateZ(clamp(60px, 5vw, 80px)) scale(0.92);
 		opacity: 0.85;
 		z-index: 20;
 	}
@@ -368,7 +380,8 @@
 	}
 
 	.carousel-item.far-prev {
-		transform: translateX(clamp(-280px, -35vw, -420px)) rotateY(45deg) translateZ(0px) scale(0.8);
+		transform: translateX(clamp(-280px, -35vw, -420px)) rotateY(45deg) translateZ(0px)
+			scale(0.8);
 		opacity: 0.6;
 		z-index: 10;
 	}
