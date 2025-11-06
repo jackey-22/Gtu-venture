@@ -47,8 +47,20 @@ export default function Navbar() {
 				<div className="h-[85px] flex items-center justify-between">
 					{/* Logo */}
 					<Link href="/" className="flex items-center gap-2 cursor-pointer select-none">
-						<img src="/gtulogo.png" alt="GTU" className="h-16 w-auto" />
-						<img src="/gtuv.png" alt="GTU Ventures" className="h-12 w-auto" />
+						<img
+							src="/ventureLogo.png"
+							alt="GTU"
+							className="
+								object-contain
+								w-auto
+								max-h-20    
+								sm:max-h-12 
+								md:max-h-16 
+								lg:max-h-20 
+								xl:max-h-20 
+								flex-shrink-0
+							"
+						/>
 					</Link>
 
 					{/* Desktop Nav */}
