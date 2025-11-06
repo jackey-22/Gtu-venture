@@ -73,7 +73,7 @@ const contentSections = [
 	{ key: 'events', label: 'Events', component: EventsCRUD, icon: Calendar },
 	{ key: 'programs', label: 'Programs', component: ProgramsCRUD, icon: Award },
 	{ key: 'startups', label: 'Startups', component: StartupsCRUD, icon: Building },
-	{ key: 'gallery', label: 'Gallery', component: GalleryCRUD, icon: Image },
+	{ key: 'galleries', label: 'Gallery', component: GalleryCRUD, icon: Image },
 	{ key: 'reports', label: 'Reports', component: ReportsCRUD, icon: FileText },
 	{ key: 'faqs', label: 'FAQs', component: FAQsCRUD, icon: HelpCircle },
 	{ key: 'teamMembers', label: 'Team Members', component: TeamCRUD, icon: TeamIcon },
