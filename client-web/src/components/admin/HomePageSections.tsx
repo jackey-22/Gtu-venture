@@ -43,11 +43,8 @@ export default function HomePageSections() {
 
 	return (
 		<div className="space-y-6">
-			<div className="">
-				<h1 className="flex items-center gap-2 text-3xl font-bold mb-1.5 text-gray-800">
-					<Home className="w-7 h-7 text-primary font-bold" />
-					Home Page Sections
-				</h1>
+			<div>
+				<h2 className="text-2xl font-bold">Home Page Sections</h2>
 				<p className="text-muted-foreground">
 					Manage all sections displayed on the home page
 				</p>

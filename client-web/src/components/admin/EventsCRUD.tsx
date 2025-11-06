@@ -201,9 +201,12 @@ export default function EventsCRUD() {
 	}
 
 	return (
-		<div className="p-6 space-y-6">
+		<div className="space-y-6">
 			<div className="flex justify-between items-center flex-wrap gap-4">
-				<h2 className="text-2xl font-bold">Events Management</h2>
+				<div>
+					<h2 className="text-2xl font-bold">Event Management</h2>
+					<p className="text-muted-foreground">Manage all your Events easily</p>
+				</div>
 				<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
 					<DialogTrigger asChild>
 						<Button onClick={resetForm}>
@@ -444,10 +447,14 @@ export default function EventsCRUD() {
 												<Calendar className="w-3 h-3" />
 												<span>
 													{event.start_date
-														? new Date(event.start_date).toLocaleDateString()
+														? new Date(
+																event.start_date
+														  ).toLocaleDateString()
 														: 'N/A'}
 													{event.end_date &&
-														` - ${new Date(event.end_date).toLocaleDateString()}`}
+														` - ${new Date(
+															event.end_date
+														).toLocaleDateString()}`}
 												</span>
 											</div>
 										)}

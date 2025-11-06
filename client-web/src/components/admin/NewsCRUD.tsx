@@ -216,10 +216,12 @@ export default function NewsCRUD() {
 	}
 
 	return (
-		<div className="p-6 space-y-6">
+		<div className="space-y-6">
 			<div className="flex justify-between items-center flex-wrap gap-4">
-				<h2 className="text-2xl font-bold">News Management</h2>
-
+				<div>
+					<h2 className="text-2xl font-bold">News Management</h2>
+					<p className="text-muted-foreground">Manage all your news articles easily</p>
+				</div>
 				<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
 					<DialogTrigger asChild>
 						<Button onClick={resetForm}>
@@ -473,12 +475,12 @@ export default function NewsCRUD() {
 							<div className="flex justify-between items-start gap-3">
 								<div className="flex-1 min-w-0">
 									<div className="flex items-center gap-2 mb-2 flex-wrap">
-										<h3 className="font-bold text-lg line-clamp-2">{n.title}</h3>
+										<h3 className="font-bold text-lg line-clamp-2">
+											{n.title}
+										</h3>
 										<Badge
 											variant={
-												n.status === 'published'
-													? 'default'
-													: 'secondary'
+												n.status === 'published' ? 'default' : 'secondary'
 											}
 											className="flex-shrink-0"
 										>
