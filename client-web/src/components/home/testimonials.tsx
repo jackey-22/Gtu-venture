@@ -53,15 +53,18 @@ export default function Testimonials() {
 	}
 
 	return (
-		<section className="py-[clamp(3rem,8vw,6rem)] bg-muted overflow-hidden" data-testid="testimonials">
+		<section
+			className="py-[clamp(1rem,6vw,4rem)] bg-muted overflow-hidden"
+			data-testid="testimonials"
+		>
 			<div className="max-w-4xl mx-auto px-[clamp(1rem,4vw,4rem)] text-center">
 				<motion.h2
 					initial={{ opacity: 0, y: 30 }}
 					whileInView={{ opacity: 1, y: 0 }}
 					viewport={{ once: true }}
 					transition={{ duration: 0.6 }}
-					className="font-bold text-foreground mb-[clamp(2rem,5vw,4rem)]"
-					style={{ fontSize: 'clamp(1.75rem, 4vw + 0.5rem, 3rem)' }}
+					className="font-bold text-foreground mb-[clamp(1rem,3vw,2rem)]"
+					style={{ fontSize: 'clamp(1.25rem, 3vw, 2.25rem)' }}
 				>
 					What Founders Say
 				</motion.h2>
@@ -77,20 +80,32 @@ export default function Testimonials() {
 							className="text-center"
 							data-testid={`testimonial-${currentIndex}`}
 						>
-							<blockquote className="font-medium text-foreground leading-relaxed mb-[clamp(1.5rem,4vw,2rem)]" style={{ fontSize: 'clamp(1.125rem, 2.5vw + 0.5rem, 1.875rem)' }}>
+							<blockquote
+								className="font-medium text-foreground leading-relaxed mb-[clamp(1rem,3vw,1rem)]"
+								style={{ fontSize: 'clamp(0.9rem, 1.8vw, 1.25rem)' }}
+							>
 								"{testimonials[currentIndex].quote}"
 							</blockquote>
 							<img
 								src={`${baseURL}${testimonials[currentIndex].image}`}
 								alt={testimonials[currentIndex].author}
 								className="rounded-full mx-auto mb-[clamp(0.75rem,2vw,1rem)] object-cover"
-								style={{ width: 'clamp(4rem, 8vw, 5rem)', height: 'clamp(4rem, 8vw, 5rem)' }}
+								style={{
+									width: 'clamp(4rem, 8vw, 5rem)',
+									height: 'clamp(4rem, 8vw, 5rem)',
+								}}
 								data-testid={`testimonial-image-${currentIndex}`}
 							/>
-							<div className="font-semibold text-foreground" style={{ fontSize: 'clamp(0.875rem, 1.5vw + 0.25rem, 1.125rem)' }}>
+							<div
+								className="font-semibold text-foreground"
+								style={{ fontSize: 'clamp(0.875rem, 1.5vw + 0.25rem, 1.125rem)' }}
+							>
 								{testimonials[currentIndex].author}
 							</div>
-							<div className="text-muted-foreground" style={{ fontSize: 'clamp(0.75rem, 1.2vw + 0.25rem, 0.875rem)' }}>
+							<div
+								className="text-muted-foreground"
+								style={{ fontSize: 'clamp(0.75rem, 1.2vw + 0.25rem, 0.875rem)' }}
+							>
 								{testimonials[currentIndex].position}
 							</div>
 						</motion.div>
@@ -106,7 +121,10 @@ export default function Testimonials() {
 							className={`rounded-full transition-colors ${
 								index === currentIndex ? 'bg-primary' : 'bg-border'
 							}`}
-							style={{ width: 'clamp(0.5rem, 1vw, 0.75rem)', height: 'clamp(0.5rem, 1vw, 0.75rem)' }}
+							style={{
+								width: 'clamp(0.5rem, 1vw, 0.75rem)',
+								height: 'clamp(0.5rem, 1vw, 0.75rem)',
+							}}
 							data-testid={`testimonial-dot-${index}`}
 						/>
 					))}

@@ -88,13 +88,6 @@ export default function Circulars() {
 	const [items, setItems] = useState<any[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [selectedCircular, setSelectedCircular] = useState<Circular | null>(null);
-	const [typeFilter, setTypeFilter] = useState<'all' | 'circular' | 'tender'>('all');
-	const [typeFilterOpen, setTypeFilterOpen] = useState(false);
-	const typeFilters = [
-		{ key: 'all', label: 'All' },
-		{ key: 'circular', label: 'Circulars' },
-		{ key: 'tender', label: 'Tenders' },
-	];
 
 	useEffect(() => {
 		const fetchCirculars = async () => {
@@ -114,19 +107,21 @@ export default function Circulars() {
 
 	const circulars: Circular[] = useMemo(() => {
 		if (items.length) {
-			return items.map((it: any, i: number) => ({
-				id: it._id || it.id || `c_${i}`,
-				title: it.title || it.name,
-				summary: it.summary || it.body,
-				tags: it.tags || [],
-				type: it.type || (it.id?.startsWith('t') ? 'tender' : 'circular'),
-				url: it.fileUrl ? `${baseURL}${it.fileUrl.replace(/\\/g, '/')}` : it.url || '#',
-				date: it.date
-					? new Date(it.date).toISOString().split('T')[0]
-					: it.created_at
-					? new Date(it.created_at).toISOString().split('T')[0]
-					: '',
-			}));
+			return items
+				.map((it: any, i: number) => ({
+					id: it._id || it.id || `c_${i}`,
+					title: it.title || it.name,
+					summary: it.summary || it.body,
+					tags: it.tags || [],
+					type: it.type || (it.id?.startsWith('t') ? 'tender' : 'circular'),
+					url: it.fileUrl ? `${baseURL}${it.fileUrl.replace(/\\/g, '/')}` : it.url || '#',
+					date: it.date
+						? new Date(it.date).toISOString().split('T')[0]
+						: it.created_at
+						? new Date(it.created_at).toISOString().split('T')[0]
+						: '',
+				}))
+				.filter((c) => c.type === 'circular');
 		}
 		return DEMO;
 	}, [items]);
@@ -143,16 +138,15 @@ export default function Circulars() {
 		const q = query.trim().toLowerCase();
 
 		return circulars.filter((c) => {
-			const matchesType = typeFilter === 'all' || c.type === typeFilter;
 			const matchesQ =
 				!q ||
 				c.title.toLowerCase().includes(q) ||
 				(c.summary || '').toLowerCase().includes(q);
 			const matchesTag = !tag || (c.tags || []).includes(tag);
 
-			return matchesType && matchesQ && matchesTag;
+			return matchesQ && matchesTag;
 		});
-	}, [circulars, query, tag, typeFilter]);
+	}, [circulars, query, tag]);
 
 	if (loading) {
 		return (
@@ -226,47 +220,6 @@ export default function Circulars() {
 						className="text-start"
 					>
 						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 items-start justify-normal">
-							<div className="w-full flex flex-col items-start">
-								<h5 className="text-center mb-2 text-base font-medium">TYPE</h5>
-								<Popover open={typeFilterOpen} onOpenChange={setTypeFilterOpen}>
-									<PopoverTrigger asChild>
-										<Button
-											variant="outline"
-											className="w-full max-w-xs justify-between rounded-full"
-										>
-											{typeFilters.find((f) => f.key === typeFilter)?.label ||
-												'All'}
-											<ChevronDown className="ml-2 h-4 w-4 opacity-50" />
-										</Button>
-									</PopoverTrigger>
-									<PopoverContent className="w-[250px] p-0">
-										<Command>
-											<CommandInput placeholder="Search type…" />
-											<CommandList className="max-h-60 overflow-y-auto">
-												<CommandEmpty>No type found.</CommandEmpty>
-												<CommandGroup>
-													{typeFilters.map((f) => (
-														<CommandItem
-															key={f.key}
-															onSelect={() => {
-																setTypeFilter(f.key as any);
-																setTypeFilterOpen(false);
-															}}
-															className="cursor-pointer"
-														>
-															{f.label}
-															{typeFilter === f.key && (
-																<Check className="ml-auto h-4 w-4" />
-															)}
-														</CommandItem>
-													))}
-												</CommandGroup>
-											</CommandList>
-										</Command>
-									</PopoverContent>
-								</Popover>
-							</div>
-
 							<div className="w-full flex flex-col items-start">
 								<h5 className="text-center mb-2 text-base font-medium">SEARCH</h5>
 								<div className="relative w-full max-w-sm">

@@ -29,6 +29,7 @@ import Contact from '@/pages/contact';
 import Admin from '@/pages/admin';
 import NotFound from '@/pages/not-found';
 import AdminLogin from './components/admin/AdminLogin';
+import Tenders from './pages/tenders';
 
 // Scroll to top component
 function ScrollToTop() {
@@ -68,6 +69,7 @@ function Router() {
 						<Route path="/gallery" component={Gallery} />
 						<Route path="/facilities" component={Facilities} />
 						<Route path="/careers" component={Careers} />
+						<Route path="/tenders" component={Tenders} />
 						<Route path="/circulars" component={Circulars} />
 						<Route path="/initiatives" component={Initiatives} />
 						<Route path="/team" component={Team} />
