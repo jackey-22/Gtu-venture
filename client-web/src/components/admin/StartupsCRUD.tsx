@@ -82,7 +82,7 @@ export default function StartupsCRUD() {
 			const data = await res.json();
 			setStartups(data || []);
 		} catch (error) {
-			console.error('Error fetching startups:', error);
+			console.error('Error fetching portfolios:', error);
 		} finally {
 			setLoading(false);
 		}
@@ -164,13 +164,13 @@ export default function StartupsCRUD() {
 			if (res.ok) {
 				fetchStartups();
 				resetForm();
-				alert(`Startup ${editingStartup ? 'updated' : 'created'} successfully`);
+				alert(`Portfolio ${editingStartup ? 'updated' : 'created'} successfully`);
 			} else {
 				alert(data.message || 'Something went wrong');
 			}
 		} catch (error) {
-			console.error('Error submitting startup:', error);
-			alert('Failed to submit startup');
+			console.error('Error submitting portfolio:', error);
+			alert('Failed to submit portfolio');
 		} finally {
 			setActionLoading(false);
 			setIsDialogOpen(false);
@@ -187,13 +187,13 @@ export default function StartupsCRUD() {
 			});
 			if (res.ok) {
 				fetchStartups();
-				alert('Startup deleted successfully');
+				alert('Portfolio deleted successfully');
 			} else {
-				alert('Failed to delete startup');
+				alert('Failed to delete portfolio');
 			}
 		} catch (error) {
-			console.error('Error deleting startup:', error);
-			alert('Failed to delete startup');
+			console.error('Error deleting portfolio:', error);
+			alert('Failed to delete portfolio');
 		} finally {
 			setActionLoading(false);
 		}
@@ -216,20 +216,20 @@ export default function StartupsCRUD() {
 		<div className="space-y-6 relative">
 			<div className="flex justify-between items-center">
 				<div>
-					<h2 className="text-2xl font-bold">Startups Management</h2>
-					<p className="text-muted-foreground">Manage startups</p>
+					<h2 className="text-2xl font-bold">Portfolios Management</h2>
+					<p className="text-muted-foreground">Manage All Portfolios</p>
 				</div>
 
 				<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
 					<DialogTrigger asChild>
 						<Button onClick={resetForm}>
-							<Plus className="w-4 h-4 mr-2" /> Add Startup
+							<Plus className="w-4 h-4 mr-2" /> Add Portfolio
 						</Button>
 					</DialogTrigger>
 					<DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
 						<DialogHeader>
 							<DialogTitle>
-								{editingStartup ? 'Edit Startup' : 'Add Startup'}
+								{editingStartup ? 'Edit Portfolio' : 'Add Portfolio'}
 							</DialogTitle>
 						</DialogHeader>
 
@@ -427,7 +427,7 @@ export default function StartupsCRUD() {
 									Cancel
 								</Button>
 								<Button type="submit" onClick={() => setIsDialogOpen(false)}>
-									{editingStartup ? 'Update' : 'Create'} Startup
+									{editingStartup ? 'Update' : 'Create'} Portfolio
 								</Button>
 							</div>
 						</form>
@@ -439,7 +439,7 @@ export default function StartupsCRUD() {
 				<div className="flex justify-center items-center h-64">
 					<div className="text-center">
 						<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
-						<p className="mt-3 text-primary">Loading Startups...</p>
+						<p className="mt-3 text-primary">Loading Portfolios...</p>
 					</div>
 				</div>
 			) : (
@@ -467,7 +467,9 @@ export default function StartupsCRUD() {
 										</AlertDialogTrigger>
 										<AlertDialogContent>
 											<AlertDialogHeader>
-												<AlertDialogTitle>Delete Startup</AlertDialogTitle>
+												<AlertDialogTitle>
+													Delete Portfolio
+												</AlertDialogTitle>
 												<AlertDialogDescription>
 													Are you sure you want to delete "{s.name}"?
 												</AlertDialogDescription>

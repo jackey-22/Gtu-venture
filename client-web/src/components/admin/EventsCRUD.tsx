@@ -111,6 +111,7 @@ export default function EventsCRUD() {
 				alert(`Event ${editingEvent ? 'updated' : 'created'} successfully`);
 				fetchEvents();
 				resetForm();
+				setIsDialogOpen(false);
 			} else {
 				alert(data.message || 'Something went wrong');
 			}
@@ -119,7 +120,6 @@ export default function EventsCRUD() {
 			alert('Failed to submit event');
 		} finally {
 			setActionLoading(false);
-			setIsDialogOpen(false);
 		}
 	};
 
@@ -195,10 +195,6 @@ export default function EventsCRUD() {
 				return 'bg-gray-100 text-gray-800';
 		}
 	};
-
-	if (loading) {
-		return <div className="p-6">Loading events...</div>;
-	}
 
 	return (
 		<div className="space-y-6">
@@ -408,7 +404,7 @@ export default function EventsCRUD() {
 								>
 									Cancel
 								</Button>
-								<Button type="submit" onClick={() => setIsDialogOpen(false)}>
+								<Button type="submit" disabled={actionLoading}>
 									{editingEvent ? 'Update' : 'Create'} Event
 								</Button>
 							</div>
@@ -417,96 +413,107 @@ export default function EventsCRUD() {
 				</Dialog>
 			</div>
 
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-				{events.map((event) => (
-					<Card key={event._id}>
-						<CardContent className="p-4">
-							<div className="flex justify-between items-start gap-3">
-								<div className="flex-1 min-w-0">
-									<div className="flex items-center gap-2 mb-2 flex-wrap">
-										<h3 className="font-bold text-lg line-clamp-2">
-											{event.title}
-										</h3>
-										<Badge
-											variant={
-												event.status === 'published'
-													? 'default'
-													: 'secondary'
-											}
-											className="flex-shrink-0"
-										>
-											{event.status}
-										</Badge>
-									</div>
-									<p className="text-sm text-muted-foreground line-clamp-3 mb-2">
-										{event.description}
-									</p>
-									<div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground mb-2">
-										{(event.start_date || event.end_date) && (
-											<div className="flex items-center gap-1">
-												<Calendar className="w-3 h-3" />
-												<span>
-													{event.start_date
-														? new Date(
-																event.start_date
-														  ).toLocaleDateString()
-														: 'N/A'}
-													{event.end_date &&
-														` - ${new Date(
-															event.end_date
-														).toLocaleDateString()}`}
-												</span>
-											</div>
-										)}
-										{event.category && (
-											<Badge variant="outline" className="text-xs">
-												{event.category}
-											</Badge>
-										)}
-									</div>
-								</div>
-								<div className="flex gap-2 flex-shrink-0">
-									<Button
-										variant="outline"
-										size="sm"
-										onClick={() => handleEdit(event)}
-									>
-										<Edit className="w-4 h-4" />
-									</Button>
-									<AlertDialog>
-										<AlertDialogTrigger asChild>
-											<Button variant="destructive" size="sm">
-												<Trash2 className="w-4 h-4" />
-											</Button>
-										</AlertDialogTrigger>
-										<AlertDialogContent>
-											<AlertDialogHeader>
-												<AlertDialogTitle>Delete Event?</AlertDialogTitle>
-												<AlertDialogDescription>
-													This action cannot be undone.
-												</AlertDialogDescription>
-											</AlertDialogHeader>
-											<AlertDialogFooter>
-												<AlertDialogCancel>Cancel</AlertDialogCancel>
-												<AlertDialogAction
-													onClick={() => handleDelete(event._id)}
-												>
-													Delete
-												</AlertDialogAction>
-											</AlertDialogFooter>
-										</AlertDialogContent>
-									</AlertDialog>
-								</div>
-							</div>
-						</CardContent>
-					</Card>
-				))}
-				{events.length === 0 && (
-					<div className="text-center text-muted-foreground py-8 col-span-full">
-						No events found
+			{loading ? (
+				<div className="flex justify-center items-center h-64">
+					<div className="text-center">
+						<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
+						<p className="mt-3 text-primary">Loading Events...</p>
 					</div>
-				)}
-			</div>
+				</div>
+			) : (
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+					{events.map((event) => (
+						<Card key={event._id}>
+							<CardContent className="p-4">
+								<div className="flex justify-between items-start gap-3">
+									<div className="flex-1 min-w-0">
+										<div className="flex items-center gap-2 mb-2 flex-wrap">
+											<h3 className="font-bold text-lg line-clamp-2">
+												{event.title}
+											</h3>
+											<Badge
+												variant={
+													event.status === 'published'
+														? 'default'
+														: 'secondary'
+												}
+												className="flex-shrink-0"
+											>
+												{event.status}
+											</Badge>
+										</div>
+										<p className="text-sm text-muted-foreground line-clamp-3 mb-2">
+											{event.description}
+										</p>
+										<div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground mb-2">
+											{(event.start_date || event.end_date) && (
+												<div className="flex items-center gap-1">
+													<Calendar className="w-3 h-3" />
+													<span>
+														{event.start_date
+															? new Date(
+																	event.start_date
+															  ).toLocaleDateString()
+															: 'N/A'}
+														{event.end_date &&
+															` - ${new Date(
+																event.end_date
+															).toLocaleDateString()}`}
+													</span>
+												</div>
+											)}
+											{event.category && (
+												<Badge variant="outline" className="text-xs">
+													{event.category}
+												</Badge>
+											)}
+										</div>
+									</div>
+									<div className="flex gap-2 flex-shrink-0">
+										<Button
+											variant="outline"
+											size="sm"
+											onClick={() => handleEdit(event)}
+										>
+											<Edit className="w-4 h-4" />
+										</Button>
+										<AlertDialog>
+											<AlertDialogTrigger asChild>
+												<Button variant="destructive" size="sm">
+													<Trash2 className="w-4 h-4" />
+												</Button>
+											</AlertDialogTrigger>
+											<AlertDialogContent>
+												<AlertDialogHeader>
+													<AlertDialogTitle>
+														Delete Event?
+													</AlertDialogTitle>
+													<AlertDialogDescription>
+														This action cannot be undone.
+													</AlertDialogDescription>
+												</AlertDialogHeader>
+												<AlertDialogFooter>
+													<AlertDialogCancel>Cancel</AlertDialogCancel>
+													<AlertDialogAction
+														onClick={() => handleDelete(event._id)}
+													>
+														Delete
+													</AlertDialogAction>
+												</AlertDialogFooter>
+											</AlertDialogContent>
+										</AlertDialog>
+									</div>
+								</div>
+							</CardContent>
+						</Card>
+					))}
+					{events.length === 0 && (
+						<div className="text-center text-muted-foreground py-8 col-span-full">
+							No events found
+						</div>
+					)}
+				</div>
+			)}
 		</div>
 	);
 }

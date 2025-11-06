@@ -4,8 +4,23 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Calendar, MapPin, Clock, Users, ExternalLink, Search, ChevronDown, Check } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+	Calendar,
+	MapPin,
+	Clock,
+	Users,
+	ExternalLink,
+	Search,
+	ChevronDown,
+	Check,
+} from 'lucide-react';
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+} from '@/components/ui/dialog';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import {
 	Command,
@@ -16,6 +31,7 @@ import {
 	CommandItem,
 } from '@/components/ui/command';
 import { cn } from '@/lib/utils';
+import { UserRound } from 'lucide-react';
 
 const baseURL = import.meta.env.VITE_URL;
 
@@ -208,7 +224,9 @@ export default function Events() {
 					>
 						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 items-start justify-normal">
 							<div className="w-full flex flex-col items-start">
-								<h5 className="text-center mb-2 text-base font-medium">TIME FILTER</h5>
+								<h5 className="text-center mb-2 text-base font-medium">
+									TIME FILTER
+								</h5>
 								<Popover open={tabOpen} onOpenChange={setTabOpen}>
 									<PopoverTrigger asChild>
 										<Button
@@ -305,40 +323,62 @@ export default function Events() {
 				</div>
 			</section>
 
-			{/* Events List */}
-			<section className="py-14">
-				<div className="max-w-7xl mx-auto px-6 lg:px-16">
-					<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+			<section className="py-10">
+				<div className="max-w-7xl mx-auto px-4 sm:px-0 md:px-0 lg:px-0">
+					<div
+						className="
+							grid grid-cols-1 
+							lg:grid-cols-3 
+							gap-5 
+							md:gap-6 
+							xl:gap-8
+						"
+					>
 						{filteredEvents.map((event, idx) => (
 							<motion.div
 								key={event._id}
 								initial={{ opacity: 0, y: 30 }}
 								animate={{ opacity: 1, y: 0 }}
 								transition={{ duration: 0.6, delay: idx * 0.1 }}
-								onClick={() => fetchEventById(event._id)}
-								className="cursor-pointer"
+								onClick={() => {
+									setSelectedEvent({ _id: event._id });
+									fetchEventById(event._id);
+								}}
+								className="cursor-pointer h-full"
 							>
-								<Card className="hover-lift overflow-hidden">
+								<Card className="hover-lift overflow-hidden h-full flex flex-col">
 									<img
 										src={`${baseURL}${event.image.replace(/\\/g, '/')}`}
 										alt={event.title}
-										className="w-full h-48 object-cover"
+										className="w-full h-40 sm:h-48 object-cover"
 									/>
 
-									<CardContent className="p-6">
-										<div className="flex justify-between items-center mb-3">
+									<CardContent className="py-4 px-6 flex flex-col flex-grow">
+										<div className="flex items-center flex-wrap gap-3 mb-3 text-xs sm:text-sm">
 											<Badge variant="secondary">{event.category}</Badge>
+
+											<div className="flex items-center gap-2">
+												<MapPin className="h-4 w-4 flex-shrink-0" />
+												<span className="truncate max-w-[100px] sm:max-w-none">
+													{event.location}
+												</span>
+											</div>
+
+											<div className="flex items-center gap-2">
+												<Users className="h-4 w-4" />
+												{event.maxAttendees} Seats
+											</div>
 										</div>
 
-										<h3 className="text-xl font-bold mb-2 line-clamp-2">
+										<h3 className="text-lg sm:text-xl font-bold mb-2 line-clamp-2">
 											{event.title}
 										</h3>
 
-										<p className="text-muted-foreground mb-4 line-clamp-2">
+										<p className="text-muted-foreground mb-4 text-sm line-clamp-2">
 											{event.description}
 										</p>
 
-										<div className="space-y-2 text-sm text-muted-foreground">
+										<div className="space-y-2 text-sm text-muted-foreground font-medium mb-4">
 											<div className="flex items-center gap-2">
 												<Calendar className="h-4 w-4" />
 												{formatDateTime(event.start_date)}
@@ -350,24 +390,11 @@ export default function Events() {
 													Ends: {formatDateTime(event.end_date)}
 												</div>
 											)}
-
-											<div className="flex items-center gap-2">
-												<MapPin className="h-4 w-4 flex-shrink-0" />
-												<span className="truncate">{event.location}</span>
-											</div>
-
-											<div className="flex items-center gap-2">
-												<Users className="h-4 w-4" />
-												{event.maxAttendees} Seats
-											</div>
 										</div>
 
-										<div className="mt-4">
-											<Button className="w-full">
-												<ExternalLink className="mr-2 h-4 w-4" /> View
-												Details
-											</Button>
-										</div>
+										<Button className="w-full mt-auto rounded-full mb-2">
+											<ExternalLink className="mr-2 h-4 w-4" /> View Details
+										</Button>
 									</CardContent>
 								</Card>
 							</motion.div>
@@ -380,58 +407,109 @@ export default function Events() {
 				</div>
 			</section>
 
-			{/* Modal */}
 			<Dialog open={!!selectedEvent} onOpenChange={() => setSelectedEvent(null)}>
-				<DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+				<DialogContent className="w-auto md:max-w-5xl max-h-[90vh] rounded-none overflow-y-auto overflow-x-hidden sidebar-scroll">
+					<DialogHeader className="sr-only">
+						<DialogTitle>{selectedEvent?.title || 'Event Details'}</DialogTitle>
+						<DialogDescription>Event info and registration details</DialogDescription>
+					</DialogHeader>
+
 					{modalLoading ? (
-						<div className="py-10 text-center">Loading...</div>
+						<div className="py-32 w-72 md:w-96 lg:w-96 text-center">Loading...</div>
 					) : selectedEvent ? (
-						<>
-							<DialogHeader>
-								<DialogTitle className="text-2xl font-bold">
+						<div className="space-y-2">
+							<div className="relative h-64 w-full rounded-t-lg overflow-hidden">
+								<img
+									src={`${baseURL}${selectedEvent.image.replace(/\\/g, '/')}`}
+									alt={selectedEvent.title}
+									className="w-full h-full object-cover"
+								/>
+								<div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+								<h2 className="absolute bottom-4 left-4 text-2xl font-bold text-white drop-shadow-md">
 									{selectedEvent.title}
-								</DialogTitle>
-							</DialogHeader>
-
-							<img
-								src={`${baseURL}${selectedEvent.image.replace(/\\/g, '/')}`}
-								alt={selectedEvent.title}
-								className="w-full h-64 object-cover rounded-lg mb-4"
-							/>
-
-							<p className="text-muted-foreground mb-4 break-words">
-								{selectedEvent.description}
-							</p>
-
-							<div className="space-y-2 text-sm">
-								<p className="break-words">
-									<strong>Date:</strong>{' '}
-									{formatDateTime(selectedEvent.start_date)}
-								</p>
-								{selectedEvent.end_date && (
-									<p className="break-words">
-										<strong>Ends:</strong>{' '}
-										{formatDateTime(selectedEvent.end_date)}
-									</p>
-								)}
-								<p className="break-words">
-									<strong>Location:</strong> {selectedEvent.location}
-								</p>
-								<p>
-									<strong>Category:</strong> {selectedEvent.category}
-								</p>
-								<p className="break-words">
-									<strong>Experts:</strong>{' '}
-									{selectedEvent.experts?.join(', ') || 'N/A'}
-								</p>
-								<p>
-									<strong>Seats:</strong> {selectedEvent.maxAttendees}
-								</p>
-								<p>
-									<strong>Registered:</strong> {selectedEvent.currentAttendees}
-								</p>
+								</h2>
+								<div className="absolute bottom-4 right-4">
+									<Badge className="px-3 py-1 text-xs sm:text-sm font-semibold bg-white/90 backdrop-blur-md text-primary shadow-md border border-primary/10">
+										{selectedEvent.category}
+									</Badge>
+								</div>
 							</div>
-						</>
+
+							<div className="px-6 pb-6 space-y-5">
+								<p className="text-muted-foreground leading-relaxed py-1 break-words break-all whitespace-pre-line">
+									{selectedEvent.description}
+								</p>
+
+								<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-muted/40 py-4 rounded-xl">
+									<div className="flex items-start gap-3">
+										<Calendar className="h-5 w-5 text-primary shrink-0" />
+										<div>
+											<p className="font-medium">Start</p>
+											<p className="text-sm text-muted-foreground">
+												{formatDateTime(selectedEvent.start_date)}
+											</p>
+										</div>
+									</div>
+
+									{selectedEvent.end_date && (
+										<div className="flex items-start gap-3">
+											<Clock className="h-5 w-5 text-primary shrink-0" />
+											<div>
+												<p className="font-medium">End</p>
+												<p className="text-sm text-muted-foreground">
+													{formatDateTime(selectedEvent.end_date)}
+												</p>
+											</div>
+										</div>
+									)}
+
+									<div className="flex items-start gap-3">
+										<MapPin className="h-5 w-5 text-primary shrink-0" />
+										<div>
+											<p className="font-medium">Location</p>
+											<p className="text-sm text-muted-foreground break-words">
+												{selectedEvent.location}
+											</p>
+										</div>
+									</div>
+
+									<div className="flex items-start gap-3">
+										<Users className="h-5 w-5 text-primary shrink-0" />
+										<div>
+											<p className="font-medium">Seats</p>
+											<p className="text-sm text-muted-foreground">
+												{selectedEvent.currentAttendees} /{' '}
+												{selectedEvent.maxAttendees}
+											</p>
+										</div>
+									</div>
+
+									{selectedEvent.experts?.length > 0 && (
+										<div className="flex items-start gap-3">
+											<UserRound className="h-5 w-5 text-primary shrink-0" />
+											<div>
+												<p className="font-medium">Speakers / Mentors</p>
+
+												<div className="text-sm text-muted-foreground space-y-1">
+													{selectedEvent.experts.map(
+														(exp: string, i: number) => (
+															<div key={i}>{exp}</div>
+														)
+													)}
+												</div>
+											</div>
+										</div>
+									)}
+								</div>
+
+								<Button
+									size="lg"
+									className="w-full rounded-full text-base font-semibold"
+								>
+									<ExternalLink className="mr-2" /> Register / Learn More
+								</Button>
+							</div>
+						</div>
 					) : null}
 				</DialogContent>
 			</Dialog>

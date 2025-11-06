@@ -3,6 +3,8 @@
  * Used for validating icon fields in models and controllers
  */
 const ICON_ENUM = [
+	``,
+
 	// Common icons
 	'Home',
 	'Menu',
@@ -40,7 +42,7 @@ const ICON_ENUM = [
 	'Folder',
 	'Tag',
 	'Tags',
-	
+
 	// Business & Growth
 	'TrendingUp',
 	'TrendingDown',
@@ -65,7 +67,7 @@ const ICON_ENUM = [
 	'Trophy',
 	'Badge',
 	'Crown',
-	
+
 	// Technology
 	'Code',
 	'Laptop',
@@ -84,7 +86,7 @@ const ICON_ENUM = [
 	'Camera',
 	'Video',
 	'Mic',
-	
+
 	// Communication & Social
 	'MessageSquare',
 	'MessageCircle',
@@ -99,7 +101,7 @@ const ICON_ENUM = [
 	'BellOff',
 	'AtSign',
 	'Hash',
-	
+
 	// Navigation & Direction
 	'Navigation',
 	'Compass',
@@ -111,7 +113,7 @@ const ICON_ENUM = [
 	'ArrowUpRight',
 	'ArrowDownRight',
 	'Move',
-	
+
 	// Education & Learning
 	'Book',
 	'BookOpen',
@@ -123,7 +125,7 @@ const ICON_ENUM = [
 	'FileCheck',
 	'Clipboard',
 	'ClipboardCheck',
-	
+
 	// Design & Creative
 	'Palette',
 	'Paintbrush',
@@ -137,14 +139,14 @@ const ICON_ENUM = [
 	'AlignLeft',
 	'AlignCenter',
 	'AlignRight',
-	
+
 	// Health & Wellness
 	'Activity',
 	'Heartbeat',
 	'Smile',
 	'Meh',
 	'Frown',
-	
+
 	// Industry & Work
 	'Factory',
 	'Package',
@@ -156,7 +158,7 @@ const ICON_ENUM = [
 	'Layers',
 	'Grid',
 	'Layout',
-	
+
 	// Security & Privacy
 	'Shield',
 	'ShieldCheck',
@@ -165,7 +167,7 @@ const ICON_ENUM = [
 	'Key',
 	'Fingerprint',
 	'Scan',
-	
+
 	// Miscellaneous
 	'HelpCircle',
 	'Info',

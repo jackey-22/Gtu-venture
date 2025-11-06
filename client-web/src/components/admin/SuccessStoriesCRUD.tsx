@@ -119,8 +119,8 @@ export default function SuccessStoriesCRUD() {
 			const payload = new FormData();
 			payload.append('title', formData.title);
 			payload.append('description', formData.description);
-			payload.append('icon', formData.icon);
-			payload.append('metric', formData.metric);
+			payload.append('icon', formData.icon || '');
+			payload.append('metric', formData.metric || '');
 			payload.append('order', formData.order.toString());
 			payload.append('status', formData.status);
 
@@ -232,22 +232,20 @@ export default function SuccessStoriesCRUD() {
 								/>
 							</div>
 
-															<div className="grid grid-cols-2 gap-4">
-									<div className="space-y-2">
-										<Label>Icon *</Label>
-										<IconPicker
-											required
-											value={formData.icon}
-											onValueChange={(value) =>
-												setFormData({ ...formData, icon: value })
-											}
-											placeholder="Select an icon"
-										/>
-									</div>
+							<div className="grid grid-cols-2 gap-4">
 								<div className="space-y-2">
-									<Label>Metric *</Label>
+									<Label>Icon</Label>
+									<IconPicker
+										value={formData.icon}
+										onValueChange={(value) =>
+											setFormData({ ...formData, icon: value })
+										}
+										placeholder="Select an icon"
+									/>
+								</div>
+								<div className="space-y-2">
+									<Label>Metric</Label>
 									<Input
-										required
 										value={formData.metric}
 										onChange={(e) =>
 											setFormData({ ...formData, metric: e.target.value })

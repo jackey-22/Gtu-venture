@@ -380,9 +380,53 @@ async function fetchInitiativeById(req, res) {
 // CIRCULARS
 async function fetchCirculars(req, res) {
 	try {
-		const circulars = await circularModel.find({ status: 'published' }).sort({ created_at: -1 });
-
-		res.status(200).json({ success: true, count: circulars.length, data: circulars });
+		// Get all published circulars
+		const allCirculars = await circularModel.find({ status: 'published' }).sort({ created_at: -1 });
+		
+		// Group tenders by parentId and include all versions (like admin side)
+		// For circulars, return all
+		const result = [];
+		const processedParentIds = new Set();
+		
+		for (const circular of allCirculars) {
+			if (circular.type === 'tender') {
+				// Get parentId (use _id if no parentId exists)
+				const parentId = circular.parentId ? circular.parentId.toString() : circular._id.toString();
+				
+				// Only process once per parent group
+				if (!processedParentIds.has(parentId)) {
+					processedParentIds.add(parentId);
+					
+					// Find all versions of this tender
+					// Include documents where parentId matches, OR where _id matches parentId and has no parentId
+					const versions = await circularModel
+						.find({ 
+							$or: [
+								{ parentId: parentId },
+								{ _id: parentId, parentId: { $in: [null, undefined] } }
+							],
+							type: 'tender',
+							status: 'published'
+						})
+						.sort({ version: -1 }); // Latest version first
+					
+					// Add all versions to result
+					result.push(...versions);
+				}
+			} else {
+				// Include all circulars
+				result.push(circular);
+			}
+		}
+		
+		// Sort by created_at descending
+		result.sort((a, b) => {
+			const aDate = new Date(a.created_at);
+			const bDate = new Date(b.created_at);
+			return bDate - aDate;
+		});
+		
+		res.status(200).json({ success: true, count: result.length, data: result });
 	} catch (error) {
 		console.error('Fetch Circulars Error:', error);
 		res.status(500).json({ message: 'Internal server error' });

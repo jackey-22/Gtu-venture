@@ -1209,7 +1209,9 @@ async function addCareer(req, res) {
 			deadlineDate.setHours(0, 0, 0, 0);
 			publishedOnDate.setHours(0, 0, 0, 0);
 			if (deadlineDate < publishedOnDate) {
-				return res.status(400).json({ message: 'Deadline cannot be before published date' });
+				return res
+					.status(400)
+					.json({ message: 'Deadline cannot be before published date' });
 			}
 		}
 
@@ -1287,7 +1289,9 @@ async function updateCareer(req, res) {
 			deadlineDate.setHours(0, 0, 0, 0);
 			publishedOnDate.setHours(0, 0, 0, 0);
 			if (deadlineDate < publishedOnDate) {
-				return res.status(400).json({ message: 'Deadline cannot be before published date' });
+				return res
+					.status(400)
+					.json({ message: 'Deadline cannot be before published date' });
 			}
 		}
 
@@ -1788,8 +1792,52 @@ async function addCircular(req, res) {
 
 async function getAllCirculars(req, res) {
 	try {
-		const circulars = await circularModel.find().sort({ created_at: -1 });
-		return res.status(200).json(circulars);
+		const allCirculars = await circularModel.find().sort({ created_at: -1 });
+
+		// Group tenders by parentId and include all versions
+		const processedParentIds = new Set();
+		const result = [];
+
+		for (const circular of allCirculars) {
+			if (circular.type === 'tender') {
+				// For tenders, get parentId (use _id if no parentId exists)
+				const parentId = circular.parentId
+					? circular.parentId.toString()
+					: circular._id.toString();
+
+				// Only process once per parent group
+				if (!processedParentIds.has(parentId)) {
+					processedParentIds.add(parentId);
+
+					// Find all versions of this tender
+					// Include documents where parentId matches, OR where _id matches parentId and has no parentId
+					const versions = await circularModel
+						.find({
+							$or: [
+								{ parentId: parentId },
+								{ _id: parentId, parentId: { $in: [null, undefined] } },
+							],
+							type: 'tender',
+						})
+						.sort({ version: -1 }); // Latest version first
+
+					// Add all versions to result
+					result.push(...versions);
+				}
+			} else {
+				// For circulars, add normally
+				result.push(circular);
+			}
+		}
+
+		// Sort by created_at descending
+		result.sort((a, b) => {
+			const aDate = new Date(a.created_at);
+			const bDate = new Date(b.created_at);
+			return bDate - aDate;
+		});
+
+		return res.status(200).json(result);
 	} catch (error) {
 		console.error(error);
 		return res.status(500).json({ message: 'Internal server error' });
@@ -1812,7 +1860,18 @@ async function getCircularById(req, res) {
 async function updateCircular(req, res) {
 	try {
 		const { id } = req.params;
-		const { title, summary, tags, url, fileUrl, date, type, status, publishedAt } = req.body;
+		const {
+			title,
+			summary,
+			tags,
+			url,
+			fileUrl,
+			date,
+			type,
+			status,
+			publishedAt,
+			isFailedTenderEdit,
+		} = req.body;
 
 		const file = req.file ? req.file.path.slice(6) : null;
 
@@ -1829,31 +1888,91 @@ async function updateCircular(req, res) {
 			}
 		}
 
-		const updatedData = {
-			title,
-			summary,
-			tags: tagsArray,
-			url,
-			date,
-			type,
-			status,
-			publishedAt,
-		};
-
-		if (file) updatedData.fileUrl = file;
-
-		const updatedCircular = await circularModel.findByIdAndUpdate(id, updatedData, {
-			new: true,
-			runValidators: true,
-		});
-
-		if (!updatedCircular) {
+		// Find the existing circular
+		const existingCircular = await circularModel.findById(id);
+		if (!existingCircular) {
 			return res.status(404).json({ message: 'Circular not found' });
 		}
 
-		return res
-			.status(200)
-			.json({ message: 'Circular updated successfully', circular: updatedCircular });
+		// For tenders, only create new version if isFailedTenderEdit is true
+		if (existingCircular.type === 'tender' && isFailedTenderEdit === 'true') {
+			// Store previous data
+			const previousData = {
+				title: existingCircular.title,
+				summary: existingCircular.summary,
+				tags: existingCircular.tags,
+				url: existingCircular.url,
+				fileUrl: existingCircular.fileUrl,
+				date: existingCircular.date,
+				status: existingCircular.status,
+				publishedAt: existingCircular.publishedAt,
+			};
+
+			// Determine parentId and version
+			const parentId = existingCircular.parentId || existingCircular._id;
+			const latestVersion = await circularModel
+				.find({ parentId: parentId })
+				.sort({ version: -1 })
+				.limit(1);
+			const nextVersion =
+				latestVersion.length > 0
+					? latestVersion[0].version + 1
+					: existingCircular.version + 1;
+
+			// Mark old version as not latest
+			await circularModel.updateMany(
+				{ parentId: parentId, isLatest: true },
+				{ $set: { isLatest: false } }
+			);
+
+			// Create new version
+			const newVersion = new circularModel({
+				title,
+				summary,
+				tags: tagsArray,
+				url,
+				fileUrl: file || existingCircular.fileUrl,
+				date,
+				type: type || existingCircular.type,
+				status,
+				publishedAt,
+				parentId: parentId,
+				version: nextVersion,
+				previousData: previousData,
+				isLatest: true,
+			});
+
+			await newVersion.save();
+			return res
+				.status(200)
+				.json({
+					message: 'Tender updated successfully (new version created)',
+					circular: newVersion,
+				});
+		} else {
+			// Regular update for circulars or regular tender edits
+			const updatedData = {
+				title,
+				summary,
+				tags: tagsArray,
+				url,
+				date,
+				type,
+				status,
+				publishedAt,
+			};
+
+			if (file) updatedData.fileUrl = file;
+
+			const updatedCircular = await circularModel.findByIdAndUpdate(id, updatedData, {
+				new: true,
+				runValidators: true,
+			});
+
+			return res
+				.status(200)
+				.json({ message: 'Circular updated successfully', circular: updatedCircular });
+		}
 	} catch (error) {
 		console.error(error);
 		return res.status(500).json({ message: 'Internal server error' });
@@ -2587,7 +2706,7 @@ async function addSuccessStory(req, res) {
 		const { title, description, icon, metric, order, status } = req.body;
 		const image = req.file ? `uploads/${req.file.filename}` : null;
 
-		if (!title || !description || !icon || !metric || !image) {
+		if (!title || !description || !image) {
 			return res.status(400).json({ message: 'Missing required fields' });
 		}
 
