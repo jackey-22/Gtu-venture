@@ -18,6 +18,7 @@ import {
 	Star,
 	MessageSquare,
 	Mail,
+	Clipboard,
 } from 'lucide-react';
 import { Skeleton } from 'primereact/skeleton';
 import CountUp from 'react-countup';
@@ -37,6 +38,7 @@ import FacilitiesCRUD from './FacilitiesCRUD';
 import InitiativesCRUD from './InitiativesCRUD';
 import ContactMessagesCRUD from './ContactMessagesCRUD';
 import CircularsCRUD from './CircularsCRUD';
+import TendersCRUD from './TendersCRUD';
 import HeroCRUD from './HeroCRUD';
 import CarouselItemsCRUD from './CarouselItemsCRUD';
 import FeaturedGridCRUD from './FeaturedGridCRUD';
@@ -89,6 +91,7 @@ const contentSections = [
 		icon: Newspaper,
 	},
 	{ key: 'circulars', label: 'Circulars', component: CircularsCRUD, icon: FileText },
+	{ key: 'tenders', label: 'Tenders', component: TendersCRUD, icon: Clipboard },
 ];
 
 export default function AdminDashboard() {

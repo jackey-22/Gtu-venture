@@ -13,6 +13,8 @@ import {
 	DialogDescription,
 } from '@/components/ui/dialog';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Skeleton } from '@/components/ui/skeleton';
+import { FileText, File } from 'lucide-react';
 
 const baseURL = import.meta.env.VITE_URL;
 
@@ -82,6 +84,8 @@ export default function Tenders() {
 						url: it.fileUrl
 							? `${baseURL}${it.fileUrl.replace(/\\/g, '/')}`
 							: it.url || '#',
+						fileUrl: it.fileUrl || null,
+						externalUrl: it.url || null,
 						date: it.date
 							? new Date(it.date)
 							: it.created_at
@@ -92,6 +96,19 @@ export default function Tenders() {
 							: it.created_at
 							? new Date(it.created_at).toLocaleDateString('en-GB')
 							: '',
+						closingDate: it.closingDate || null,
+						closingDateString: it.closingDate
+							? new Date(it.closingDate).toLocaleDateString('en-GB')
+							: '',
+						formattedClosingDate: it.closingDate
+							? (() => {
+									const d = new Date(it.closingDate);
+									const day = String(d.getDate()).padStart(2, '0');
+									const month = String(d.getMonth() + 1).padStart(2, '0');
+									const year = d.getFullYear();
+									return `${day}/${month}/${year}`;
+							  })()
+							: '',
 						status: it.status,
 						type: it.type,
 						created_at: it.created_at
@@ -99,6 +116,7 @@ export default function Tenders() {
 							: '',
 						previousData: it.previousData || null,
 						version: it.version || 1,
+						docNumber: it.version || 1,
 						isLatest: it.isLatest !== false,
 					})),
 					latest: null,
@@ -146,16 +164,25 @@ export default function Tenders() {
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.6 }}
 					>
-						<h5 className="mb-2 text-base font-medium">SEARCH</h5>
-						<div className="relative w-full max-w-sm">
-							<Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
-							<Input
-								value={query}
-								onChange={(e) => setQuery(e.target.value)}
-								placeholder="Search tenders..."
-								className="pl-10 rounded-full"
-							/>
-						</div>
+						{loading ? (
+							<div className="space-y-3 max-w-sm">
+								<Skeleton className="h-4 w-20" />
+								<Skeleton className="h-10 w-full rounded-full" />
+							</div>
+						) : (
+							<>
+								<h5 className="mb-2 text-base font-medium">SEARCH</h5>
+								<div className="relative w-full max-w-sm">
+									<Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
+									<Input
+										value={query}
+										onChange={(e) => setQuery(e.target.value)}
+										placeholder="Search tenders..."
+										className="pl-10 rounded-full"
+									/>
+								</div>
+							</>
+						)}
 					</motion.div>
 				</div>
 			</section>
@@ -165,123 +192,149 @@ export default function Tenders() {
 					<table className="w-full text-sm text-left border-separate border-spacing-y-2">
 						<thead>
 							<tr className="text-black text-sm md:text-base uppercase bg-gray-200">
-								<th className="p-3">Sr No.</th>
-								<th className="p-3">Title</th>
-								<th className="p-3">DESCRIPTION</th>
-								<th className="p-3">Tags</th>
-								<th className="p-3">POSTING Date</th>
-								<th className="p-3 text-right">Action</th>
+								<th className="p-3 font-bold">Sr No.</th>
+								<th className="p-3 font-bold">Title</th>
+								<th className="p-3 font-bold">Summary</th>
+								<th className="p-3 font-bold">Tags</th>
+								<th className="p-3 font-bold">Date</th>
+								<th className="p-3 font-bold">Closing Date</th>
+								<th className="p-3 font-bold">Action</th>
 							</tr>
 						</thead>
 
 						<tbody>
-							{filtered.map((group, index) => {
-								const latest = group.latest;
-								const secondLatest = group.versions[1] || null;
-								return (
-									<tr
-										key={latest.id}
-										className="bg-card hover:shadow rounded-xl cursor-pointer transition"
-										onClick={() => {
-											setSelectedTenderVersions(group.versions);
-											setSelected(latest);
-										}}
-									>
-										<td className="p-3 text-xs text-gray-800 font-medium">
-											{index + 1}
+							{loading ? (
+								Array.from({ length: 5 }).map((_, i) => (
+									<tr key={i} className="bg-card rounded-xl">
+										<td className="p-3">
+											<Skeleton className="h-4 w-6 rounded" />
 										</td>
-										<td className="p-3 text-base text-gray-700 font-medium">
-											<div className="flex items-center gap-2">
-												{latest.title}
-												{latest.version && latest.version > 1 && (
-													<span className="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded">
-														v{latest.version}
-													</span>
-												)}
-											</div>
+										<td className="p-3">
+											<Skeleton className="h-4 w-40 rounded mb-1" />
+											<Skeleton className="h-4 w-28 rounded" />
 										</td>
-										<td className="p-3 max-w-xs">
+										<td className="p-3">
 											<div className="space-y-2">
-												{/* Latest Version */}
-												<div className="text-xs space-y-1 p-2 bg-primary/5 rounded border-l-2 border-primary">
-													<div className="font-semibold text-primary mb-1">
-														v{latest.version || 1} (Latest):
-													</div>
-													<div className="text-base text-gray-700 font-medium">
-														<strong>Title:</strong> {latest.title}
-													</div>
-													{latest.summary && (
-														<div className="text-base text-gray-700 font-medium truncate">
-															<strong>Summary:</strong>{' '}
-															{latest.summary.substring(0, 80)}
-															{latest.summary.length > 80 && '...'}
-														</div>
-													)}
-												</div>
-												{/* Second Latest Version (if exists) */}
-												{secondLatest && (
-													<div className="text-xs space-y-1 p-2 bg-muted rounded border-l-2 border-muted-foreground">
-														<div className="font-semibold text-muted-foreground mb-1">
-															v{secondLatest.version || 1}:
-														</div>
-														<div className="text-gray-600 font-medium">
-															<strong>Title:</strong>{' '}
-															{secondLatest.title}
-														</div>
-														{/* {secondLatest.summary && (
-															<div className="text-gray-600 font-medium truncate">
-																<strong>Summary:</strong>{' '}
-																{secondLatest.summary.substring(
-																	0,
-																	80
-																)}
-																{secondLatest.summary.length > 80 &&
-																	'...'}
-															</div>
-														)} */}
-													</div>
-												)}
-												{group.versions.length > 2 && (
-													<div className="text-xs text-muted-foreground italic">
-														+ {group.versions.length - 2} more
-														version(s)
-													</div>
-												)}
+												<Skeleton className="h-4 w-48 rounded" />
+												<Skeleton className="h-4 w-60 rounded" />
 											</div>
 										</td>
-
-										<td className="p-3 flex flex-wrap gap-1">
-											{latest.tags.map((tg, i) => (
-												<span
-													key={i}
-													className="text-primary text-base font-medium px-2 py-1 rounded-full"
-												>
-													{tg}
-												</span>
-											))}
+										<td className="p-3">
+											<Skeleton className="h-4 w-20 rounded" />
 										</td>
-
-										<td className="p-3 w-36">{latest.formattedDate}</td>
-
+										<td className="p-3">
+											<div className="flex gap-1">
+												<Skeleton className="h-6 w-16 rounded-full" />
+												<Skeleton className="h-6 w-12 rounded-full" />
+											</div>
+										</td>
+										<td className="p-3">
+											<Skeleton className="h-4 w-24 rounded" />
+										</td>
+										<td className="p-3">
+											<Skeleton className="h-4 w-24 rounded" />
+										</td>
 										<td className="p-3 text-right">
-											<Button
-												variant="ghost"
-												size="sm"
-												asChild
-												onClick={(e) => e.stopPropagation()}
-											>
-												<a
-													href={latest.url}
-													target="_blank"
-													rel="noopener noreferrer"
-												>
-													<Download className="w-4 h-4" />
-												</a>
-											</Button>
+											<Skeleton className="h-6 w-6 rounded-full ml-auto" />
 										</td>
 									</tr>
-								);
-							})}
+								))
+							) : filtered.length > 0 ? (
+								filtered.flatMap((group, index) =>
+									group.versions.map((doc, vIndex) => {
+										const isLatest = vIndex === 0;
+
+										return (
+											<tr
+												key={doc._id || `${index}-${vIndex}`}
+												className={`bg-card rounded-xl transition cursor-pointer ${
+													isLatest
+														? 'font-semibold'
+														: 'text-muted-foreground'
+												} ${!isLatest ? 'border-t border-gray-300' : ''}`}
+												onClick={() => {
+													setSelectedTenderVersions(group.versions);
+													setSelected(doc);
+												}}
+											>
+												<td className="p-3 text-base font-medium">
+													{isLatest ? index + 1 : ''}
+												</td>
+
+												<td className="p-3 text-base">
+													{doc.title}{' '}
+													{isLatest && (
+														<span className="text-primary text-sm">
+															(Latest)
+														</span>
+													)}
+												</td>
+
+												<td className="p-3 max-w-xs">
+													{doc.summary
+														? doc.summary.length > 100
+															? doc.summary.substring(0, 100) + '...'
+															: doc.summary
+														: '-'}
+												</td>
+
+												<td className="p-3 flex flex-wrap gap-1">
+													{doc.tags?.map((tg, i) => (
+														<span
+															key={i}
+															className="text-sm font-medium px-2 py-1 rounded-full"
+														>
+															{tg}
+														</span>
+													))}
+												</td>
+
+												<td className="p-3 text-base">
+													{doc.formattedDate}
+												</td>
+
+												<td className="p-3 text-base">
+													{doc.formattedClosingDate || '-'}
+												</td>
+
+												<td className="p-3">
+													<Button
+														variant="outline"
+														size="sm"
+														className="h-10 w-10 rounded-full flex items-center justify-center transition-all hover:scale-110"
+														asChild
+														onClick={(e) => e.stopPropagation()}
+													>
+														<a
+															href={
+																doc.fileUrl
+																	? `${baseURL}${doc.fileUrl.replace(
+																			/\\/g,
+																			'/'
+																	  )}`
+																	: doc.externalUrl || doc.url
+															}
+															target="_blank"
+															rel="noopener noreferrer"
+														>
+															<FileText className="h-6 w-6" />
+														</a>
+													</Button>
+												</td>
+											</tr>
+										);
+									})
+								)
+							) : (
+								<tr>
+									<td
+										colSpan={7}
+										className="text-center py-6 text-muted-foreground"
+									>
+										No tenders found
+									</td>
+								</tr>
+							)}
 						</tbody>
 					</table>
 				</div>
@@ -299,25 +352,26 @@ export default function Tenders() {
 						<>
 							<DialogHeader>
 								<DialogTitle className="text-2xl font-bold text-foreground mb-2">
-									{selected.title} - All Versions
+									{selected.title} - All Documents
 								</DialogTitle>
 								<DialogDescription>
-									Total {selectedTenderVersions.length} version(s) available
+									{selectedTenderVersions.length} document(s)
 								</DialogDescription>
 							</DialogHeader>
 							<Tabs
 								defaultValue={`v${selectedTenderVersions[0].version || 1}`}
 								className="w-full"
 							>
-								<TabsList className="grid w-full grid-cols-3 gap-2">
-									{selectedTenderVersions.map((version) => (
+								<TabsList className="grid w-full grid-cols-3 gap-2 text-sm font-semibold">
+									{selectedTenderVersions.map((doc) => (
 										<TabsTrigger
-											key={version.id}
-											value={`v${version.version || 1}`}
-											className="text-xs"
+											key={doc.id}
+											value={`v${doc.version || 1}`}
+											className="text-sm font-semibold"
 										>
-											v{version.version || 1}
-											{version.version !== 1 && version.isLatest && (
+											<File className="w-4 h-4 mr-1 font-semibold" />
+											Doc {doc.docNumber || 1}
+											{doc.version !== 1 && doc.isLatest && (
 												<Badge variant="default" className="ml-1 text-xs">
 													Latest
 												</Badge>
@@ -325,41 +379,36 @@ export default function Tenders() {
 										</TabsTrigger>
 									))}
 								</TabsList>
-								{selectedTenderVersions.map((version) => (
+								{selectedTenderVersions.map((doc) => (
 									<TabsContent
-										key={version.id}
-										value={`v${version.version || 1}`}
+										key={doc.id}
+										value={`v${doc.version || 1}`}
 										className="space-y-4 mt-4"
 									>
 										<div className="p-4 border rounded-lg">
 											<div className="flex items-center justify-between mb-4">
-												<h3 className="text-lg font-semibold">
-													Version {version.version || 1}
-													{version.version !== 1 && version.isLatest && (
-														<Badge variant="default" className="ml-2">
-															Latest
-														</Badge>
+												<div className="flex items-center gap-4 text-sm text-muted-foreground">
+													{doc.dateString && (
+														<span>Date: {doc.dateString}</span>
 													)}
-												</h3>
-												{version.dateString && (
-													<span className="text-sm text-muted-foreground">
-														Date: {version.dateString}
-													</span>
-												)}
+													{doc.closingDateString && (
+														<span>Closing Date: {doc.closingDateString}</span>
+													)}
+												</div>
 											</div>
 											<div className="space-y-3">
 												<div>
-													<strong>Title:</strong> {version.title}
+													<strong>Title:</strong> {doc.title}
 												</div>
-												{version.summary && (
+												{doc.summary && (
 													<div>
-														<strong>Summary:</strong> {version.summary}
+														<strong>Summary:</strong> {doc.summary}
 													</div>
 												)}
-												{version.tags && version.tags.length > 0 && (
+												{doc.tags && doc.tags.length > 0 && (
 													<div>
 														<strong>Tags:</strong>{' '}
-														{version.tags.map((tag, i) => (
+														{doc.tags.map((tag, i) => (
 															<Badge
 																key={i}
 																variant="outline"
@@ -370,39 +419,41 @@ export default function Tenders() {
 														))}
 													</div>
 												)}
-												{version.previousData && (
-													<div className="mt-4 p-3 bg-muted rounded border-l-4 border-muted-foreground">
-														<strong className="text-muted-foreground">
-															Previous Version Data (v
-															{(version.version || 1) - 1}):
+												{doc.previousData && (
+													<div className="mt-4 px-3 py-2 bg-muted rounded border-l-4 border-muted-foreground">
+														<strong className="text-muted-foreground font-semibold">
+															Previous Document (Doc{' '}
+															{doc.docNumber - 1}):
 														</strong>
 														<div className="mt-2 space-y-1 text-sm">
 															<div>
 																<strong>Title:</strong>{' '}
-																{version.previousData.title}
+																{doc.previousData.title}
 															</div>
-															{version.previousData.summary && (
-																<div>
-																	<strong>Summary:</strong>{' '}
-																	{version.previousData.summary}
-																</div>
-															)}
-															{version.previousData.date && (
+															{doc.previousData.date && (
 																<div>
 																	<strong>Date:</strong>{' '}
 																	{new Date(
-																		version.previousData.date
+																		doc.previousData.date
+																	).toLocaleDateString()}
+																</div>
+															)}
+															{doc.previousData.closingDate && (
+																<div>
+																	<strong>Closing Date:</strong>{' '}
+																	{new Date(
+																		doc.previousData.closingDate
 																	).toLocaleDateString()}
 																</div>
 															)}
 														</div>
 													</div>
 												)}
-												{version.url && (
+												{doc.url && (
 													<div className="pt-4">
 														<Button asChild className="w-full">
 															<a
-																href={version.url}
+																href={doc.url}
 																target="_blank"
 																rel="noopener noreferrer"
 															>

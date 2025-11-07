@@ -8,6 +8,7 @@ const circularSchema = new mongoose.Schema(
 		url: { type: String },
 		fileUrl: { type: String },
 		date: { type: Date },
+		closingDate: { type: Date },
 		type: { type: String, enum: ['circular', 'tender'], default: 'circular' },
 		status: { type: String, enum: ['draft', 'published', 'archived'], default: 'draft' },
 		publishedAt: { type: Date },

@@ -1748,7 +1748,7 @@ async function deleteContactMessage(req, res) {
 // Circular
 async function addCircular(req, res) {
 	try {
-		const { title, summary, tags, url, fileUrl, date, type, status, publishedAt } = req.body;
+		const { title, summary, tags, url, fileUrl, date, closingDate, type, status, publishedAt } = req.body;
 		if (!title) {
 			return res.status(400).json({ message: 'Missing required fields' });
 		}
@@ -1775,6 +1775,7 @@ async function addCircular(req, res) {
 			url,
 			fileUrl: file,
 			date,
+			closingDate: closingDate ? new Date(closingDate) : null,
 			type: type || 'circular',
 			status: status || 'draft',
 			publishedAt,
@@ -1867,6 +1868,7 @@ async function updateCircular(req, res) {
 			url,
 			fileUrl,
 			date,
+			closingDate,
 			type,
 			status,
 			publishedAt,
@@ -1904,6 +1906,7 @@ async function updateCircular(req, res) {
 				url: existingCircular.url,
 				fileUrl: existingCircular.fileUrl,
 				date: existingCircular.date,
+				closingDate: existingCircular.closingDate,
 				status: existingCircular.status,
 				publishedAt: existingCircular.publishedAt,
 			};
@@ -1933,6 +1936,7 @@ async function updateCircular(req, res) {
 				url,
 				fileUrl: file || existingCircular.fileUrl,
 				date,
+				closingDate: closingDate ? new Date(closingDate) : existingCircular.closingDate,
 				type: type || existingCircular.type,
 				status,
 				publishedAt,
@@ -1957,6 +1961,7 @@ async function updateCircular(req, res) {
 				tags: tagsArray,
 				url,
 				date,
+				closingDate: closingDate ? new Date(closingDate) : null,
 				type,
 				status,
 				publishedAt,
@@ -2012,6 +2017,7 @@ async function getDashboardCounts(req, res) {
 			initiativesCount,
 			contactMessagesCount,
 			circularsCount,
+			tendersCount,
 		] = await Promise.all([
 			eventModel.countDocuments(),
 			programModel.countDocuments(),
@@ -2027,7 +2033,8 @@ async function getDashboardCounts(req, res) {
 			facilityModel.countDocuments(),
 			initiativeModel.countDocuments(),
 			contactMessageModel.countDocuments(),
-			circularModel.countDocuments(),
+			circularModel.countDocuments({ type: 'circular' }),
+			circularModel.countDocuments({ type: 'tender' }),
 		]);
 		return res.status(200).json({
 			events: eventsCount,
@@ -2045,6 +2052,7 @@ async function getDashboardCounts(req, res) {
 			initiatives: initiativesCount,
 			contactMessages: contactMessagesCount,
 			circulars: circularsCount,
+			tenders: tendersCount,
 		});
 	} catch (error) {
 		console.error(error);

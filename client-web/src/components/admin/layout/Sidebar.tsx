@@ -14,6 +14,7 @@ import {
 	Star,
 	MessageSquare,
 	Mail,
+	Clipboard,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -25,7 +26,7 @@ interface SidebarProps {
 }
 
 const navItems = [
-	{ key: 'overview', label: 'Overview', icon: Settings },
+	{ key: 'overview', label: 'Dashboard', icon: Settings },
 	{ key: 'homePageSections', label: 'Home Page', icon: Home },
 	{ key: 'news', label: 'News', icon: Newspaper },
 	{ key: 'events', label: 'Events', icon: Calendar },
@@ -42,6 +43,7 @@ const navItems = [
 	{ key: 'initiatives', label: 'Initiatives', icon: Award },
 	{ key: 'contactMessages', label: 'Contacts', icon: Newspaper },
 	{ key: 'circulars', label: 'Circulars', icon: FileText },
+	{ key: 'tenders', label: 'Tenders', icon: Clipboard },
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpen, onClose }) => {
