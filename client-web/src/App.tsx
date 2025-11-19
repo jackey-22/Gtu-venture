@@ -44,7 +44,7 @@ function ScrollToTop() {
 
 function Router() {
 	const [location] = useLocation();
-	const isAdminRoute = location === '/admin';
+	const isAdminRoute = location.startsWith('/admin');
 
 	return (
 		<AuthProvider>
@@ -75,6 +75,7 @@ function Router() {
 						<Route path="/team" component={Team} />
 						<Route path="/contact" component={Contact} />
 						<Route path="/login" component={AdminLogin} />
+						<Route path="/admin/:tab" component={Admin} />
 						<Route path="/admin" component={Admin} />
 						<Route component={NotFound} />
 					</Switch>

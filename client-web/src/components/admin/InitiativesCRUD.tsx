@@ -119,6 +119,7 @@ export default function InitiativesCRUD() {
 			const data = await fetchPost({
 				pathName: `admin/delete-initiative/${id}`,
 				body: JSON.stringify({}),
+				method: 'DELETE',
 			});
 			if (data?.message?.toLowerCase().includes('deleted')) {
 				alert('Initiative deleted successfully');

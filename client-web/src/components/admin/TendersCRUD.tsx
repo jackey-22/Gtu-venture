@@ -233,6 +233,7 @@ export default function TendersCRUD() {
 			const data = await fetchPost({
 				pathName: `admin/delete-circular/${id}`,
 				body: JSON.stringify({}),
+				method: 'DELETE',
 			});
 			if (data?.message?.toLowerCase().includes('deleted')) {
 				alert('Tender deleted successfully');

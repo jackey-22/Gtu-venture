@@ -119,6 +119,7 @@ export default function FacilitiesCRUD() {
 			const data = await fetchPost({
 				pathName: `admin/delete-facility/${id}`,
 				body: JSON.stringify({}),
+				method: 'DELETE',
 			});
 			if (data?.message?.toLowerCase().includes('deleted')) {
 				alert('Facility deleted successfully');

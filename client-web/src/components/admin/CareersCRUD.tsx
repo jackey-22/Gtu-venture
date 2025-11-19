@@ -168,6 +168,7 @@ export default function CareersCRUD() {
 			const data = await fetchPost({
 				pathName: `admin/delete-career/${id}`,
 				body: JSON.stringify({}),
+				method: 'DELETE',
 			});
 			if (data?.message?.toLowerCase().includes('deleted')) {
 				alert('Career deleted successfully');
