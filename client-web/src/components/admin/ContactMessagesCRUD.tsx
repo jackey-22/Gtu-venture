@@ -126,6 +126,7 @@ export default function ContactMessagesCRUD() {
 			const data = await fetchPost({
 				pathName: `admin/delete-contact-message/${id}`,
 				body: JSON.stringify({}),
+				method: 'DELETE',
 			});
 			if (data?.message?.toLowerCase().includes('deleted')) {
 				alert('Contact message deleted successfully');

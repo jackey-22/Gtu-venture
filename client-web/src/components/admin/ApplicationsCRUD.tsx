@@ -165,6 +165,7 @@ export default function ApplicationsCRUD() {
 			const data = await fetchPost({
 				pathName: `admin/delete-application/${id}`,
 				body: JSON.stringify({}),
+				method: 'DELETE',
 			});
 			if (data?.message?.toLowerCase().includes('deleted')) {
 				alert('Application deleted successfully');

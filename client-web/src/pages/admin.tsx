@@ -1,10 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useLocation } from 'wouter';
 import { useAuth } from '@/hooks/use-auth';
 import AdminLogin from '@/components/admin/AdminLogin';
 import AdminDashboard from '@/components/admin/AdminDashboard';
 
 export default function Admin() {
+  const [location, setLocation] = useLocation();
   const { isAuthenticated, loading } = useAuth();
+
+  useEffect(() => {
+    // Redirect /admin to /admin/overview if no tab is specified
+    if (location === '/admin' && isAuthenticated) {
+      setLocation('/admin/overview');
+    }
+  }, [location, isAuthenticated, setLocation]);
 
   if (loading) {
     return (

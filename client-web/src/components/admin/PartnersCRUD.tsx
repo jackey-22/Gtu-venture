@@ -152,6 +152,7 @@ export default function PartnersCRUD() {
 			const data = await fetchPost({
 				pathName: `admin/delete-partner/${id}`,
 				body: JSON.stringify({}),
+				method: 'DELETE',
 			});
 			if (data?.message?.toLowerCase().includes('deleted')) {
 				alert('Partner deleted successfully');
