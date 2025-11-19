@@ -1,0 +1,14 @@
+node_modules
+.git
+*.log
+.env.local
+.env.*.local
+.vscode
+.DS_Store
+attached_assets
+../server/public/uploads/*.jpg
+../server/public/uploads/*.png
+../server/public/uploads/*.jpeg
+../server/public/uploads/*.gif
+../server/public/uploads/*.pdf
+../server/public/uploads/*
