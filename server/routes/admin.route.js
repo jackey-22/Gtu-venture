@@ -107,10 +107,14 @@ router.post('/update-application/:id', asyncRouteHandler(adminController.updateA
 router.delete('/delete-application/:id', asyncRouteHandler(adminController.deleteApplication));
 
 // Career
-router.post('/add-career', asyncRouteHandler(adminController.addCareer));
+router.post('/add-career', upload.single('document'), asyncRouteHandler(adminController.addCareer));
 router.get('/get-careers', asyncRouteHandler(adminController.getAllCareers));
 router.get('/get-career/:id', asyncRouteHandler(adminController.getCareerById));
-router.post('/update-career/:id', asyncRouteHandler(adminController.updateCareer));
+router.post(
+	'/update-career/:id',
+	upload.single('document'),
+	asyncRouteHandler(adminController.updateCareer)
+);
 router.delete('/delete-career/:id', asyncRouteHandler(adminController.deleteCareer));
 
 // Partner

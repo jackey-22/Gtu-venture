@@ -1196,9 +1196,43 @@ async function addCareer(req, res) {
 			publishedAt,
 			deadline,
 			publishedOn,
+			link,
 		} = req.body;
+		
 		if (!title) {
 			return res.status(400).json({ message: 'Missing required fields' });
+		}
+
+		// Handle document file upload
+		const document = req.file ? req.file.path.slice(6) : null;
+
+		// Parse requirements and benefits if they are JSON strings
+		let parsedRequirements = [];
+		let parsedBenefits = [];
+		
+		if (requirements) {
+			if (typeof requirements === 'string') {
+				try {
+					parsedRequirements = JSON.parse(requirements);
+				} catch (e) {
+					// If not JSON, treat as array or split by newline
+					parsedRequirements = Array.isArray(requirements) ? requirements : requirements.split('\n').filter(Boolean);
+				}
+			} else {
+				parsedRequirements = Array.isArray(requirements) ? requirements : [];
+			}
+		}
+		
+		if (benefits) {
+			if (typeof benefits === 'string') {
+				try {
+					parsedBenefits = JSON.parse(benefits);
+				} catch (e) {
+					parsedBenefits = Array.isArray(benefits) ? benefits : benefits.split('\n').filter(Boolean);
+				}
+			} else {
+				parsedBenefits = Array.isArray(benefits) ? benefits : [];
+			}
 		}
 
 		// Validation: deadline should be on or after publishedOn
@@ -1222,13 +1256,15 @@ async function addCareer(req, res) {
 			category,
 			startup,
 			details,
-			requirements: Array.isArray(requirements) ? requirements : [],
-			benefits: Array.isArray(benefits) ? benefits : [],
+			requirements: parsedRequirements,
+			benefits: parsedBenefits,
 			location,
 			status: status || 'draft',
 			publishedAt,
 			deadline: deadline ? new Date(deadline) : null,
 			publishedOn: publishedOn ? new Date(publishedOn) : null,
+			link: link || null,
+			document: document || null,
 		});
 
 		await newCareer.save();
@@ -1279,7 +1315,70 @@ async function updateCareer(req, res) {
 			publishedAt,
 			deadline,
 			publishedOn,
+			link,
+			existingDocument,
 		} = req.body;
+
+		// Handle document file upload
+		let documentPath = null;
+		const existingCareer = await careerModel.findById(id);
+		
+		if (req.file) {
+			// New file uploaded - delete old file if it exists
+			documentPath = req.file.path.slice(6);
+			if (existingCareer && existingCareer.document) {
+				const oldFilePath = path.join(__dirname, '..', 'public', existingCareer.document);
+				if (fs.existsSync(oldFilePath)) {
+					fs.unlinkSync(oldFilePath);
+				}
+			}
+		} else if (existingDocument !== undefined) {
+			// existingDocument field was explicitly provided in the request
+			if (existingDocument && existingDocument !== '') {
+				// Keep existing document
+				documentPath = existingDocument;
+			} else {
+				// Explicitly remove document (existingDocument is null or empty string)
+				if (existingCareer && existingCareer.document) {
+					const filePath = path.join(__dirname, '..', 'public', existingCareer.document);
+					if (fs.existsSync(filePath)) {
+						fs.unlinkSync(filePath);
+					}
+				}
+				documentPath = null;
+			}
+		} else {
+			// existingDocument not in request - keep existing document unchanged
+			documentPath = existingCareer ? existingCareer.document : null;
+		}
+
+		// Parse requirements and benefits if they are JSON strings
+		let parsedRequirements = [];
+		let parsedBenefits = [];
+		
+		if (requirements) {
+			if (typeof requirements === 'string') {
+				try {
+					parsedRequirements = JSON.parse(requirements);
+				} catch (e) {
+					parsedRequirements = Array.isArray(requirements) ? requirements : requirements.split('\n').filter(Boolean);
+				}
+			} else {
+				parsedRequirements = Array.isArray(requirements) ? requirements : [];
+			}
+		}
+		
+		if (benefits) {
+			if (typeof benefits === 'string') {
+				try {
+					parsedBenefits = JSON.parse(benefits);
+				} catch (e) {
+					parsedBenefits = Array.isArray(benefits) ? benefits : benefits.split('\n').filter(Boolean);
+				}
+			} else {
+				parsedBenefits = Array.isArray(benefits) ? benefits : [];
+			}
+		}
 
 		// Validation: deadline should be on or after publishedOn
 		if (deadline && publishedOn) {
@@ -1302,14 +1401,18 @@ async function updateCareer(req, res) {
 			category,
 			startup,
 			details,
-			requirements: Array.isArray(requirements) ? requirements : [],
-			benefits: Array.isArray(benefits) ? benefits : [],
+			requirements: parsedRequirements,
+			benefits: parsedBenefits,
 			location,
 			status,
 			publishedAt,
 			deadline: deadline ? new Date(deadline) : null,
 			publishedOn: publishedOn ? new Date(publishedOn) : null,
+			link: link || null,
 		};
+
+		// Update document field
+		updatedData.document = documentPath;
 
 		const updatedCareer = await careerModel.findByIdAndUpdate(id, updatedData, {
 			new: true,
@@ -1336,6 +1439,15 @@ async function deleteCareer(req, res) {
 		if (!deletedCareer) {
 			return res.status(404).json({ message: 'Career not found' });
 		}
+
+		// Delete associated document file if it exists
+		if (deletedCareer.document) {
+			const filePath = path.join(__dirname, '..', 'public', deletedCareer.document);
+			if (fs.existsSync(filePath)) {
+				fs.unlinkSync(filePath);
+			}
+		}
+
 		return res.status(200).json({ message: 'Career deleted successfully' });
 	} catch (error) {
 		console.error(error);

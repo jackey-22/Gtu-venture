@@ -18,144 +18,144 @@ import {
 
 const baseURL = import.meta.env.VITE_URL;
 
-const partnerData = {
-  funding: [
-    {
-      id: 1,
-      name: "MSME",
-      logo: "/incubators/MSME.png",
-      description: "Ministry of Micro, Small and Medium Enterprises providing financial and technical support to startups in the MSME sector.",
-      website: "https://msme.gov.in",
-      type: "Government",
-      focus: "MSME Development",
-    },
-    {
-      id: 2,
-      name: "Atal Innovation Mission",
-      logo: "/incubators/aim.png", 
-      description: "Government of India's flagship innovation promotion platform, supporting startup ecosystem through funding and mentorship.",
-      website: "https://aim.gov.in",
-      type: "Government",
-      focus: "Innovation & Technology",
-    },
-    {
-      id: 3,
-      name: "SISFS",
-      logo: "/incubators/SISFS.png",
-      description: "Startup India Seed Fund Scheme providing seed funding and support to student entrepreneurs.",
-      website: "https://seedfund.startupindia.gov.in/",
-      type: "Government",
-      focus: "Student Startups",
-    },
-    {
-      id: 4,
-      name: "SSIP",
-      logo: "/incubators/ssip-.png",
-      description: "Student Startup and Innovation Policy promoting entrepreneurship culture among students in Gujarat.",
-      website: "https://www.ssipgujarat.in/",
-      type: "State Government",
-      focus: "Policy Support",
-    },
-  ],
-  strategic: [
-    {
-      id: 5,
-      name: "Nodal Institute",
-      logo: "/incubators/Nodalinstitute.png",
-      description: "Central coordinating body facilitating collaboration between academia, industry, and government for innovation.",
-      website: "#",
-      type: "Institutional",
-      focus: "Coordination & Support",
-    },
-    {
-      id: 6,
-      name: "TiE Gujarat",
-      logo: "/gtuv.png", // Using GTU logo as placeholder for partners without specific logos
-      description: "The Indus Entrepreneurs Gujarat chapter, fostering entrepreneurship through mentorship and networking.",
-      website: "https://gujarat.tie.org",
-      type: "Non-Profit",
-      focus: "Mentorship & Networking",
-    },
-    {
-      id: 7,
-      name: "NASSCOM",
-      logo: "/gtuv.png", // Using GTU logo as placeholder for partners without specific logos
-      description: "National Association of Software and Service Companies, supporting tech startups and digital transformation.",
-      website: "https://nasscom.in",
-      type: "Industry Body",
-      focus: "Technology & Software",
-    },
-  ],
-  corporate: [
-    {
-      id: 8,
-      name: "Reliance Industries",
-      logo: "/gtuv.png", // Using GTU logo as placeholder for partners without specific logos
-      description: "India's largest private sector corporation, partnering for innovation in energy, retail, and digital services.",
-      website: "https://ril.com",
-      type: "Corporate",
-      focus: "Energy & Digital Services",
-    },
-    {
-      id: 9,
-      name: "Tata Consultancy Services",
-      logo: "/gtuv.png", // Using GTU logo as placeholder for partners without specific logos
-      description: "Global IT services and consulting company supporting digital transformation and innovation initiatives.",
-      website: "https://tcs.com",
-      type: "Corporate",
-      focus: "IT Services & Consulting",
-    },
-    {
-      id: 10,
-      name: "Adani Group",
-      logo: "/gtuv.png", // Using GTU logo as placeholder for partners without specific logos
-      description: "Multinational conglomerate supporting infrastructure, energy, and logistics innovation startups.",
-      website: "https://adani.com",
-      type: "Corporate",
-      focus: "Infrastructure & Energy",
-    },
-  ],
-  academic: [
-    {
-      id: 11,
-      name: "Gujarat Technological University",
-      logo: "/gtulogo.png", // Using GTU logo for GTU itself
-      description: "Leading technical university in Gujarat, collaborating on research, innovation, and entrepreneurship education.",
-      website: "https://gtu.ac.in",
-      type: "University",
-      focus: "Research & Education",
-    },
-    {
-      id: 12,
-      name: "Indian Institute of Technology Gandhinagar",
-      logo: "/gtuv.png", // Using GTU logo as placeholder for partners without specific logos
-      description: "Premier institute of technology fostering innovation and entrepreneurship through cutting-edge research and education.",
-      website: "https://iitgn.ac.in",
-      type: "Institute",
-      focus: "Technology & Innovation",
-    },
-  ],
-  csr: [
-    {
-      id: 13,
-      name: "Tata Trusts",
-      logo: "/gtuv.png", // Using GTU logo as placeholder for partners without specific logos
-      description: "Philanthropic organization supporting social innovation and sustainable development through CSR initiatives.",
-      website: "https://tatatrusts.org",
-      type: "CSR",
-      focus: "Social Innovation",
-    },
-    {
-      id: 14,
-      name: "Adani Foundation",
-      logo: "/gtuv.png", // Using GTU logo as placeholder for partners without specific logos
-      description: "CSR arm of Adani Group focusing on education, healthcare, and sustainable development initiatives.",
-      website: "https://adanifoundation.org",
-      type: "CSR",
-      focus: "Community Development",
-    },
-  ],
-};
+// const partnerData = {
+//   funding: [
+//     {
+//       id: 1,
+//       name: "MSME",
+//       logo: "/incubators/MSME.png",
+//       description: "Ministry of Micro, Small and Medium Enterprises providing financial and technical support to startups in the MSME sector.",
+//       website: "https://msme.gov.in",
+//       type: "Government",
+//       focus: "MSME Development",
+//     },
+//     {
+//       id: 2,
+//       name: "Atal Innovation Mission",
+//       logo: "/incubators/aim.png", 
+//       description: "Government of India's flagship innovation promotion platform, supporting startup ecosystem through funding and mentorship.",
+//       website: "https://aim.gov.in",
+//       type: "Government",
+//       focus: "Innovation & Technology",
+//     },
+//     {
+//       id: 3,
+//       name: "SISFS",
+//       logo: "/incubators/SISFS.png",
+//       description: "Startup India Seed Fund Scheme providing seed funding and support to student entrepreneurs.",
+//       website: "https://seedfund.startupindia.gov.in/",
+//       type: "Government",
+//       focus: "Student Startups",
+//     },
+//     {
+//       id: 4,
+//       name: "SSIP",
+//       logo: "/incubators/ssip-.png",
+//       description: "Student Startup and Innovation Policy promoting entrepreneurship culture among students in Gujarat.",
+//       website: "https://www.ssipgujarat.in/",
+//       type: "State Government",
+//       focus: "Policy Support",
+//     },
+//   ],
+//   strategic: [
+//     {
+//       id: 5,
+//       name: "Nodal Institute",
+//       logo: "/incubators/Nodalinstitute.png",
+//       description: "Central coordinating body facilitating collaboration between academia, industry, and government for innovation.",
+//       website: "#",
+//       type: "Institutional",
+//       focus: "Coordination & Support",
+//     },
+//     {
+//       id: 6,
+//       name: "TiE Gujarat",
+//       logo: "/gtuv.png", // Using GTU logo as placeholder for partners without specific logos
+//       description: "The Indus Entrepreneurs Gujarat chapter, fostering entrepreneurship through mentorship and networking.",
+//       website: "https://gujarat.tie.org",
+//       type: "Non-Profit",
+//       focus: "Mentorship & Networking",
+//     },
+//     {
+//       id: 7,
+//       name: "NASSCOM",
+//       logo: "/gtuv.png", // Using GTU logo as placeholder for partners without specific logos
+//       description: "National Association of Software and Service Companies, supporting tech startups and digital transformation.",
+//       website: "https://nasscom.in",
+//       type: "Industry Body",
+//       focus: "Technology & Software",
+//     },
+//   ],
+//   corporate: [
+//     {
+//       id: 8,
+//       name: "Reliance Industries",
+//       logo: "/gtuv.png", // Using GTU logo as placeholder for partners without specific logos
+//       description: "India's largest private sector corporation, partnering for innovation in energy, retail, and digital services.",
+//       website: "https://ril.com",
+//       type: "Corporate",
+//       focus: "Energy & Digital Services",
+//     },
+//     {
+//       id: 9,
+//       name: "Tata Consultancy Services",
+//       logo: "/gtuv.png", // Using GTU logo as placeholder for partners without specific logos
+//       description: "Global IT services and consulting company supporting digital transformation and innovation initiatives.",
+//       website: "https://tcs.com",
+//       type: "Corporate",
+//       focus: "IT Services & Consulting",
+//     },
+//     {
+//       id: 10,
+//       name: "Adani Group",
+//       logo: "/gtuv.png", // Using GTU logo as placeholder for partners without specific logos
+//       description: "Multinational conglomerate supporting infrastructure, energy, and logistics innovation startups.",
+//       website: "https://adani.com",
+//       type: "Corporate",
+//       focus: "Infrastructure & Energy",
+//     },
+//   ],
+//   academic: [
+//     {
+//       id: 11,
+//       name: "Gujarat Technological University",
+//       logo: "/gtulogo.png", // Using GTU logo for GTU itself
+//       description: "Leading technical university in Gujarat, collaborating on research, innovation, and entrepreneurship education.",
+//       website: "https://gtu.ac.in",
+//       type: "University",
+//       focus: "Research & Education",
+//     },
+//     {
+//       id: 12,
+//       name: "Indian Institute of Technology Gandhinagar",
+//       logo: "/gtuv.png", // Using GTU logo as placeholder for partners without specific logos
+//       description: "Premier institute of technology fostering innovation and entrepreneurship through cutting-edge research and education.",
+//       website: "https://iitgn.ac.in",
+//       type: "Institute",
+//       focus: "Technology & Innovation",
+//     },
+//   ],
+//   csr: [
+//     {
+//       id: 13,
+//       name: "Tata Trusts",
+//       logo: "/gtuv.png", // Using GTU logo as placeholder for partners without specific logos
+//       description: "Philanthropic organization supporting social innovation and sustainable development through CSR initiatives.",
+//       website: "https://tatatrusts.org",
+//       type: "CSR",
+//       focus: "Social Innovation",
+//     },
+//     {
+//       id: 14,
+//       name: "Adani Foundation",
+//       logo: "/gtuv.png", // Using GTU logo as placeholder for partners without specific logos
+//       description: "CSR arm of Adani Group focusing on education, healthcare, and sustainable development initiatives.",
+//       website: "https://adanifoundation.org",
+//       type: "CSR",
+//       focus: "Community Development",
+//     },
+//   ],
+// };
 
 const partnerCategories = [
   { id: "funding", label: "Funding Partners", icon: Building },
@@ -197,11 +197,11 @@ export default function Partners() {
 
   // Use real data if available, otherwise fallback to static data
   const displayPartners = {
-    funding: groupedPartners.funding.length > 0 ? groupedPartners.funding : partnerData.funding,
-    strategic: groupedPartners.strategic.length > 0 ? groupedPartners.strategic : partnerData.strategic,
-    corporate: groupedPartners.corporate.length > 0 ? groupedPartners.corporate : partnerData.corporate,
-    academic: groupedPartners.academic.length > 0 ? groupedPartners.academic : partnerData.academic,
-    csr: groupedPartners.csr.length > 0 ? groupedPartners.csr : partnerData.csr,
+    funding: groupedPartners.funding.length > 0 ? groupedPartners.funding : [],
+    strategic: groupedPartners.strategic.length > 0 ? groupedPartners.strategic : [],
+    corporate: groupedPartners.corporate.length > 0 ? groupedPartners.corporate : [],
+    academic: groupedPartners.academic.length > 0 ? groupedPartners.academic : [],
+    csr: groupedPartners.csr.length > 0 ? groupedPartners.csr : [],
   };
 
   const [selectedCategory, setSelectedCategory] = useState('funding');

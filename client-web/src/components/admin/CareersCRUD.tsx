@@ -31,7 +31,9 @@ import {
 	AlertDialogTitle,
 	AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, FileText, Eye } from 'lucide-react';
+
+const BASE_URL = import.meta.env.VITE_URL;
 
 interface CareerType {
 	_id: string;
@@ -47,6 +49,8 @@ interface CareerType {
 	status: 'draft' | 'published' | 'archived';
 	deadline?: string;
 	publishedOn?: string;
+	link?: string;
+	document?: string;
 }
 
 export default function CareersCRUD() {
@@ -55,6 +59,7 @@ export default function CareersCRUD() {
 	const [actionLoading, setActionLoading] = useState(false);
 	const [editingCareer, setEditingCareer] = useState<CareerType | null>(null);
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
+	const [existingDocument, setExistingDocument] = useState<string | null>(null);
 	const [formData, setFormData] = useState({
 		title: '',
 		body: '',
@@ -68,6 +73,8 @@ export default function CareersCRUD() {
 		status: 'draft' as 'draft' | 'published' | 'archived',
 		deadline: '',
 		publishedOn: '',
+		link: '',
+		document: null as File | null,
 	});
 	const [validationError, setValidationError] = useState<string>('');
 
@@ -107,19 +114,61 @@ export default function CareersCRUD() {
 		
 		setValidationError('');
 		setActionLoading(true);
+		
+		const token = localStorage.getItem('token');
+		const payload = new FormData();
+		
+		// Append all form fields
+		payload.append('title', formData.title);
+		if (formData.body) payload.append('body', formData.body);
+		if (formData.type) payload.append('type', formData.type);
+		if (formData.category) payload.append('category', formData.category);
+		if (formData.startup) payload.append('startup', formData.startup);
+		if (formData.details) payload.append('details', formData.details);
+		if (formData.location) payload.append('location', formData.location);
+		if (formData.link) payload.append('link', formData.link);
+		payload.append('status', formData.status);
+		
+		// Handle requirements and benefits as arrays
+		const requirements = formData.requirements
+			? formData.requirements.split('\n').filter(Boolean)
+			: [];
+		const benefits = formData.benefits
+			? formData.benefits.split('\n').filter(Boolean)
+			: [];
+		payload.append('requirements', JSON.stringify(requirements));
+		payload.append('benefits', JSON.stringify(benefits));
+		
+		// Handle dates
+		if (formData.deadline) payload.append('deadline', formData.deadline);
+		if (formData.publishedOn) payload.append('publishedOn', formData.publishedOn);
+		
+		// Handle document file
+		if (formData.document) {
+			payload.append('document', formData.document);
+		} else if (editingCareer) {
+			// Always send existingDocument when editing - null means remove, value means keep
+			if (existingDocument) {
+				payload.append('existingDocument', existingDocument);
+			} else {
+				// Explicitly send empty string to indicate removal
+				payload.append('existingDocument', '');
+			}
+		}
+		
 		try {
-			const payload = {
-				...formData,
-				requirements: formData.requirements
-					? formData.requirements.split('\n').filter(Boolean)
-					: [],
-				benefits: formData.benefits ? formData.benefits.split('\n').filter(Boolean) : [],
-			};
-			const pathName = editingCareer
-				? `admin/update-career/${editingCareer._id}`
-				: 'admin/add-career';
-			const data = await fetchPost({ pathName, body: JSON.stringify(payload) });
-			if (data?.message?.toLowerCase().includes('success')) {
+			const url = editingCareer
+				? `${BASE_URL}admin/update-career/${editingCareer._id}`
+				: `${BASE_URL}admin/add-career`;
+			
+			const res = await fetch(url, {
+				method: 'POST',
+				body: payload,
+				headers: { Authorization: `Bearer ${token}` },
+			});
+			
+			const data = await res.json();
+			if (res.ok && data?.message?.toLowerCase().includes('success')) {
 				alert(editingCareer ? 'Career updated successfully' : 'Career added successfully');
 				setIsDialogOpen(false);
 				resetForm();
@@ -157,7 +206,10 @@ export default function CareersCRUD() {
 			status: career.status,
 			deadline: formatDateForInput(career.deadline),
 			publishedOn: formatDateForInput(career.publishedOn),
+			link: career.link || '',
+			document: null,
 		});
+		setExistingDocument(career.document || null);
 		setValidationError('');
 		setIsDialogOpen(true);
 	};
@@ -186,6 +238,7 @@ export default function CareersCRUD() {
 
 	const resetForm = () => {
 		setEditingCareer(null);
+		setExistingDocument(null);
 		setFormData({
 			title: '',
 			body: '',
@@ -199,6 +252,8 @@ export default function CareersCRUD() {
 			status: 'draft',
 			deadline: '',
 			publishedOn: '',
+			link: '',
+			document: null,
 		});
 		setValidationError('');
 	};
@@ -349,6 +404,98 @@ export default function CareersCRUD() {
 									{validationError}
 								</div>
 							)}
+							<div>
+								<Label>Application Link</Label>
+								<Input
+									type="url"
+									value={formData.link}
+									onChange={(e) =>
+										setFormData({ ...formData, link: e.target.value })
+									}
+									placeholder="https://example.com/apply"
+								/>
+								<p className="text-xs text-muted-foreground mt-1">
+									Optional: Link to external application form
+								</p>
+							</div>
+							<div>
+								<Label>Document</Label>
+								<Input
+									type="file"
+									accept=""
+									onChange={(e) =>
+										setFormData({
+											...formData,
+											document: e.target.files?.[0] || null,
+										})
+									}
+								/>
+								{existingDocument && !formData.document && (
+									<div className="flex items-center justify-between border rounded-lg p-2 bg-gray-50 mt-2">
+										<div className="flex items-center gap-2">
+											<FileText className="w-4 h-4 text-gray-600" />
+											<span className="truncate max-w-[200px]">
+												{existingDocument.split('/').pop()}
+											</span>
+										</div>
+										<div className="flex gap-2">
+											<button
+												type="button"
+												className="p-1 rounded hover:bg-gray-200 transition"
+												onClick={async () => {
+													try {
+														const token = localStorage.getItem('token');
+														const res = await fetch(
+															`${BASE_URL}${existingDocument}`,
+															{
+																headers: {
+																	Authorization: `Bearer ${token}`,
+																},
+															}
+														);
+														const blob = await res.blob();
+														const url = URL.createObjectURL(blob);
+														window.open(url, '_blank');
+													} catch (err) {
+														console.error('Error opening file:', err);
+													}
+												}}
+											>
+												<Eye className="w-4 h-4 text-blue-600" />
+											</button>
+											<button
+												type="button"
+												className="p-1 rounded hover:bg-red-100 transition"
+												onClick={() => setExistingDocument(null)}
+											>
+												<Trash2 className="w-4 h-4 text-red-600" />
+											</button>
+										</div>
+									</div>
+								)}
+								{formData.document && (
+									<div className="flex items-center justify-between border rounded-lg p-2 bg-gray-50 mt-2">
+										<div className="flex items-center gap-2">
+											<FileText className="w-4 h-4 text-gray-600" />
+											<span className="truncate max-w-[200px]">
+												{formData.document.name}
+											</span>
+										</div>
+										<button
+											type="button"
+											className="p-1 rounded hover:bg-red-100 transition"
+											onClick={() =>
+												setFormData({ ...formData, document: null })
+											}
+										>
+											<Trash2 className="w-4 h-4 text-red-600" />
+										</button>
+									</div>
+								)}
+								<p className="text-xs text-muted-foreground mt-1">
+									Optional: Upload job description or application form (PDF, DOC, DOCX)
+								</p>
+							</div>
 							<div>
 								<Label>Status</Label>
 								<Select

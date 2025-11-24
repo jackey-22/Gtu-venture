@@ -10,6 +10,8 @@ import {
 	Search,
 	ChevronDown,
 	Check,
+	FileText,
+	ExternalLink,
 } from 'lucide-react';
 import { fetchGet } from '@/utils/fetch.utils';
 import {
@@ -58,6 +60,8 @@ export default function Careers() {
 					location: c.location || '',
 					deadline: c.deadline,
 					publishedOn: c.publishedOn,
+					link: c.link || '',
+					document: c.document || '',
 				}));
 				setOpenings(mappedCareers);
 			} catch (error) {
@@ -424,14 +428,41 @@ export default function Careers() {
 											</div> */}
 										</div>
 
-										<div className="mt-auto">
-											<a
-												href="#"
-												className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-colors font-medium w-full justify-center"
-												onClick={(e) => e.stopPropagation()}
-											>
-												Apply Now
-											</a>
+										<div className="flex flex-col items-center justify-center sm:flex-row items-stretch sm:items-center gap-3 mt-auto">
+											{o.link ? (
+												<a
+													href={o.link}
+													target="_blank"
+													rel="noopener noreferrer"
+													className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-all duration-200 font-medium shadow-sm hover:shadow-md"
+													onClick={(e) => e.stopPropagation()}
+												>
+													Apply Now
+													<ExternalLink className="w-4 h-4" />
+												</a>
+											) : (
+												<button
+													className="w-full flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-all duration-200 font-medium shadow-sm hover:shadow-md"
+													onClick={(e) => {
+														e.stopPropagation();
+														setSelectedOpening(o);
+													}}
+												>
+													Apply Now
+												</button>
+											)}
+											{o.document && (
+												<a
+													href={`${import.meta.env.VITE_URL}${o.document}`}
+													target="_blank"
+													rel="noopener noreferrer"
+													className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-secondary/10 text-foreground rounded-xl hover:bg-secondary/20 transition-all duration-200 font-medium border border-border shadow-sm hover:shadow-md"
+													onClick={(e) => e.stopPropagation()}
+												>
+													<FileText className="w-4 h-4 flex-shrink-0" />
+													<span className="whitespace-nowrap">View Document</span>
+												</a>
+											)}
 										</div>
 									</div>
 								</motion.article>
@@ -587,12 +618,41 @@ export default function Careers() {
 										</div>
 									)}
 
-								<div className="pt-4">
-									<Button asChild className="w-full">
-										<a href="#" onClick={(e) => e.stopPropagation()}>
+								<div className="pt-4 space-y-3">
+									{selectedOpening.link ? (
+										<Button asChild className="w-full">
+											<a
+												href={selectedOpening.link}
+												target="_blank"
+												rel="noopener noreferrer"
+												onClick={(e) => e.stopPropagation()}
+											>
+												Apply Now
+												<ExternalLink className="w-4 h-4 ml-2" />
+											</a>
+										</Button>
+									) : (
+										<Button className="w-full" disabled>
 											Apply Now
-										</a>
-									</Button>
+										</Button>
+									)}
+									{selectedOpening.document && (
+										<Button
+											variant="outline"
+											asChild
+											className="w-full"
+										>
+											<a
+												href={`${import.meta.env.VITE_URL}${selectedOpening.document}`}
+												target="_blank"
+												rel="noopener noreferrer"
+												onClick={(e) => e.stopPropagation()}
+											>
+												<FileText className="w-4 h-4 mr-0" />
+												View Job Document
+											</a>
+										</Button>
+									)}
 								</div>
 							</div>
 						</>

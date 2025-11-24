@@ -15,6 +15,8 @@ const careerSchema = new mongoose.Schema(
 		publishedAt: { type: Date },
 		deadline: { type: Date },
 		publishedOn: { type: Date },
+		link: { type: String }, // Application link
+		document: { type: String }, // Document file path
 	},
 	{ timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } }
 );
